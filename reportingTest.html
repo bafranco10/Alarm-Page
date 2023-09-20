@@ -232,7 +232,7 @@
         var historyArray = [];
         var xmlFileUrl = 'alarms.xml';
         var alarmActive = false;
-        var acknowledged = false;
+        var isAcknowledged = false;
         initializeHistoryFromCookies();
         const fetchEndpoints = [
             "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=0",
@@ -278,9 +278,8 @@
                 console.error("Error while updating graphic:", error);
             }
         }
-
         const activeAlarms = new Set();
-        function updateGraphic(data) {
+        function updateGraphic(data, alarmData) {
             if (data.Train !== undefined && data.Alarms !== undefined && Array.isArray(data.Alarms)) {
                 var trainData = data.Train;
                 var alarms = data.Alarms;
@@ -289,7 +288,7 @@
                 alarms.forEach(alarm => {
                     // Combine trainData and alarm.Code as a single string
                     var combinedKey = trainData + "-" + alarm.Code;
-
+                    console.log(combinedKey);
                     // Check if the combined key is not already in the active alarms Set
                     if (!activeAlarms.has(combinedKey)) {
                         // Call fetchAndProcessXML to get the alarm description based on alarm.Code
@@ -305,32 +304,35 @@
                             };
                             console.log(alarmData);
                             dataArray.push(alarmData);
-                            // Update the history array in cookies
-                            // updateHistoryInCookies(dataArray);
                             console.log(alarmDescription);
                             // Call updateDisplay to display the updated data.
                             updateDisplay();
 
                             // Add the combined key (trainData + alarm.Code) to the active alarms Set
                             activeAlarms.add(combinedKey);
+                            console.log(activeAlarms);
                         });
                     }
                 });
+                if (alarmData) {
+                    // Check if any active alarms are no longer reported
+                    activeAlarms.forEach(combinedKey => {
+                        // Split the combined key to extract trainData and alarm.Code
+                        var [train, code] = combinedKey.split('-');
+                        const isReported = alarms.some(alarm => alarm.Code === code && trainData === train);
+                        if (!isReported && alarmData.Acknowledged) {
+                            // Alarm is no longer reported, remove from active alarms and move to history
+                            activeAlarms.delete(combinedKey);
+                            moveAlarmToHistory(code);
 
-                // Check if any active alarms are no longer reported
-                activeAlarms.forEach(combinedKey => {
-                    // Split the combined key to extract trainData and alarm.Code
-                    var [train, code] = combinedKey.split('-');
-                    const isReported = alarms.some(alarm => alarm.Code === code && trainData === train);
-                    if (!isReported && isAcknowledged) {
-                        // Alarm is no longer reported, remove from active alarms and move to history
-                        activeAlarms.delete(combinedKey);
-                        moveAlarmToHistory(code);
-
-                    }
-                });
+                            // Remove the corresponding row from the table
+                            deleteRow("row" + trainData);
+                        }
+                    });
+                }
             }
         }
+
         var k = 0; // Initialize k with 0
 
         // Function to format a Date object as "MM/DD/YYYY HH:MM:SS" (e.g., "09/11/2023 08:25:22")
@@ -347,93 +349,90 @@
         }
 
         function updateDisplay() {
-            // Get a reference to the table body.
             var tableBody = document.querySelector("#alarmTable tbody");
 
-            // Clear existing rows from the table.
-            tableBody.innerHTML = '';
-
-            // Iterate over the dataArray and append rows to the table.
             dataArray.forEach(entry => {
-                var row = tableBody.insertRow();
+                // Check if the row already exists
+                var existingRow = document.getElementById("row" + k);
 
-                // Create individual cell elements
-                var trainCell = row.insertCell();
-                var dateCell = row.insertCell();
-                var codeCell = row.insertCell();
-                var msgDataCell = row.insertCell();
-                var descCell = row.insertCell();
+                if (!existingRow) {
+                    // If the row doesn't exist, create a new one
+                    var row = tableBody.insertRow();
+                    row.id = "row" + k;
 
-                // Set text content for each cell
-                trainCell.textContent = entry.Train;
-                const date = new Date(entry.DateTime);
-                dateCell.textContent = formatDate(date); // Use the formatDate function
-                codeCell.textContent = entry.Code;
-                msgDataCell.textContent = entry.Msg_Data;
-                descCell.textContent = entry.Desc;
+                    // Create individual cell elements
+                    var trainCell = row.insertCell();
+                    var dateCell = row.insertCell();
+                    var codeCell = row.insertCell();
+                    var msgDataCell = row.insertCell();
+                    var descCell = row.insertCell();
 
-                // Apply the blinking effect to each cell
-                const list = ['blink'];
-                trainCell.classList.add(...list);
-                dateCell.classList.add(...list);
-                codeCell.classList.add(...list);
-                msgDataCell.classList.add(...list);
-                descCell.classList.add(...list);
+                    // Set text content for each cell
+                    trainCell.textContent = entry.Train;
+                    const date = new Date(entry.DateTime);
+                    dateCell.textContent = formatDate(date);
+                    codeCell.textContent = entry.Code;
+                    msgDataCell.textContent = entry.Msg_Data;
+                    descCell.textContent = entry.Desc;
 
-                // Apply the blinking effect to the entire row
-                row.classList.add('table-danger');
+                    // Apply the blinking effect to each cell
+                    const list = ['blink'];
+                    trainCell.classList.add(...list);
+                    dateCell.classList.add(...list);
+                    codeCell.classList.add(...list);
+                    msgDataCell.classList.add(...list);
+                    descCell.classList.add(...list);
 
-                // Generate a dynamic ID for each row (e.g., table0, table1, table2, etc.)
-                var rowId = "row" + k;
-                row.id = rowId;
+                    // Apply the blinking effect to the entire row
+                    row.classList.add('table-danger');
 
-                // Create a cell for the Acknowledge button.
-                var buttonCell = row.insertCell();
-                buttonCell.classList.add(...list);
-                var acknowledgeButton = document.createElement("button");
+                    // Generate a dynamic ID for each row (e.g., table0, table1, table2, etc.)
+                    rowId = "row" + k;
+                    row.id = rowId;
 
-                // Use a unique ID for each button based on k
-                acknowledgeButton.id = "button" + k;
-                acknowledgeButton.type = "button";
-                acknowledgeButton.className = "btn btn-danger no-blink";
-                acknowledgeButton.textContent = "Acknowledge";
+                    // Create a cell for the Acknowledge button.
+                    var buttonCell = row.insertCell();
+                    buttonCell.classList.add(...list);
+                    var acknowledgeButton = document.createElement("button");
 
-                // Store the current alarmData in a variable
-                var currentAlarmData = entry;
+                    // Use a unique ID for each button based on k
+                    acknowledgeButton.id = "button" + k;
+                    acknowledgeButton.type = "button";
+                    acknowledgeButton.className = "btn btn-danger no-blink";
+                    acknowledgeButton.textContent = "Acknowledge";
 
-                // Add an onclick event to the button using a closure
-                acknowledgeButton.onclick = (function (buttonId, alarmData) {
-                    return function () {
-                        stopFlickerById(row.id);
-                        removeButton(buttonId); // Use the captured button ID
-                        acknowledgeAlarm(buttonId, alarmData); // Pass the alarmData to acknowledgeAlarm
-                    };
-                })(acknowledgeButton.id, currentAlarmData);
+                    // Store the current alarmData in a variable
+                    var currentAlarmData = entry;
 
-                // Append the button to the cell.
-                buttonCell.appendChild(acknowledgeButton);
+                    // Add an onclick event to the button using a closure
+                    acknowledgeButton.onclick = (function (buttonId, alarmData) {
+                        return function () {
+                            stopFlickerById(row.id);
+                            acknowledgeAlarm(buttonId, alarmData);
+                        };
+                    })(acknowledgeButton.id, currentAlarmData);
+
+                    // Append the button to the cell
+                    buttonCell.appendChild(acknowledgeButton);
+                } else {
+
+                }
+
                 k++; // Increment k for the next button
             });
         }
 
         function acknowledgeAlarm(buttonId, alarmData) {
-            // Disable the Acknowledge button
+            // Disable the Acknowledge button and change its text
             var buttonElement = document.getElementById(buttonId);
             buttonElement.disabled = true;
-            buttonElement.innerText = "Acknowledged";
+            buttonElement.textContent = "Acknowledged";
 
-            // Remove the blinking effect
+            // Remove the blinking effect (if needed)
             stopFlickerById(alarmData.Train);
 
             // Update the `acknowledged` status for the corresponding alarm in dataArray
-            dataArray.forEach(data => {
-                if (data.Train === alarmData.Train && data.Code === alarmData.Code) {
-                    data.Acknowledged = true;
-                }
-            });
-
-            // Update the display of current alarms
-            updateDisplay();
+            alarmData.Acknowledged = true;
 
             // Update the history array in cookies with both existing and new data
             updateHistoryInCookies(historyArray);
@@ -445,15 +444,17 @@
             setTimeout(fetchNextData, 50 * (currentFetchIndex + 1));
         }
 
-        // takes in id of the alarm and stops flickering based on click of acknowledgement button
-        function stopFlickerById(...ids) {
-            ids.forEach(id => {
-                var alertBox = document.getElementById(id);
-                if (alertBox) {
-                    alertBox.classList.add("stopFlicker"); // Apply the new class to stop flickering
+        // Takes in id of the alarm and stops the blinking effect based on the click of the acknowledgement button
+        function stopFlickerById(id) {
+            var row = document.getElementById(id);
+            if (row) {
+                var cells = row.getElementsByTagName('td');
+                for (var i = 0; i < cells.length; i++) {
+                    cells[i].classList.remove('blink'); // Remove the blinking effect from all cells in the row
                 }
-            });
+            }
         }
+
         //disable button and change text after acknowledgement
         function removeButton(...ids) {
             ids.forEach(id => {
@@ -717,6 +718,7 @@
                 }
             });
         }
+        
         function moveAlarmToHistory(code) {
             // Find the alarm in dataArray and move it to historyArray
             const indexToRemove = dataArray.findIndex(data => data.Code === code);
@@ -727,6 +729,17 @@
                 updateHistoryInCookies(historyArray);
                 // Update the display
                 updateDisplay();
+
+                // Remove the corresponding row from the table
+                deleteRow("row" + removedAlarm.Train);
+            }
+        }
+
+        // Add this function to delete a row by its ID
+        function deleteRow(rowId) {
+            var row = document.getElementById(rowId);
+            if (row) {
+                row.remove();
             }
         }
 
