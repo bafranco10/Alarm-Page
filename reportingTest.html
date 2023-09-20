@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Fetch and Update Graphic</title>
+    <!--These are necessary for bootstrap -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Javascript sources for bootstrap and the calendar -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://unpkg.com/gijgo@1.9.14/js/gijgo.min.js" type="text/javascript"></script>
+
+    <!-- linking the stylesheet(CSS) -->
+    <link href="https://unpkg.com/gijgo@1.9.14/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        /* prevents the items inside of a table from blinking */
+        .no-blink {
+            visibility: visible;
+            animation: none;
+            -webkit-animation: none;
+        }
+
+        /* stops the flickering*/
+        .stopFlicker {
+            -webkit-animation: none !important;
+            -moz-animation: none !important;
+            -ms-animation: none !important;
+            -o-animation: none !important;
+            animation: none !important;
+            opacity: 1 !important;
+        }
+
+        /* Apply blinking effect to the background of each cell */
+        .blink {
+            animation: blink-background-animation 0.35s steps(5, start) infinite;
+            -webkit-animation: blink-background-animation 0.35s steps(5, start) infinite;
+        }
+
+        @keyframes blink-background-animation {
+            to {
+                background-color: transparent;
+                /* Change the background color to transparent */
+            }
+        }
+
+        @-webkit-keyframes blink-background-animation {
+            to {
+                background-color: transparent;
+                /* Change the background color to transparent */
+            }
+        }
+
+        .tab-container {
+            display: flex;
+            justify-content: flex-end;
+            max-width: 280px;
+            margin-bottom: 20px;
+            margin-left: 40px;
+        }
+
+        /* Style the tab */
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+
+        /* Style the buttons that are used to open the tab content */
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+        }
+
+        /* Change background color of buttons on hover */
+        .tab button:hover {
+            background-color: #ddd;
+        }
+
+        /* Create an active/current tablink class */
+        .tab button.active {
+            background-color: #ccc;
+        }
+
+        /* Style the tab content */
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+
+        .btn-primary {
+            float: right;
+        }
+
+        /* Places the calendars side by side */
+        .datepicker-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .submit-container {
+            display: inline-flex;
+            margin-top: 24px;
+            /* Add spacing between calendars and submit button */
+        }
+
+        .submit-button {
+            height: 38px;
+            padding: 6px 12px;
+        }
+
+        #searchbar {
+            padding: 7px;
+            border-radius: 5px;
+        }
+
+        input[type=text] {
+            width: 30%;
+            -webkit-transition: width 0.15s ease-in-out;
+            transition: width 0.15s ease-in-out;
+        }
+
+        input[type=text]:focus {
+            width: 70%;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="dataDisplay">
+        <!-- Data will be displayed here -->
+    </div>
+    <!-- Tab Links -->
+    <div class="tab-container">
+        <div class="tab">
+            <button class="tablinks" onclick="openPage(event, 'Current Alarms')" id="defaultOpen">Current
+                Alarms</button>
+            <button class="tablinks" onclick="openPage(event, 'Alarm History')">Alarm History</button>
+        </div>
+    </div>
+    <!-- Tab content -->
+    <div id="Current Alarms" class="tabcontent">
+        <h1>Current Alarms</h1>
+        <button type="button" class="btn btn-primary" id="acknowledgeAllButton"
+            onclick="acknowledgeAllAlarms();">Acknowledge
+            All</button>
+        <table id="alarmTable" class="table">
+            <thead>
+                <tr>
+                    <th>Train</th>
+                    <th>Alarm Date/Time</th>
+                    <th>Alarm Code</th>
+                    <th>Alarm Message</th>
+                    <th>Alarm Description</th>
+                    <th>Acknowledged?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be displayed here -->
+            </tbody>
+        </table>
+    </div>
+
+    <div id="Alarm History" class="tabcontent">
+        <h1>Alarm History</h1>
+
+        <input id="searchbar" onkeyup="search_code()" type="text" name="search" placeholder="Search Alarms by Code..">
+
+        <!-- Calendar that filters alarm data-->
+        <form id="dateRangeForm">
+            <div class="datepicker-container form-group">
+                <div class="datepicker-wrapper">
+                    <label for="datepicker1">Start Date:</label>
+                    <input type="text" name="datepicker1" id="datepicker1" class="datepicker-input" width="276" />
+                </div>
+                <div class="datepicker-wrapper form-group">
+                    <label for="datepicker2">End Date:</label>
+                    <input type="text" name="datepicker2" id="datepicker2" class="datepicker-input" width="276" />
+                </div>
+                <div class="submit-container"> <!-- Submit button -->
+                    <button class="btn btn-primary submit-button" type="button" onclick="filterData()">Submit</button>
+                </div>
+            </div>
+            <button class="btn btn-primary submit-button" type="button" onclick="clearDateRange()">Clear
+                Filters</button>
+        </form>
+
+
+        <script>
+            $('#datepicker1').datepicker({
+                uiLibrary: 'bootstrap5'
+            });
+
+            $('#datepicker2').datepicker({
+                uiLibrary: 'bootstrap5'
+            });
+        </script>
+
+        <table id="historyTable" class="table">
+            <thead>
+                <tr>
+                    <th>Train</th>
+                    <th>Alarm Date/Time</th>
+                    <th>Alarm Code</th>
+                    <th>Alarm Message</th>
+                    <th>Alarm Description</th>
+                    <th>Acknowledged?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be displayed here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        var dataArray = []; // Create an array to store trainData and alarmData objects
+        var historyArray = [];
+        var xmlFileUrl = 'alarms.xml';
+        var alarmActive = false;
+        var acknowledged = false;
+        initializeHistoryFromCookies();
+        const fetchEndpoints = [
+            "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=0",
+            //"http://172.16.1.102/Get_Alarms.cgi?Acknowledge=0",
+            //"http://172.16.1.103/Get_Alarms.cgi?Acknowledge=0"
+        ];
+
+        const isFetching = Array.from({ length: fetchEndpoints.length }, () => false);
+        let currentFetchIndex = 0;
+
+        function fetchData(index) {
+            if (isFetching[index]) {
+                return;
+            }
+
+            isFetching[index] = true;
+            const scriptElement = document.createElement("script");
+            scriptElement.src = fetchEndpoints[index];
+            scriptElement.onerror = function () {
+                console.error("Error loading script:", scriptElement.src);
+                isFetching[index] = false;
+                currentFetchIndex = index; // Retry fetching from this index
+            };
+
+            scriptElement.onload = function () {
+                isFetching[index] = false;
+                currentFetchIndex = (index + 1) % fetchEndpoints.length; // Move to the next index
+            };
+
+            const existingScript = document.getElementById("dataScript");
+            if (existingScript) {
+                existingScript.remove();
+            }
+
+            scriptElement.id = "dataScript";
+            document.body.appendChild(scriptElement);
+        }
+
+        function parseResponse(jsonData) {
+            try {
+                updateGraphic(jsonData);
+            } catch (error) {
+                console.error("Error while updating graphic:", error);
+            }
+        }
+
+        const activeAlarms = new Set();
+        function updateGraphic(data) {
+            if (data.Train !== undefined && data.Alarms !== undefined && Array.isArray(data.Alarms)) {
+                var trainData = data.Train;
+                var alarms = data.Alarms;
+
+                // Process all alarms without checking for duplicates
+                alarms.forEach(alarm => {
+                    // Combine trainData and alarm.Code as a single string
+                    var combinedKey = trainData + "-" + alarm.Code;
+
+                    // Check if the combined key is not already in the active alarms Set
+                    if (!activeAlarms.has(combinedKey)) {
+                        // Call fetchAndProcessXML to get the alarm description based on alarm.Code
+                        fetchAndProcessXML(alarm.Code, function (alarmDescription) {
+                            // Create a new alarmData object with the description
+                            var alarmData = {
+                                "Train": trainData,
+                                "DateTime": alarm.DateTime,
+                                "Code": alarm.Code,
+                                "Msg_Data": alarmDescription,
+                                "Desc": alarm.Desc, // Use the fetched description
+                                "Acknowledged": false
+                            };
+                            console.log(alarmData);
+                            dataArray.push(alarmData);
+                            // Update the history array in cookies
+                            // updateHistoryInCookies(dataArray);
+                            console.log(alarmDescription);
+                            // Call updateDisplay to display the updated data.
+                            updateDisplay();
+
+                            // Add the combined key (trainData + alarm.Code) to the active alarms Set
+                            activeAlarms.add(combinedKey);
+                        });
+                    }
+                });
+
+                // Check if any active alarms are no longer reported
+                activeAlarms.forEach(combinedKey => {
+                    // Split the combined key to extract trainData and alarm.Code
+                    var [train, code] = combinedKey.split('-');
+                    const isReported = alarms.some(alarm => alarm.Code === code && trainData === train);
+                    if (!isReported && isAcknowledged) {
+                        // Alarm is no longer reported, remove from active alarms and move to history
+                        activeAlarms.delete(combinedKey);
+                        moveAlarmToHistory(code);
+
+                    }
+                });
+            }
+        }
+        var k = 0; // Initialize k with 0
+
+        // Function to format a Date object as "MM/DD/YYYY HH:MM:SS" (e.g., "09/11/2023 08:25:22")
+        function formatDate(date) {
+            const options = {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            return date.toLocaleString(undefined, options);
+        }
+
+        function updateDisplay() {
+            // Get a reference to the table body.
+            var tableBody = document.querySelector("#alarmTable tbody");
+
+            // Clear existing rows from the table.
+            tableBody.innerHTML = '';
+
+            // Iterate over the dataArray and append rows to the table.
+            dataArray.forEach(entry => {
+                var row = tableBody.insertRow();
+
+                // Create individual cell elements
+                var trainCell = row.insertCell();
+                var dateCell = row.insertCell();
+                var codeCell = row.insertCell();
+                var msgDataCell = row.insertCell();
+                var descCell = row.insertCell();
+
+                // Set text content for each cell
+                trainCell.textContent = entry.Train;
+                const date = new Date(entry.DateTime);
+                dateCell.textContent = formatDate(date); // Use the formatDate function
+                codeCell.textContent = entry.Code;
+                msgDataCell.textContent = entry.Msg_Data;
+                descCell.textContent = entry.Desc;
+
+                // Apply the blinking effect to each cell
+                const list = ['blink'];
+                trainCell.classList.add(...list);
+                dateCell.classList.add(...list);
+                codeCell.classList.add(...list);
+                msgDataCell.classList.add(...list);
+                descCell.classList.add(...list);
+
+                // Apply the blinking effect to the entire row
+                row.classList.add('table-danger');
+
+                // Generate a dynamic ID for each row (e.g., table0, table1, table2, etc.)
+                var rowId = "row" + k;
+                row.id = rowId;
+
+                // Create a cell for the Acknowledge button.
+                var buttonCell = row.insertCell();
+                buttonCell.classList.add(...list);
+                var acknowledgeButton = document.createElement("button");
+
+                // Use a unique ID for each button based on k
+                acknowledgeButton.id = "button" + k;
+                acknowledgeButton.type = "button";
+                acknowledgeButton.className = "btn btn-danger no-blink";
+                acknowledgeButton.textContent = "Acknowledge";
+
+                // Store the current alarmData in a variable
+                var currentAlarmData = entry;
+
+                // Add an onclick event to the button using a closure
+                acknowledgeButton.onclick = (function (buttonId, alarmData) {
+                    return function () {
+                        stopFlickerById(row.id);
+                        removeButton(buttonId); // Use the captured button ID
+                        acknowledgeAlarm(buttonId, alarmData); // Pass the alarmData to acknowledgeAlarm
+                    };
+                })(acknowledgeButton.id, currentAlarmData);
+
+                // Append the button to the cell.
+                buttonCell.appendChild(acknowledgeButton);
+                k++; // Increment k for the next button
+            });
+        }
+
+        function acknowledgeAlarm(buttonId, alarmData) {
+            // Disable the Acknowledge button
+            var buttonElement = document.getElementById(buttonId);
+            buttonElement.disabled = true;
+            buttonElement.innerText = "Acknowledged";
+
+            // Remove the blinking effect
+            stopFlickerById(alarmData.Train);
+
+            // Update the `acknowledged` status for the corresponding alarm in dataArray
+            dataArray.forEach(data => {
+                if (data.Train === alarmData.Train && data.Code === alarmData.Code) {
+                    data.Acknowledged = true;
+                }
+            });
+
+            // Update the display of current alarms
+            updateDisplay();
+
+            // Update the history array in cookies with both existing and new data
+            updateHistoryInCookies(historyArray);
+        }
+
+
+        function fetchNextData() {
+            fetchData(currentFetchIndex);
+            setTimeout(fetchNextData, 50 * (currentFetchIndex + 1));
+        }
+
+        // takes in id of the alarm and stops flickering based on click of acknowledgement button
+        function stopFlickerById(...ids) {
+            ids.forEach(id => {
+                var alertBox = document.getElementById(id);
+                if (alertBox) {
+                    alertBox.classList.add("stopFlicker"); // Apply the new class to stop flickering
+                }
+            });
+        }
+        //disable button and change text after acknowledgement
+        function removeButton(...ids) {
+            ids.forEach(id => {
+                var buttonElement = document.getElementById(id);
+                console.log("Button Element:", buttonElement);
+                // change button after it is clicked
+                buttonElement.disabled = true;
+                buttonElement.innerText = "Acknowledged";
+                if (id == "historyButton" || id == "mainButton") {
+                    buttonElement.style.display = 'none'
+                }
+            });
+        }
+
+        // this function opens up page depending on which tab is clicked
+        function openPage(evt, AlarmPageName) {
+            // Declare all variables
+            var i, tabcontent, tablinks;
+
+            // Get all elements with class="tabcontent" and hide them
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            // Get all elements with class="tablinks" and remove the class "active"
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            // Show the current tab, and add an "active" class to the button that opened the tab
+            document.getElementById(AlarmPageName).style.display = "block";
+            evt.currentTarget.className += " active";
+
+            // Call the displayAlarmHistory function when the "Alarm History" tab is selected
+            if (AlarmPageName === "Alarm History") {
+                displayAlarmHistory();
+            }
+        }
+
+        // Get the element with id="defaultOpen" and click on it
+        document.getElementById("defaultOpen").click();
+        //stops flickering of all tables
+        function stopAllFlickering() {
+            const tables = document.querySelectorAll('.blink');
+            tables.forEach(table => {
+                table.classList.remove("blink");
+            });
+        }
+
+        //delete all alarms in data array and send them to history
+        function acknowledgeAllAlarms() {
+        }
+
+        function search_code() {
+            // Get the search input
+            let input = document.getElementById('searchbar').value;
+
+            if (input.trim() === "") {
+                // If the search bar is empty, display the entire history array
+                displayFilteredHistory(historyArray);
+            } else {
+                // Filter the historyArray based on the entered alarm code
+                const filteredHistory = historyArray.filter(alarmData => {
+                    return alarmData.Code == input;
+                });
+
+                // Display the filtered history in the table
+                displayFilteredHistory(filteredHistory);
+            }
+        }
+
+        function displayFilteredHistory(filteredHistory) {
+            var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+            historyTable.innerHTML = ''; // Clear the existing history table
+
+            filteredHistory.forEach(alarmData => {
+                var historyRow = historyTable.insertRow();
+                historyRow.insertCell().textContent = alarmData.Train;
+                const date = new Date(alarmData.DateTime);
+                historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+                historyRow.insertCell().textContent = alarmData.Code;
+                historyRow.insertCell().textContent = alarmData.Msg_Data;
+                historyRow.insertCell().textContent = alarmData.Desc;
+                historyRow.insertCell().textContent = "Yes"; // Mark as acknowledged in history
+                historyRow.classList.add('table-success');
+            });
+        }
+
+        function displayAlarmHistory() {
+            var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+
+            // Ensure that historyArray contains at most 100 alarms
+            while (historyArray.length > 100) {
+                // Remove the oldest alarm from the beginning of the historyArray
+                historyArray.shift();
+            }
+
+            // Reverse the historyArray to display the newest entries first
+            historyArray.reverse();
+
+            historyTable.innerHTML = ''; // Clear the existing history table
+
+            historyArray.forEach(alarmData => {
+                var historyRow = historyTable.insertRow();
+                historyRow.insertCell().textContent = alarmData.Train;
+                // Format the date before displaying it
+                const date = new Date(alarmData.DateTime);
+                historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+                historyRow.insertCell().textContent = alarmData.Code;
+                historyRow.insertCell().textContent = alarmData.Msg_Data;
+                historyRow.insertCell().textContent = alarmData.Desc;
+                historyRow.insertCell().textContent = "Yes"; // Mark as acknowledged in history
+                historyRow.classList.add('table-success')
+            });
+        }
+
+        // filters data based on the dates that are input 
+        function filterData() {
+            const startDate = new Date(document.querySelector("#datepicker1").value);
+            const endDate = new Date(document.querySelector("#datepicker2").value);
+
+            if (isNaN(startDate) || isNaN(endDate)) {
+                alert("Please select valid start and end dates.");
+                return;
+            }
+
+            // Filter the data based on the selected date range
+            const filteredData = historyArray.filter(entry => {
+                const date = new Date(entry.DateTime);
+                return date >= startDate && date <= endDate;
+            });
+
+            // Display the filtered data in the history table
+            displayFilteredHistory(filteredData);
+        }
+
+        function clearDateRange() {
+            // Clear the date range inputs
+            document.querySelector("#datepicker1").value = "";
+            document.querySelector("#datepicker2").value = "";
+            // Clear the search input field
+            document.getElementById("searchbar").value = "";
+
+            // Display the entire historyArray
+            displayFilteredHistory(historyArray);
+        }
+
+        function updateHistoryInCookies(historyArray) {
+            const cookieValue = encodeURIComponent(JSON.stringify(historyArray));
+            document.cookie = `history=${cookieValue}; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/`;
+        }
+
+        function getCookie(name) {
+            const cookies = document.cookie.split(';');
+            for (const cookie of cookies) {
+                const [cookieName, cookieValue] = cookie.split('=');
+                if (cookieName.trim() === name) {
+                    return decodeURIComponent(cookieValue);
+                }
+            }
+            return null;
+        }
+
+        function updateHistoryInCookies(historyArray) {
+            const cookieValue = encodeURIComponent(JSON.stringify(historyArray));
+            document.cookie = `history=${cookieValue}; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/`;
+        }
+
+        function initializeHistoryFromCookies() {
+            const historyData = getCookie("history");
+
+            if (historyData !== null) {
+                // Parse the history data from the cookie
+                const parsedHistoryData = JSON.parse(historyData);
+
+                // Append the parsed history data to the existing historyArray
+                historyArray = historyArray.concat(parsedHistoryData);
+            }
+        }
+        // fetch xml data
+        // Define the URL of your XML file
+        var xmlFileUrl = 'alarms.xml'; // Replace with the actual URL of your XML file
+
+        // Fetch the XML file only once
+        var xmlDoc = null;
+
+        console.log('Fetching XML data from:', xmlFileUrl);
+        fetch(xmlFileUrl)
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(function (xmlData) {
+                console.log('XML data received:', xmlData);
+                // Parse the XML data
+                var parser = new DOMParser();
+                xmlDoc = parser.parseFromString(xmlData, 'text/xml');
+                if (xmlDoc === null) {
+                    throw new Error('Failed to parse XML data');
+                }
+                console.log('XML document parsed successfully:', xmlDoc);
+                // Continue with your processing code
+            })
+            .catch(function (error) {
+                console.error('Error fetching or parsing XML data:', error);
+            });
+
+
+        function fetchAndProcessXML(alarmCode, callback) {
+            console.log("alarm code being pulled in");
+            console.log(alarmCode);
+            if (xmlDoc === null) {
+                console.error('XML data not available yet. Wait for the XML file to load.');
+                return;
+            }
+
+            // Find the corresponding alarm description based on alarmCode
+            var description = null;
+            var alarmItems = xmlDoc.querySelectorAll('AlarmItem');
+            alarmItems.forEach(function (alarmItem) {
+                var codeProperty = alarmItem.querySelector("Property[Name='Index']");
+                console.log("This is alarm code");
+                //console.log(codeProperty);
+                var textProperty = alarmItem.querySelector("Property[Name='TextItemText[0]']");
+                if (codeProperty && textProperty) {
+                    var code = codeProperty.getAttribute('Value');
+                    console.log(code);
+                    var textValue = textProperty.getAttribute('Value');
+                    if (code == alarmCode) {
+                        description = textValue;
+                        return;
+                    }
+                }
+            });
+
+            // Call the callback function with the fetched description
+            callback(description);
+        }
+
+        // need to meet with Elliott to actually get this part finished
+        // replace all in devText that has {msg_data} or {desc} as placeholders
+        function replacePlaceholders(inputString, alarmData) {
+            // Use a regular expression to find all placeholders enclosed in curly braces {}
+            const regex = /{([^}]+)}/g;
+            return inputString.replace(regex, (match, placeholder) => {
+                // Trim the placeholder and convert it to lowercase for case-insensitive matching
+                placeholder = placeholder.trim().toLowerCase();
+
+                // Check if the placeholder exists in the alarmData object
+                if (placeholder === 'msg_data') {
+                    return alarmData.Msg_Data;
+                } else if (placeholder === 'desc') {
+                    return alarmData.Desc;
+                } else {
+                    // If the placeholder doesn't match 'msg_data' or 'desc', keep it as is
+                    return match;
+                }
+            });
+        }
+        function moveAlarmToHistory(code) {
+            // Find the alarm in dataArray and move it to historyArray
+            const indexToRemove = dataArray.findIndex(data => data.Code === code);
+            if (indexToRemove !== -1) {
+                const removedAlarm = dataArray.splice(indexToRemove, 1)[0];
+                historyArray.push(removedAlarm);
+                // Update the history array in cookies with both existing and new data
+                updateHistoryInCookies(historyArray);
+                // Update the display
+                updateDisplay();
+            }
+        }
+
+        fetchNextData();
+    </script>
+
+</body>
+
+</html>
