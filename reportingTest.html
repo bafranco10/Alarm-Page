@@ -165,6 +165,7 @@
                     <th>Date/Time</th>
                     <th>Code</th>
                     <th>Message</th>
+                    <th>Status</th>
                     <th>Acknowledged?</th>
                 </tr>
             </thead>
@@ -233,18 +234,33 @@
         var alarmActive = false;
         var isAcknowledged = false;
         var rowIdToData = {};
-        var stopAlarmCodes = [1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 18, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 4, 42, 43, 44, 45, 46, 48, 49, 50, 68, 69];
+        var stopAlarmCodes = [1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 18, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 68, 69, 19];
         var buttonArray = []; //stores button ids
         initializeHistoryFromCookies();
         const fetchEndpoints = [
             "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=0",
-            "http://172.16.1.102/Get_Alarms.cgi?Acknowledge=0",
+            //"http://172.16.1.102/Get_Alarms.cgi?Acknowledge=0",
             "http://172.16.1.103/Get_Alarms.cgi?Acknowledge=0"
         ];
+
+        const ipAddressByEndpoint = {};
+
+        // Function to extract the IP address from a fetchEndpoint
+        function getIpAddressFromEndpoint(endpoint) {
+            const url = new URL(endpoint);
+            return url.hostname;
+        }
+
+        // Loop through the fetchEndpoints and store the IP address for each
+        fetchEndpoints.forEach(endpoint => {
+            const ipAddress = getIpAddressFromEndpoint(endpoint);
+            ipAddressByEndpoint[endpoint] = ipAddress;
+        });
 
         const isFetching = Array.from({ length: fetchEndpoints.length }, () => false);
         let currentFetchIndex = 0;
 
+        //fetches data and moves between indexes of sources
         function fetchData(index) {
             if (isFetching[index]) {
                 return;
@@ -252,7 +268,8 @@
 
             isFetching[index] = true;
             const scriptElement = document.createElement("script");
-            scriptElement.src = fetchEndpoints[index];
+            const ipAddress = ipAddressByEndpoint[fetchEndpoints[index]]; // Get the IP address
+            scriptElement.src = `${fetchEndpoints[index]}&IPAddress=${ipAddress}`; // Include the IP address in the URL
             scriptElement.onerror = function () {
                 console.error("Error loading script:", scriptElement.src);
                 isFetching[index] = false;
@@ -277,34 +294,61 @@
             try {
                 updateGraphic(jsonData);
                 checkStopAlarm();
+                checkInactiveAlarms();
             } catch (error) {
                 console.error("Error while updating graphic:", error);
             }
         }
 
+        fetchData(currentFetchIndex);
         const activeAlarms = new Set();
-
+        const existingAlarms = new Set();
+        //checks if data is not undefined and stores ip depending on train source
+        //it also checks the status of the alarm deciding whether or not it should be moved
         function updateGraphic(data, alarmData) {
+            //call this function before processing alarms so it will have to have two ways of processing
+            var trainData = data.Train;
+            var alarms = data.Alarms;
+            checkInactiveAlarms(trainData, alarms);
+            console.log(alarms);
             if (data.Train !== undefined && data.Alarms !== undefined && Array.isArray(data.Alarms)) {
-                var trainData = data.Train;
-                var alarms = data.Alarms;
-                console.log("These are alarms", alarms);
-
                 alarms.forEach(alarm => {
-                    var combinedKey = trainData + "-" + alarm.Code;
+                    var ip = ''; // Declare 'ip' here
 
-                    if (!activeAlarms.has(combinedKey)) {
-                        fetchAndProcessAlarm(trainData, alarm, combinedKey);
+                    if (trainData === 1) {
+                        ip = ipAddressByEndpoint[fetchEndpoints[0]];
+                    } else if (trainData === 2) {
+                        ip = ipAddressByEndpoint[fetchEndpoints[1]];
+                    } else if (trainData === 3) {
+                        ip = ipAddressByEndpoint[fetchEndpoints[2]];
+                    }
+
+                    var alarmKey = trainData + "-" + alarm.DateTime + "-" + alarm.Code + "-" + alarm.Msg_Data + "-" + alarm.Desc + "-" + alarm.Dev_Num + "-" + ip; 
+                    // Check if the alarm is already in dataArray
+                    /*var alarmExistsInDataArray = dataArray.some(existingAlarm => {
+                        return existingAlarm.Train === trainData && existingAlarm.Code === alarm.Code && existingAlarm.ip === ip;
+                    }); */ 
+
+                    if (!existingAlarms.has(alarmKey)) {
+                        fetchAndProcessAlarm(trainData, alarm,alarmKey);
                     }
                 });
-
-                checkInactiveAlarms(trainData, alarms);
-                moveFlaggedAlarmsToHistory();
             }
         }
 
-        function fetchAndProcessAlarm(trainData, alarm, combinedKey) {
+        //receives alarm data and stores it in data array with corresonding values typed in and checks the type of alarm that it is
+        //it then calls for display to be updated
+        async function fetchAndProcessAlarm(trainData, alarm,alarmKey) {
             fetchAndProcessXML(alarm.Code, alarm, function (alarmDescription) {
+                let ip = '';
+                if (trainData === 1) {
+                    ip = ipAddressByEndpoint[fetchEndpoints[0]];
+                } else if (trainData === 2) {
+                    ip = ipAddressByEndpoint[fetchEndpoints[1]];
+                } else if (trainData === 3) {
+                    ip = ipAddressByEndpoint[fetchEndpoints[2]];
+                }
+
                 var alarmData = {
                     "Train": trainData,
                     "DateTime": alarm.DateTime,
@@ -314,13 +358,15 @@
                     "Dev_Num": alarm.Dev_Num,
                     "Acknowledged": false,
                     "stopAlarm": false,
-                    "Message": alarmDescription
+                    "Message": alarmDescription,
+                    "ip": ip, // Add the "ip" field based on trainData
+                    "active": true
                 };
-                checkStopAlarm();
-                console.log(alarmData);
+
+                // Pass alarmData to checkStopAlarm function
+                checkStopAlarm(alarmData);
                 dataArray.push(alarmData);
-                console.log("dataarray", dataArray);
-                activeAlarms.add(combinedKey);
+                existingAlarms.add(alarmKey);
             });
             updateDisplay();
         }
@@ -356,84 +402,96 @@
         }
 
         function checkInactiveAlarms(trainData, alarms) {
-            activeAlarms.forEach(combinedKey => {
-                var [train, code] = combinedKey.split('-');
-                code = parseInt(code); // Convert code to a number if it's a string
-                train = parseInt(train); // Convert train to a number if it's a string
-                const isReported = alarms.some(alarm => alarm.Code === code && trainData === train);
-                const matchingAlarm = dataArray.find(data => data.Code === code && data.Train === train);
+            // Create a list of alarm keys to remove
+            const keysToRemove = [];
+            // Iterate through alarms in activeAlarms
+            existingAlarms.forEach(alarmKey => {
+                const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('-');
+                const alarmCode = parseInt(code);
+                const alarmTrain = parseInt(train);
 
-                if (matchingAlarm) {
-                    if (!isReported && matchingAlarm.Acknowledged && matchingAlarm.stopAlarm) {
-                        matchingAlarm.flagForRemoval = true;
+                // Check if the alarm's train data matches the provided trainData
+                if (alarmTrain === trainData) {
+                    let found = false;
+                    // Iterate through alarms from the current data
+                    for (const alarmKey in alarms) {
+                        if (alarms.hasOwnProperty(alarmKey)) {
+                            const alarm = alarms[alarmKey];
+
+                            // Check if the alarm from activeAlarms matches an alarm from the current data
+                            if (alarm.DateTime === DateTime && alarm.Code === alarmCode && alarmIp === alarmIp) {
+                                found = true;
+                                break;
+                            }
+                        }
                     }
-                    else if (!isReported && !matchingAlarm.stopAlarm) {
-                        matchingAlarm.flagForRemoval = true;
+                    // If the alarm is not found in the current data, mark it for removal
+                    if (!found) {
+                        keysToRemove.push(alarmKey); 
+                        const matchingAlarm = dataArray.find(data => data.Code === alarmCode && data.Train === alarmTrain && data.DateTime === DateTime && data.Desc === Desc && data.Msg_Data === Msg_Data && 
+                        data.Dev_Num === Dev_Num);
+                        if(matchingAlarm) {
+                            matchingAlarm.active = false;
+                        }
+                        moveAlarmToHistory(alarmTrain, alarmCode);
                     }
-                    else {
-                        matchingAlarm.flagForRemoval = false;
-                    }
+                }
+            });
+
+            // Remove marked alarms from activeAlarms and dataArray
+            keysToRemove.forEach(alarmKey => {
+                const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('-');
+                const alarmCode = parseInt(code);
+                const alarmTrain = parseInt(train);
+
+                // Remove from activeAlarms set
+                existingAlarms.delete(alarmKey);
+
+                // Remove from dataArray
+                const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === alarmTrain && data.ip === alarmIp);
+                if (indexToRemove !== -1) {
+                    const removedData = dataArray.splice(indexToRemove, 1);
                 }
             });
         }
 
-        function checkStopAlarm() {
-            activeAlarms.forEach(combinedKey => {
-                var [train, code] = combinedKey.split('-');
-                code = parseInt(code); // Convert code to a number if it's a string
-                train = parseInt(train); // Convert train to a number if it's a string
-                const matchingAlarm = dataArray.find(data => data.Code === code && data.Train === train);
+        function checkStopAlarm(alarmData) {
+            if (alarmData && alarmData.Code) {
+                if (stopAlarmCodes.includes(alarmData.Code)) {
+                    alarmData.stopAlarm = true; // Set stopAlarm to true if the Code is in stopAlarmCodes
+                } else {
+                    alarmData.stopAlarm = false;
+                }
+            }
 
-                if (matchingAlarm && stopAlarmCodes.includes(code)) {
-                    // If matchingAlarm is found and its Code is in stopAlarmCodes, set stopAlarm to true
-                    matchingAlarm.stopAlarm = true;
-                }
-                else {
-                    matchingAlarm.stopAlarm = false;
-                }
+            updateDisplay();
+        }
+
+        function moveAlarmToHistory(trainData, alarmCode) {
+            // Find the alarm in dataArray and move it to historyArray
+            const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === trainData);
+            if (indexToRemove !== -1) {
+                const removedAlarm = dataArray.splice(indexToRemove, 1)[0];
+                historyArray.push(removedAlarm);
+                // Update the history array in cookies with both existing and new data
+                updateHistoryInCookies(historyArray);
+                // Update the display
                 updateDisplay();
-            });
-        }
-        function moveFlaggedAlarmsToHistory() {
-            dataArray.forEach(alarmData => {
-                if (alarmData.flagForRemoval) {
-                    // Find the alarm in dataArray and move it to historyArray
-                    const indexToRemove = dataArray.findIndex(data => data.Code === alarmData.Code);
-                    if (indexToRemove !== -1) {
-                        const removedAlarm = dataArray.splice(indexToRemove, 1)[0];
 
-                        // Remove from activeAlarms Set
-                        const combinedKey = removedAlarm.Train + "-" + removedAlarm.Code;
-                        activeAlarms.delete(combinedKey);
-
-                        historyArray.push(removedAlarm);
-                        console.log("update dataArray", dataArray);
-
-                        // Update the history array in cookies with both existing and new data
-                        updateHistoryInCookies(historyArray);
-
-                        // Update the display
-                        updateDisplay();
-
-                        // Remove the corresponding row from the table
-                        console.log("this is being appended to row", removedAlarm.Train);
-                        deleteRow("row" + removedAlarm.Train + removedAlarm.Code);
-                    }
-                }
-            });
+                // Remove the corresponding row from the table 
+                // Maybe this line can be removed
+                deleteRow("row" + removedAlarm.Train + removedAlarm.Code);
+            }
         }
 
-        // Function to format a Date object as "MM/DD/YYYY HH:MM:SS" (e.g., "09/11/2023 08:25:22")
-        function formatDate(date) {
-            const options = {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            };
-            return date.toLocaleString(undefined, options);
+        // Add this function to delete a row by its ID
+        function deleteRow(rowId) {
+            var row = document.getElementById(rowId);
+            console.log("this is the row we are removing");
+            console.log(rowId);
+            if (row) {
+                row.remove();
+            }
         }
 
         function updateDisplay() {
@@ -456,6 +514,7 @@
                     var dateCell = row.insertCell();
                     var codeCell = row.insertCell();
                     var msgDataCell = row.insertCell();
+                    var activeCell = row.insertCell();
 
                     // Set text content for each cell
                     trainCell.textContent = entry.Train;
@@ -463,6 +522,12 @@
                     dateCell.textContent = formatDate(date);
                     codeCell.textContent = entry.Code;
                     msgDataCell.textContent = entry.Message;
+                    if (entry.active === true) {
+                        activeCell.textContent = "Active";
+                    }
+                    else {
+                        activeCell.textContent = "Inactive";
+                    }
 
                     // Apply the blinking effect to each cell
                     const list = ['blink'];
@@ -470,6 +535,7 @@
                     dateCell.classList.add(...list);
                     codeCell.classList.add(...list);
                     msgDataCell.classList.add(...list);
+                    activeCell.classList.add(...list);
 
                     if (entry.stopAlarm) {
                         row.classList.add('table-danger');
@@ -500,6 +566,8 @@
                         acknowledgeButton.textContent = "Acknowledge";
 
                     }
+                    console.log("Entry.stopAlarm:", entry.stopAlarm);
+                    console.log("Row classList:", row.classList);
 
                     // Store the current alarmData in a variable
                     var currentAlarmData = entry;
@@ -626,7 +694,6 @@
             });
         }
 
-
         // Assuming you have an array of button IDs called buttonArray
         function acknowledgeAllAlarms() {
             buttonArray.forEach(buttonId => {
@@ -731,11 +798,6 @@
             displayFilteredHistory(historyArray);
         }
 
-        function updateHistoryInCookies(historyArray) {
-            const cookieValue = encodeURIComponent(JSON.stringify(historyArray));
-            document.cookie = `history=${cookieValue}; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/`;
-        }
-
         function getCookie(name) {
             const cookies = document.cookie.split(';');
             for (const cookie of cookies) {
@@ -787,58 +849,24 @@
                 console.error('Error fetching or parsing XML data:', error);
             });
 
-        // need to meet with Elliott to actually get this part finished
-        // replace all in devText that has {msg_data} or {desc} as placeholders
-        function replacePlaceholders(inputString, alarmData) {
-            // Use a regular expression to find all placeholders enclosed in curly braces {}
-            const regex = /{([^}]+)}/g;
-            return inputString.replace(regex, (match, placeholder) => {
-                // Trim the placeholder and convert it to lowercase for case-insensitive matching
-                placeholder = placeholder.trim().toLowerCase();
-
-                // Check if the placeholder exists in the alarmData object
-                if (placeholder === 'msg_data') {
-                    return alarmData.Msg_Data;
-                } else if (placeholder === 'desc') {
-                    return alarmData.Desc;
-                } else {
-                    // If the placeholder doesn't match 'msg_data' or 'desc', keep it as is
-                    return match;
-                }
-            });
-        }
-
-        function moveAlarmToHistory(code) {
-            // Find the alarm in dataArray and move it to historyArray
-            const indexToRemove = dataArray.findIndex(data => data.Code === code);
-            if (indexToRemove !== -1) {
-                const removedAlarm = dataArray.splice(indexToRemove, 1)[0];
-                historyArray.push(removedAlarm);
-                // Update the history array in cookies with both existing and new data
-                updateHistoryInCookies(historyArray);
-                // Update the display
-                updateDisplay();
-
-                // Remove the corresponding row from the table 
-                //maybe this line can be removed
-                deleteRow("row" + removedAlarm.Train + removedAlarm.Code);
-            }
-        }
-        // Add this function to delete a row by its ID
-        function deleteRow(rowId) {
-            var row = document.getElementById(rowId);
-            console.log("this is the row we are removing");
-            console.log(rowId);
-            if (row) {
-                row.remove();
-            }
-        }
         // Add this function to remove the "blink" class from all cells in the table
         function stopAllFlickering() {
             const cells = document.querySelectorAll('.blink');
             cells.forEach(cell => {
                 cell.classList.remove('blink');
             });
+        }
+        // Function to format a Date object as "MM/DD/YYYY HH:MM:SS" (e.g., "09/11/2023 08:25:22")
+        function formatDate(date) {
+            const options = {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            return date.toLocaleString(undefined, options);
         }
 
         fetchNextData();
