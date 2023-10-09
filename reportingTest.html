@@ -302,6 +302,7 @@
         fetchData(currentFetchIndex);
         const activeAlarms = new Set();
         const existingAlarms = new Set();
+        
         //checks if data is not undefined and stores ip depending on train source
         //it also checks the status of the alarm deciding whether or not it should be moved
         function updateGraphic(data, alarmData) {
@@ -309,7 +310,7 @@
             var trainData = data.Train;
             var alarms = data.Alarms;
             checkInactiveAlarms(trainData, alarms);
-            //console.log(alarms);
+            console.log(alarms);
             if (data.Train !== undefined && data.Alarms !== undefined && Array.isArray(data.Alarms)) {
                 alarms.forEach(alarm => {
                     var ip = ''; // Declare 'ip' here
@@ -425,7 +426,6 @@
                     // If the alarm is not found in the current data, mark it for removal
                     if (!found) {
                         keysToRemove.push(alarmKey);
-                        console.log(keysToRemove);
                         const matchingAlarm = dataArray.find(data => data.Code === alarmCode && data.Train === alarmTrain && data.DateTime === DateTime && data.Desc === Desc && data.Msg_Data == Msg_Data &&
                             data.Dev_Num == Dev_Num);
                         if (matchingAlarm && !matchingAlarm.stopAlarm) {
@@ -451,7 +451,6 @@
                             updateActiveCellText(matchingAlarm.Code, matchingAlarm.Train, "Inactive");
                         }
                         if (matchingAlarm && matchingAlarm.stopAlarm && matchingAlarm.Acknowledged) {
-                            console.log("we get herevstop")
                             matchingAlarm.active = false;
                             moveAlarmToHistory(alarmTrain, alarmCode);
                             keysToRemove.forEach(alarmKey => {
@@ -514,16 +513,15 @@
             }
         }
 
-        // Add this function to delete a row by its ID
+        // delete a row by its ID effectively removing it from display
         function deleteRow(rowId) {
             var row = document.getElementById(rowId);
-            console.log("this is the row we are removing");
-            console.log(rowId);
             if (row) {
                 row.remove();
             }
         }
-
+        //creates each individual row for the display logging each entry in the dataArray
+        // this also applies specific css classes and updates acknowledged/active status 
         function updateDisplay() {
             var tableBody = document.querySelector("#alarmTable tbody");
             //console.log(dataArray);
@@ -591,9 +589,7 @@
                         acknowledgeButton.textContent = "Acknowledge";
 
                     }
-                    console.log("Entry.stopAlarm:", entry.stopAlarm);
-                    console.log("Row classList:", row.classList);
-
+                
                     // Store the current alarmData in a variable
                     var currentAlarmData = entry;
 
@@ -723,23 +719,28 @@
         function search_code() {
             // Get the search input
             let input = document.getElementById('searchbar').value.trim().toLowerCase(); // Convert input to lowercase
-            // Check if the input is an integer (code)
-            const inputAsInt = parseInt(input);
-            if (!isNaN(inputAsInt)) {
-                // If the input is a valid integer, search by code
+
+            if (input !== "") {
+                // Split the input into individual words
+                const inputWords = input.split(' ');
+
+                // Search by code or keyword
                 const filteredHistory = historyArray.filter(alarmData => {
-                    return alarmData.Code == inputAsInt;
-                });
-                displayFilteredHistory(filteredHistory);
-            } else if (input !== "") {
-                // If the input is not empty and not a valid integer, search by keyword
-                const filteredHistory = historyArray.filter(alarmData => {
-                    // Check if alarmData.Message is defined before calling toLowerCase()
-                    if (alarmData.Message && typeof alarmData.Message === 'string') {
-                        return alarmData.Message.toLowerCase().includes(input);
+                    const codeMatch = String(alarmData.Code).includes(input); // Check for partial code match
+
+                    if (codeMatch) {
+                        return true; // Return true if there's a code match
                     }
-                    return false; // Handle the case where Message is not defined or not a string
+
+                    if (inputWords.length > 0 && alarmData.Message && typeof alarmData.Message === 'string') {
+                        // Check for partial message match for each word in the input
+                        const messageWords = alarmData.Message.toLowerCase().split(' ');
+                        return inputWords.every(word => messageWords.some(messageWord => messageWord.includes(word)));
+                    }
+
+                    return false; // Handle other cases
                 });
+
                 displayFilteredHistory(filteredHistory);
             } else {
                 // If the input is empty, display the entire history array
@@ -770,7 +771,6 @@
         //gets history array and displays all data to table
         function displayAlarmHistory() {
             var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
-            console.log(historyArray);
             // Ensure that historyArray contains at most 100 alarms
             while (historyArray.length > 100) {
                 // Remove the oldest alarm from the beginning of the historyArray
@@ -802,7 +802,7 @@
                 alert("Please select valid start and end dates.");
                 return;
             }
-            endDate.setDate(endDate.getDate() + 1); 
+            endDate.setDate(endDate.getDate() + 1);
             // Filter the data based on the selected date range
             const filteredData = historyArray.filter(entry => {
                 const date = new Date(entry.DateTime);
@@ -812,7 +812,7 @@
             // Display the filtered data in the history table
             displayFilteredHistory(filteredData);
         }
-    
+
         function clearDateRange() {
             // Clear the date range inputs
             document.querySelector("#datepicker1").value = "";
@@ -910,4 +910,5 @@
         fetchNextData();
     </script>
 </body>
+
 </html>
