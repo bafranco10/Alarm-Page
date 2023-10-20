@@ -233,16 +233,20 @@
         var alarmActive = false;
         var isAcknowledged = false;
         var rowIdToData = {};
-        var stopAlarmCodes = [1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 18, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 68, 69];
+        var stopAlarmCodes = [19, 1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 18, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 68, 69];
         var buttonArray = []; //stores button ids
         initializeHistoryFromCookies();
         const fetchEndpoints = [
             "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=0",
             "http://172.16.1.102/Get_Alarms.cgi?Acknowledge=0",
             "http://172.16.1.103/Get_Alarms.cgi?Acknowledge=0"
+            //"http://172.16.1.104/Get_Alarms.cgi?Acknowledge=0",
+            //"http://172.16.1.105/Get_Alarms.cgi?Acknowledge=0",
+            //"http://172.16.1.106/Get_Alarms.cgi?Acknowledge=0",
+            //"http://172.16.1.107/Get_Alarms.cgi?Acknowledge=0"
             //add any missing ips here 
         ];
-
+        const retryDelay = 3000; // You can adjust this value as needed
         const ipAddressByEndpoint = {};
 
         // Function to extract the IP address from a fetchEndpoint
@@ -261,44 +265,51 @@
         let currentFetchIndex = 0;
 
         //fetches data and moves between indexes of sources
-        function fetchData(index) {
-    if (isFetching[index]) {
-        return;
-    }
+        async function fetchData(index) {
+            try {
+                if (isFetching[index]) {
+                    return;
+                }
 
-    isFetching[index] = true;
-    const scriptElement = document.createElement("script");
-    const ipAddress = ipAddressByEndpoint[fetchEndpoints[index]]; // Get the IP address
-    scriptElement.src = `${fetchEndpoints[index]}&IPAddress=${ipAddress}`; // Include the IP address in the URL
+                isFetching[index] = true;
+                const scriptElement = document.createElement("script");
+                const ipAddress = ipAddressByEndpoint[fetchEndpoints[index]];
 
-    console.log(`Fetching data from source: ${fetchEndpoints[index]}`); // Log the source being fetched
+                scriptElement.src = `${fetchEndpoints[index]}&IPAddress=${ipAddress}`;
 
-    scriptElement.onerror = function () {
-        console.error("Error loading script:", scriptElement.src);
-        isFetching[index] = false; // Mark the current source as unsuccessful
-        currentFetchIndex = (index + 1) % fetchEndpoints.length; // Move to the next source
+                //console.log(`Fetching data from source: ${fetchEndpoints[index]}`);
 
-        // Introduce a 1000-millisecond (1 second) delay before moving to the next source
-        setTimeout(() => {
-            fetchData(currentFetchIndex); // Continue fetching from the next source after the delay
-        }, 500); // Adjust the delay time here
-    };
+                scriptElement.onerror = function () {
+                    console.error("Error loading script:", scriptElement.src);
+                    //console.log("IP Address:", ipAddress);
+                    isFetching[index] = false;
+                    addTrainDownAlarm(ipAddress);
+                    // Retry fetching from the same source after a delay (infinite retries)
+                    setTimeout(() => {
+                        fetchData(index);
+                    }, retryDelay);
+                };
 
-    scriptElement.onload = function () {
-        isFetching[index] = false;
-    };
+                scriptElement.onload = function () {
+                    isFetching[index] = false;
+                    //console.log(ipAddress);
+                    checkIfTrainAlarmNeedsToBeRemoved(ipAddress);
+                    fetchData(index); // Fetch from the same source immediately after success
+                };
 
-    const existingScript = document.getElementById("dataScript");
-    if (existingScript) {
-        existingScript.remove();
-    }
+                const existingScript = document.getElementById("dataScript");
+                if (existingScript) {
+                    existingScript.remove();
+                }
 
-    scriptElement.id = "dataScript";
-    document.body.appendChild(scriptElement);
-
-    // After initiating the fetch, move to the next source
-    currentFetchIndex = (index + 1) % fetchEndpoints.length;
-}
+                scriptElement.id = "dataScript";
+                document.body.appendChild(scriptElement);
+            } catch (error) {
+                console.error("An error occurred:", error);
+                addTrainDownAlarm(ipAddress);
+                fetchData(index); // Retry immediately on error
+            }
+        }
 
         function parseResponse(jsonData) {
             try {
@@ -309,10 +320,127 @@
                 console.error("Error while updating graphic:", error);
             }
         }
+        setTimeout(() => {
+            fetchData(0);
+        }, 500);
+        setTimeout(() => {
+            fetchData(1);
+        }, 500);
 
-        fetchData(currentFetchIndex);
+        setTimeout(() => {
+            fetchData(2);
+        }, 1000);
+        /*setTimeout(() => {
+                    fetchData(3);
+                }, 1000); 
+        setTimeout(() => {
+                    fetchData(4);
+                }, 1500); 
+        setTimeout(() => {
+                    fetchData(5);
+                }, 1500); 
+        setTimeout(() => {
+                    fetchData(6);
+                }, 2000); */
+
         const activeAlarms = new Set();
         const existingAlarms = new Set();
+        function getTrainFromIP(ipAddress) {
+            if (ipAddress === "172.16.1.101") {
+                return 1;
+            } else if (ipAddress === "172.16.1.102") {
+                return 2;
+            } else if (ipAddress === "172.16.1.103") {
+                return 3;
+            }
+            else if (ipaddress === "172.16.1.104") {
+                return 4
+            }
+            else if (ipaddress === "172.16.1.105") {
+                return 5
+            }
+            else if (ipaddress === "172.16.1.106") {
+                return 6
+            }
+            else if (ipaddress === "172.16.1.107") {
+                return 7
+            }
+            else {
+                // Handle other cases or defaults
+                return error; // returns an error if message 
+            }
+        }
+
+        // formats date for my custom alarm
+        function formatDateToCustomString(date) {
+            const options = {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true,
+            };
+
+            return date.toLocaleString('en-US', options);
+        }
+
+        // if communication is lost post a message to the screen
+        function addTrainDownAlarm(ipAddress) {
+            var currentDate = new Date();
+            var formattedDate = formatDateToCustomString(currentDate);
+
+            // Check if an alarm with the same characteristics already exists
+            const existingAlarmIndex = dataArray.findIndex((alarm) => {
+                return (
+                    alarm.Train === getTrainFromIP(ipAddress) &&
+                    alarm.Code === 78 &&
+                    alarm.Msg_Data === "New Alarm Data" &&
+                    alarm.Desc === "New Alarm Description" &&
+                    alarm.Dev_Num === "" &&
+                    alarm.Message === "Train Communication Lost" &&
+                    alarm.ip === ipAddress
+                );
+            });
+
+            if (existingAlarmIndex === -1) {
+                // Create a new alarm if it doesn't exist
+                const newAlarm = {
+                    "Train": getTrainFromIP(ipAddress),
+                    "DateTime": formattedDate,
+                    "Code": 78,
+                    "Msg_Data": "New Alarm Data",
+                    "Desc": "New Alarm Description",
+                    "Dev_Num": "",
+                    "Acknowledged": false,
+                    "stopAlarm": false,
+                    "Message": "Train Communication Lost",
+                    "ip": ipAddress,
+                    "active": true
+                };
+                // Add the new alarm to the dataArray
+                dataArray.push(newAlarm);
+
+                // Update the display with the new alarm
+                updateDisplay();
+            }
+
+            //console.log(dataArray);
+        }
+        // after every successfu fetch this is called with ipaddrress to ensure we dont have any communication warnings when there is in fact no warning
+        // if there is no communicationn issue then remove it 
+        function checkIfTrainAlarmNeedsToBeRemoved(ipAddress) {
+            const trainToRemove = getTrainFromIP(ipAddress); // Get the train from the IP address
+            const alarmCodeToRemove = 78;
+
+            // Check if there's a missing alarm with the specified train and alarm code
+            const missingAlarm = dataArray.find(entry => entry.Train === trainToRemove && entry.Code === alarmCodeToRemove);
+
+            if (missingAlarm) {
+                moveAlarmToHistory(trainToRemove, alarmCodeToRemove);
+            }
+        }
 
         //checks if data is not undefined and stores ip depending on train source
         //it also checks the status of the alarm deciding whether or not it should be moved
@@ -432,6 +560,14 @@
                         // Check if the alarm from activeAlarms matches an alarm from the current data
                         if (alarm.DateTime === DateTime && alarm.Code === alarmCode && alarmIp === alarmIp && alarm.Desc === Desc && alarm.Msg_Data == Msg_Data) {
                             found = true;
+                            const matchingAlarm = dataArray.find(data => data.Code === alarmCode && data.Train === alarmTrain && data.DateTime === DateTime && data.Desc === Desc && data.Msg_Data == Msg_Data &&
+                            data.Dev_Num == Dev_Num);
+                            if (matchingAlarm) {
+                                matchingAlarm.active = true; 
+                                console.log(matchingAlarm);
+                            updateActiveCellText(matchingAlarm.Code, matchingAlarm.Train, "Active", matchingAlarm.Desc);
+                            found = true;
+                            }
                             break;
                         }
                     }
@@ -441,6 +577,7 @@
                         keysToRemove.push(alarmKey);
                         const matchingAlarm = dataArray.find(data => data.Code === alarmCode && data.Train === alarmTrain && data.DateTime === DateTime && data.Desc === Desc && data.Msg_Data == Msg_Data &&
                             data.Dev_Num == Dev_Num);
+                            console.log("matching alarm value", matchingAlarm.active);
                         if (matchingAlarm && !matchingAlarm.stopAlarm) {
                             console.log("Removing alarm", matchingAlarm);
                             matchingAlarm.active = false;
@@ -462,9 +599,11 @@
                             });
                         }
                         if (matchingAlarm && matchingAlarm.stopAlarm && !matchingAlarm.Acknowledged) {
+                            matchingAlarm.active = false;
                             updateActiveCellText(matchingAlarm.Code, matchingAlarm.Train, "Inactive", matchingAlarm.Desc);
                         }
-                        if (matchingAlarm && matchingAlarm.stopAlarm && matchingAlarm.Acknowledged) {
+                        
+                        if (matchingAlarm && matchingAlarm.stopAlarm && matchingAlarm.Acknowledged && !matchingAlarm.active) {
                             matchingAlarm.active = false;
                             moveAlarmToHistory(alarmTrain, alarmCode);
                             keysToRemove.forEach(alarmKey => {
@@ -503,9 +642,11 @@
         // function to change text in active column to inactive if a stop alarm is inactive but needs to be acknowledged
         function updateActiveCellText(alarmCode, trainData, newText, Desc) {
             var rowId = "row" + trainData + alarmCode + Desc;
-            var activeCell = document.querySelector("#" + rowId + " .active-cell");
+            var row = document.getElementById(rowId);
 
-            if (activeCell) {
+            if (row) {
+                var cells = row.cells;
+                var activeCell = cells[cells.length - 2]; // Access the last cell in the row
                 activeCell.textContent = newText;
             }
         }
@@ -534,6 +675,7 @@
                 row.remove();
             }
         }
+        
         //creates each individual row for the display logging each entry in the dataArray
         // this also applies specific css classes and updates acknowledged/active status 
         function updateDisplay() {
@@ -542,7 +684,6 @@
             dataArray.forEach(entry => {
                 // Create a unique row ID by concatenating "train" and "alarm code"
                 var rowId = "row" + entry.Train + entry.Code + entry.Desc;
-
                 // Check if the row already exists
                 var existingRow = document.getElementById(rowId);
 
@@ -565,7 +706,6 @@
                     codeCell.textContent = entry.Code;
                     msgDataCell.textContent = entry.Message;
                     activeCell.textContent = "Active"
-                    activeCell.classList.add("active-cell"); // Add the "active-cell" class
                     // Apply the blinking effect to each cell
                     const list = ['blink'];
                     trainCell.classList.add(...list);
@@ -649,11 +789,6 @@
                 // Update the history array in cookies with both existing and new data
                 updateHistoryInCookies(historyArray);
             }
-        }
-
-        function fetchNextData() {
-            fetchData(currentFetchIndex);
-            setTimeout(fetchNextData, 50 * (currentFetchIndex + 1));
         }
 
         // Takes in id of the alarm and stops the blinking effect based on the click of the acknowledgement button
@@ -785,14 +920,16 @@
         //gets history array and displays all data to table
         function displayAlarmHistory() {
             var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
-            // Ensure that historyArray contains at most 100 alarms
-            while (historyArray.length > 100) {
-                // Remove the oldest alarm from the beginning of the historyArray
-                historyArray.shift();
-            }
-            // Reverse the historyArray to display the newest entries first
-            historyArray.reverse();
             historyTable.innerHTML = ''; // Clear the existing history table
+
+            // Sort the historyArray based on the DateTime property, from newest to oldest
+            historyArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+
+            // Ensure that historyArray contains at most 100 alarms
+            if (historyArray.length > 100) {
+                historyArray = historyArray.slice(0, 100);
+            }
+
             //output all necessary fields for history
             historyArray.forEach(alarmData => {
                 var historyRow = historyTable.insertRow();
@@ -800,10 +937,16 @@
                 historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
                 historyRow.insertCell().textContent = alarmData.Train;
                 historyRow.insertCell().textContent = alarmData.Code;
-                fetchAndProcessXML(alarmData.Code, alarmData, function (alarmDescription) {
-                    historyRow.insertCell().textContent = alarmDescription;
-                });
-                historyRow.classList.add('table-success')
+                if (alarmData.Code === 78) {
+                    // Display alarm.Message if Code is 78
+                    historyRow.insertCell().textContent = alarmData.Message;
+                } else {
+                    // Display alarmDescription for other alarm codes
+                    fetchAndProcessXML(alarmData.Code, alarmData, function (alarmDescription) {
+                        historyRow.insertCell().textContent = alarmDescription;
+                    });
+                }
+                historyRow.classList.add('table-success');
             });
         }
 
@@ -908,6 +1051,7 @@
                 cell.classList.remove('blink');
             });
         }
+
         // Function to format a Date object as "MM/DD/YYYY HH:MM:SS" (e.g., "09/11/2023 08:25:22")
         function formatDate(date) {
             const options = {
@@ -921,7 +1065,6 @@
             return date.toLocaleString(undefined, options);
         }
 
-        fetchNextData();
     </script>
 </body>
 
