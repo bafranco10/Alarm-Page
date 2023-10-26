@@ -258,17 +258,31 @@
         let currentFetchIndex = 0;
         let retryCount = 0;
         //fetches data and moves between indexes of sources
+        // Inside fetchData function
         async function fetchData(index) {
             try {
                 if (isFetching[index]) {
                     return;
                 }
+
                 isFetching[index] = true;
                 const scriptElement = document.createElement("script");
                 const ipAddress = ipAddressByEndpoint[fetchEndpoints[index]];
 
+                let requestCompleted = false; // Flag to track if the request has completed
+                const timeoutDuration = 5000; // Set a timeout of 5 seconds (adjust as needed)
+
+                const timeoutId = setTimeout(function () {
+                    if (!requestCompleted) {
+                        // If the request is still pending after the timeout, handle it as an error
+                        scriptElement.onerror();
+                    }
+                }, timeoutDuration);
+
                 scriptElement.src = `${fetchEndpoints[index]}&IPAddress=${ipAddress}`;
                 scriptElement.onerror = function () {
+                    clearTimeout(timeoutId); // Clear the timeout
+
                     console.error("Error loading script:", scriptElement.src);
                     console.error("IP Address:", ipAddress);
                     isFetching[index] = false;
@@ -283,7 +297,10 @@
                         retryCount = 0; // Reset the retry count if needed
                     }
                 };
+
                 scriptElement.onload = function () {
+                    clearTimeout(timeoutId); // Clear the timeout
+                    requestCompleted = true; // Mark the request as completed
                     isFetching[index] = false;
                     checkIfTrainAlarmNeedsToBeRemoved(ipAddress);
                     fetchData(index); // Fetch from the same source immediately after success
@@ -303,8 +320,8 @@
             }
         }
 
+
         function checkServerAvailability() {
-            console.log("HI");
             const serverUrl = fetchEndpoints[currentServerIndex];
             const scriptElement = document.createElement("script");
             const ipAddress = getIpAddressFromEndpoint(serverUrl);
@@ -325,6 +342,7 @@
                 isFetching[currentServerIndex] = false;
                 addTrainDownAlarm(ipAddress);
                 currentServerIndex = (currentServerIndex + 1) % fetchEndpoints.length;
+                fetchData(currentServerIndex);
             };
             scriptElement.onload = function () {
                 console.log("Server is available:", serverUrl);
