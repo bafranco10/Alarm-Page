@@ -37,26 +37,6 @@
             opacity: 1 !important;
         }
 
-        /* Apply blinking effect to the background of each cell */
-        .blink {
-            animation: blink-background-animation 0.5s ease-in-out infinite alternate;
-            -webkit-animation: blink-background-animation 0.5s ease-in-out infinite alternate;
-        }
-
-        @keyframes blink-background-animation {
-            to {
-                background-color: transparent;
-                /* Change the background color to transparent */
-            }
-        }
-
-        @-webkit-keyframes blink-background-animation {
-            to {
-                background-color: transparent;
-                /* Change the background color to transparent */
-            }
-        }
-
         .tab-container {
             display: flex;
             justify-content: flex-end;
@@ -156,7 +136,7 @@
     <div id="Current Alarms" class="tabcontent">
         <h1>Current Alarms</h1>
         <button type="button" class="btn btn-primary" id="acknowledgeAllButton"
-            onclick="acknowledgeAllAlarms();stopAllFlickering()">Acknowledge
+            onclick="acknowledgeAllAlarms();">Acknowledge
             All</button>
         <table id="alarmTable" class="table">
             <thead>
@@ -225,6 +205,7 @@
             </tbody>
         </table>
     </div>
+    <div id="errorContainer"></div>
 
     <script>
         var dataArray = []; // Create an array to store trainData and alarmData objects
@@ -246,7 +227,19 @@
             //"http://172.16.1.107/Get_Alarms.cgi?Acknowledge=0"
             //add any missing ips here 
         ];
-        const retryDelay = 3000; // You can adjust this value as needed
+
+        const ipAddresses = {
+            '172.16.1.101': false,
+            '172.16.1.102': false,
+            '172.16.1.103': false,
+            '172.16.1.104': false,
+            '172.16.1.105': false,
+            '172.16.1.106': false,
+            '172.16.1.107': false
+        };
+
+        const retryDelay = 3000;
+        let currentServerIndex = 0;
         const ipAddressByEndpoint = {};
 
         // Function to extract the IP address from a fetchEndpoint
@@ -263,36 +256,35 @@
 
         const isFetching = Array.from({ length: fetchEndpoints.length }, () => false);
         let currentFetchIndex = 0;
-
+        let retryCount = 0;
         //fetches data and moves between indexes of sources
         async function fetchData(index) {
             try {
                 if (isFetching[index]) {
                     return;
                 }
-
                 isFetching[index] = true;
                 const scriptElement = document.createElement("script");
                 const ipAddress = ipAddressByEndpoint[fetchEndpoints[index]];
 
                 scriptElement.src = `${fetchEndpoints[index]}&IPAddress=${ipAddress}`;
-
-                //console.log(`Fetching data from source: ${fetchEndpoints[index]}`);
-
                 scriptElement.onerror = function () {
                     console.error("Error loading script:", scriptElement.src);
-                    //console.log("IP Address:", ipAddress);
+                    console.error("IP Address:", ipAddress);
                     isFetching[index] = false;
                     addTrainDownAlarm(ipAddress);
-                    // Retry fetching from the same source after a delay (infinite retries)
-                    setTimeout(() => {
-                        fetchData(index);
-                    }, retryDelay);
-                };
 
+                    if (retryCount < 3) {
+                        // Retry fetching from the same source immediately
+                        fetchData(index);
+                        retryCount++;
+                    } else {
+                        console.error("Max retry count reached. No more retries.");
+                        retryCount = 0; // Reset the retry count if needed
+                    }
+                };
                 scriptElement.onload = function () {
                     isFetching[index] = false;
-                    //console.log(ipAddress);
                     checkIfTrainAlarmNeedsToBeRemoved(ipAddress);
                     fetchData(index); // Fetch from the same source immediately after success
                 };
@@ -311,6 +303,59 @@
             }
         }
 
+        function checkServerAvailability() {
+            console.log("HI");
+            const serverUrl = fetchEndpoints[currentServerIndex];
+            const scriptElement = document.createElement("script");
+            const ipAddress = getIpAddressFromEndpoint(serverUrl);
+            /*
+            if (isFetching[currentServerIndex]) {
+                // If a fetch is already in progress for this index, skip this server for now.
+                console.log(`Fetch is already in progress for ${serverUrl}`);
+                currentServerIndex = (currentServerIndex + 1) % fetchEndpoints.length; // Move to the next server
+                return;
+            } */
+
+            isFetching[currentServerIndex] = true;
+
+            scriptElement.src = `${serverUrl}&IPAddress=${ipAddress}`;
+            scriptElement.onerror = function () {
+                console.error("Error loading script:", scriptElement.src);
+                console.error("IP Address:", ipAddress);
+                isFetching[currentServerIndex] = false;
+                addTrainDownAlarm(ipAddress);
+                currentServerIndex = (currentServerIndex + 1) % fetchEndpoints.length;
+            };
+            scriptElement.onload = function () {
+                console.log("Server is available:", serverUrl);
+                checkIfTrainAlarmNeedsToBeRemoved(ipAddress);
+                fetchData(currentServerIndex); // Fetch data from the available server
+                currentServerIndex = (currentServerIndex + 1) % fetchEndpoints.length;
+            };
+
+            // Replace existing script, if any
+            const existingScript = document.getElementById("serverCheckScript");
+            if (existingScript) {
+                existingScript.remove();
+            }
+            scriptElement.id = "serverCheckScript";
+            document.body.appendChild(scriptElement);
+        }
+
+        const serverCheckInterval = setInterval(checkServerAvailability, 1000); // Adjust the interval as needed
+        function postErrorMessage(errorMessage) {
+            const errorContainer = document.getElementById("errorContainer");
+
+            if (errorContainer) {
+                // Create a new paragraph for the error message
+                const errorMessageElement = document.createElement("p");
+                errorMessageElement.textContent = errorMessage;
+
+                // Append it to the error container
+                errorContainer.appendChild(errorMessageElement);
+            }
+        }
+
         function parseResponse(jsonData) {
             try {
                 updateGraphic(jsonData);
@@ -326,7 +371,6 @@
         setTimeout(() => {
             fetchData(1);
         }, 500);
-
         setTimeout(() => {
             fetchData(2);
         }, 1000);
@@ -560,27 +604,19 @@
                         // Check if the alarm from activeAlarms matches an alarm from the current data
                         if (alarm.DateTime === DateTime && alarm.Code === alarmCode && alarmIp === alarmIp && alarm.Desc === Desc && alarm.Msg_Data == Msg_Data) {
                             found = true;
-                            const matchingAlarm = dataArray.find(data => data.Code === alarmCode && data.Train === alarmTrain && data.DateTime === DateTime && data.Desc === Desc && data.Msg_Data == Msg_Data &&
-                            data.Dev_Num == Dev_Num);
-                            if (matchingAlarm) {
-                                matchingAlarm.active = true; 
-                                console.log(matchingAlarm);
-                            updateActiveCellText(matchingAlarm.Code, matchingAlarm.Train, "Active", matchingAlarm.Desc);
-                            found = true;
-                            }
                             break;
                         }
                     }
-
                     // If the alarm is not found in the current data, mark it for removal
                     if (!found) {
                         keysToRemove.push(alarmKey);
                         const matchingAlarm = dataArray.find(data => data.Code === alarmCode && data.Train === alarmTrain && data.DateTime === DateTime && data.Desc === Desc && data.Msg_Data == Msg_Data &&
                             data.Dev_Num == Dev_Num);
-                            console.log("matching alarm value", matchingAlarm.active);
+                        // console.log("matching alarm value", matchingAlarm.active);
+                        console.log("here is matching alarm", matchingAlarm);
                         if (matchingAlarm && !matchingAlarm.stopAlarm) {
-                            console.log("Removing alarm", matchingAlarm);
                             matchingAlarm.active = false;
+                            console.log("Removing alarm", matchingAlarm);
                             moveAlarmToHistory(alarmTrain, alarmCode);
                             keysToRemove.forEach(alarmKey => {
                                 const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('-');
@@ -591,20 +627,21 @@
                                 existingAlarms.delete(alarmKey);
 
                                 // Remove from dataArray
-                                const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === alarmTrain && data.ip === alarmIp);
+                                const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === alarmTrain && data.ip === alarmIp && data.DateTime === DateTime);
                                 if (indexToRemove !== -1) {
                                     const removedData = dataArray.splice(indexToRemove, 1);
+                                    console.log("Removed from dataArray:", removedData);
                                 }
                                 moveAlarmToHistory(alarmTrain, alarmCode);
                             });
                         }
                         if (matchingAlarm && matchingAlarm.stopAlarm && !matchingAlarm.Acknowledged) {
-                            matchingAlarm.active = false;
-                            updateActiveCellText(matchingAlarm.Code, matchingAlarm.Train, "Inactive", matchingAlarm.Desc);
+                            console.log("updating staus to inactive");
+                            updateActiveCellText(matchingAlarm.Code, matchingAlarm.Train, "Inactive", matchingAlarm.Desc, matchingAlarm.DateTime);
                         }
-                        
-                        if (matchingAlarm && matchingAlarm.stopAlarm && matchingAlarm.Acknowledged && !matchingAlarm.active) {
-                            matchingAlarm.active = false;
+
+                        if (matchingAlarm && matchingAlarm.stopAlarm && matchingAlarm.Acknowledged) {
+                            console.log("removing critical alarm");
                             moveAlarmToHistory(alarmTrain, alarmCode);
                             keysToRemove.forEach(alarmKey => {
                                 const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('-');
@@ -615,9 +652,10 @@
                                 existingAlarms.delete(alarmKey);
 
                                 // Remove from dataArray
-                                const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === alarmTrain && data.ip === alarmIp);
+                                const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === alarmTrain && data.ip === alarmIp && data.DateTime === DateTime);
                                 if (indexToRemove !== -1) {
                                     const removedData = dataArray.splice(indexToRemove, 1);
+                                    console.log("Removed from dataArray:", removedData);
                                 }
                                 moveAlarmToHistory(alarmTrain, alarmCode);
                             });
@@ -640,8 +678,8 @@
         }
 
         // function to change text in active column to inactive if a stop alarm is inactive but needs to be acknowledged
-        function updateActiveCellText(alarmCode, trainData, newText, Desc) {
-            var rowId = "row" + trainData + alarmCode + Desc;
+        function updateActiveCellText(alarmCode, trainData, newText, Desc, DateTime) {
+            var rowId = "row" + trainData + alarmCode + Desc + DateTime;
             var row = document.getElementById(rowId);
 
             if (row) {
@@ -664,7 +702,7 @@
                 // Update the display
                 updateDisplay();
                 // Remove the corresponding row from the table 
-                deleteRow("row" + removedAlarm.Train + removedAlarm.Code + removedAlarm.Desc);
+                deleteRow("row" + removedAlarm.Train + removedAlarm.Code + removedAlarm.Desc + removedAlarm.DateTime);
             }
         }
 
@@ -675,7 +713,7 @@
                 row.remove();
             }
         }
-        
+
         //creates each individual row for the display logging each entry in the dataArray
         // this also applies specific css classes and updates acknowledged/active status 
         function updateDisplay() {
@@ -683,7 +721,7 @@
             //console.log(dataArray);
             dataArray.forEach(entry => {
                 // Create a unique row ID by concatenating "train" and "alarm code"
-                var rowId = "row" + entry.Train + entry.Code + entry.Desc;
+                var rowId = "row" + entry.Train + entry.Code + entry.Desc + entry.DateTime;
                 // Check if the row already exists
                 var existingRow = document.getElementById(rowId);
 
@@ -706,40 +744,31 @@
                     codeCell.textContent = entry.Code;
                     msgDataCell.textContent = entry.Message;
                     activeCell.textContent = "Active"
-                    // Apply the blinking effect to each cell
-                    const list = ['blink'];
-                    trainCell.classList.add(...list);
-                    dateCell.classList.add(...list);
-                    codeCell.classList.add(...list);
-                    msgDataCell.classList.add(...list);
-                    activeCell.classList.add(...list);
 
                     if (entry.stopAlarm) {
                         row.classList.add('table-danger');
                         // Create a cell for the Acknowledge button.
                         var buttonCell = row.insertCell();
-                        buttonCell.classList.add(...list);
                         var acknowledgeButton = document.createElement("button");
 
                         // Use a unique ID for each button based on k
                         acknowledgeButton.id = "button" + rowId;
                         buttonArray.push(acknowledgeButton.id);
                         acknowledgeButton.type = "button";
-                        acknowledgeButton.className = "btn btn-danger no-blink";
+                        acknowledgeButton.className = "btn btn-danger";
                         acknowledgeButton.textContent = "Acknowledge";
                     }
                     else {
                         row.classList.add('table-warning');
                         // Create a cell for the Acknowledge button.
                         var buttonCell = row.insertCell();
-                        buttonCell.classList.add(...list);
                         var acknowledgeButton = document.createElement("button");
 
                         // Use a unique ID for each button based on k
                         acknowledgeButton.id = "button" + rowId;
                         buttonArray.push(acknowledgeButton.id);
                         acknowledgeButton.type = "button";
-                        acknowledgeButton.className = "btn btn-warning no-blink";
+                        acknowledgeButton.className = "btn btn-warning";
                         acknowledgeButton.textContent = "Acknowledge";
 
                     }
@@ -750,15 +779,12 @@
                     // Add an onclick event to the button using a closure
                     acknowledgeButton.onclick = (function (buttonId, alarmData) {
                         return function () {
-                            stopFlickerById(rowId);
                             acknowledgeAlarm(buttonId, alarmData);
                         };
                     })(acknowledgeButton.id, currentAlarmData);
 
                     // Append the button to the cell
                     buttonCell.appendChild(acknowledgeButton);
-                } else {
-
                 }
                 // Store the mapping between row ID and dataArray index
                 rowIdToData[rowId] = entry;
@@ -770,9 +796,6 @@
             var buttonElement = document.getElementById(buttonId);
             buttonElement.disabled = true;
             buttonElement.textContent = "Acknowledged";
-
-            // Remove the blinking effect (if needed)
-            stopFlickerById(alarmData.Train);
 
             // Find the corresponding alarm in dataArray and update its `acknowledged` status
             const matchingAlarm = dataArray.find(data => data.Code === alarmData.Code && data.Train === alarmData.Train);
@@ -788,17 +811,6 @@
                 }
                 // Update the history array in cookies with both existing and new data
                 updateHistoryInCookies(historyArray);
-            }
-        }
-
-        // Takes in id of the alarm and stops the blinking effect based on the click of the acknowledgement button
-        function stopFlickerById(id) {
-            var row = document.getElementById(id);
-            if (row) {
-                var cells = row.getElementsByTagName('td');
-                for (var i = 0; i < cells.length; i++) {
-                    cells[i].classList.remove('blink'); // Remove the blinking effect from all cells in the row
-                }
             }
         }
 
@@ -844,13 +856,6 @@
 
         // Get the element with id="defaultOpen" and click on it
         document.getElementById("defaultOpen").click();
-        //stops flickering of all tables
-        function stopAllFlickering() {
-            const tables = document.querySelectorAll('.blink');
-            tables.forEach(table => {
-                table.classList.remove("blink");
-            });
-        }
 
         // disables all buttons and removes flashing from each alarm
         function acknowledgeAllAlarms() {
@@ -1043,14 +1048,6 @@
             .catch(function (error) {
                 console.error('Error fetching or parsing XML data:', error);
             });
-
-        // Add this function to remove the "blink" class from all cells in the table
-        function stopAllFlickering() {
-            const cells = document.querySelectorAll('.blink');
-            cells.forEach(cell => {
-                cell.classList.remove('blink');
-            });
-        }
 
         // Function to format a Date object as "MM/DD/YYYY HH:MM:SS" (e.g., "09/11/2023 08:25:22")
         function formatDate(date) {
