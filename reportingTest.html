@@ -238,7 +238,7 @@
             '172.16.1.107': false
         };
 
-        const retryDelay = 3000;
+        const retryDelay = 1000;
         let currentServerIndex = 0;
         const ipAddressByEndpoint = {};
 
@@ -270,7 +270,7 @@
                 const ipAddress = ipAddressByEndpoint[fetchEndpoints[index]];
 
                 let requestCompleted = false; // Flag to track if the request has completed
-                const timeoutDuration = 5000; // Set a timeout of 5 seconds (adjust as needed)
+                const timeoutDuration = 1000; // Set a timeout of 1 second
 
                 const timeoutId = setTimeout(function () {
                     if (!requestCompleted) {
@@ -365,12 +365,6 @@
             const errorContainer = document.getElementById("errorContainer");
 
             if (errorContainer) {
-                // Create a new paragraph for the error message
-                const errorMessageElement = document.createElement("p");
-                errorMessageElement.textContent = errorMessage;
-
-                // Append it to the error container
-                errorContainer.appendChild(errorMessageElement);
             }
         }
 
