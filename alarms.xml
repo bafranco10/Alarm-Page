@@ -12,7 +12,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="813"/>
-  <Property Name="TextItemText[0]" Value="Module Power Controller {Msg_Data} is reporting an overtemperature condition."/>
+  <Property Name="TextItemText[0]" Value="Module Power Controller {DEV_NUM} is reporting an overtemperature condition."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -52,7 +52,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="819"/>
-  <Property Name="TextItemText[0]" Value="Cartridge {Msg_Data} exceeded its charge timeout limit."/>
+  <Property Name="TextItemText[0]" Value="Cartridge {DEV_NUM} exceeded its charge timeout limit."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -92,7 +92,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="827"/>
-  <Property Name="TextItemText[0]" Value="Cartridge {Msg_Data} exceeded its discharge timeout limit."/>
+  <Property Name="TextItemText[0]" Value="Cartridge {DEV_NUM} exceeded its discharge timeout limit."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -132,7 +132,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="820"/>
-  <Property Name="TextItemText[0]" Value="{Msg_Data} cartrdige(s) is/are available.  {desc} are required to run the system. Fix or modify config parameters."/>
+  <Property Name="TextItemText[0]" Value="{MSG_DATA} cartrdige(s) is/are available.  {DEV_NUM} are required to run the system. Fix or modify config parameters."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -172,7 +172,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="821"/>
-  <Property Name="TextItemText[0]" Value="Serial port {Device5} failed to open."/>
+  <Property Name="TextItemText[0]" Value="Serial port {DEV_NUM} failed to open."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -212,7 +212,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="822"/>
-  <Property Name="TextItemText[0]" Value="Serial port {Device6} reported an invalid header."/>
+  <Property Name="TextItemText[0]" Value="Serial port {DEV_NUM} reported an invalid header."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -252,7 +252,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="823"/>
-  <Property Name="TextItemText[0]" Value="Serial port {Device7} reported an invalid trailer."/>
+  <Property Name="TextItemText[0]" Value="Serial port {DEV_NUM} reported an invalid trailer."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -292,7 +292,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="824"/>
-  <Property Name="TextItemText[0]" Value="Serial port {Device8} reported receive error {Data8}."/>
+  <Property Name="TextItemText[0]" Value="Serial port {DEV_NUM} reported receive error {MSG_DATA}."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -332,7 +332,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="825"/>
-  <Property Name="TextItemText[0]" Value="Serial port {Device9} reported transmit error {Data9}."/>
+  <Property Name="TextItemText[0]" Value="Serial port {DEV_NUM} reported transmit error {MSG_DATA}."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -372,7 +372,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="848"/>
-  <Property Name="TextItemText[0]" Value="Serial port {Device10} reported an invalid checksum."/>
+  <Property Name="TextItemText[0]" Value="Serial port {DEV_NUM} reported an invalid checksum."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -412,7 +412,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="847"/>
-  <Property Name="TextItemText[0]" Value="System has lost communication with cartridge {Device11}."/>
+  <Property Name="TextItemText[0]" Value="System has lost communication with cartridge {DEV_NUM}."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -452,7 +452,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="846"/>
-  <Property Name="TextItemText[0]" Value="Pump {Device12} reported a low pressure alarm from {DevText12} "/>
+  <Property Name="TextItemText[0]" Value="Pump {DEV_NUM} reported a low pressure alarm from {DESC} "/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -492,7 +492,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="845"/>
-  <Property Name="TextItemText[0]" Value="Pump {Device13} reported a high pressure alarm from {DevText13} "/>
+  <Property Name="TextItemText[0]" Value="Pump {DEV_NUM} reported a high pressure alarm from {DESC} "/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -532,7 +532,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="878"/>
-  <Property Name="TextItemText[0]" Value="Pump {Device14} is not ready to run.  Check for a fault condition."/>
+  <Property Name="TextItemText[0]" Value="Pump {DEV_NUM} is not ready to run.  Check for a fault condition."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -572,7 +572,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="844"/>
-  <Property Name="TextItemText[0]" Value="System has lost communication with the radio for Pump {Device15}."/>
+  <Property Name="TextItemText[0]" Value="System has lost communication with the radio for Pump {DEV_NUM}."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -612,7 +612,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="843"/>
-  <Property Name="TextItemText[0]" Value="Pump {Device16} has reported PID tuning error {Data16}."/>
+  <Property Name="TextItemText[0]" Value="Pump {DEV_NUM} has reported PID tuning error {MSG_DATA}."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -652,7 +652,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="842"/>
-  <Property Name="TextItemText[0]" Value="Valve {Device17} {DevText17} has reported a positioning error."/>
+  <Property Name="TextItemText[0]" Value="Valve {DEV_NUM} {DESC} has reported a positioning error."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -732,7 +732,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="884"/>
-  <Property Name="TextItemText[0]" Value="Tank {Device19} {DevText19}  reported a low level condition."/>
+  <Property Name="TextItemText[0]" Value="Tank {DEV_NUM} {DESC}  reported a low level condition."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -772,7 +772,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="882"/>
-  <Property Name="TextItemText[0]" Value="Tank {Device20} {DevText20}  reported a pH that is out of range."/>
+  <Property Name="TextItemText[0]" Value="Tank {DEV_NUM} {DESC}  reported a pH that is out of range."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -812,7 +812,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="879"/>
-  <Property Name="TextItemText[0]" Value="Tank {Device21} {DevText21}  reported an impossible combination of level sensor readings. Check for a faulty level sensor."/>
+  <Property Name="TextItemText[0]" Value="Tank {DEV_NUM} {DESC}  reported an impossible combination of level sensor readings. Check for a faulty level sensor."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -892,7 +892,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="839"/>
-  <Property Name="TextItemText[0]" Value="The DataRecorder reported file creation error {Data23}."/>
+  <Property Name="TextItemText[0]" Value="The DataRecorder reported file creation error {MSG_DATA}."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -932,7 +932,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="838"/>
-  <Property Name="TextItemText[0]" Value="The DataRecorder reported get time error {Data24}."/>
+  <Property Name="TextItemText[0]" Value="The DataRecorder reported get time error {MSG_DATA}."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -972,7 +972,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="837"/>
-  <Property Name="TextItemText[0]" Value="The DataRecorder reported file write error {Data25}."/>
+  <Property Name="TextItemText[0]" Value="The DataRecorder reported file write error {MSG_DATA}."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1012,7 +1012,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="836"/>
-  <Property Name="TextItemText[0]" Value="The DataRecorder reported file close error {Data26}."/>
+  <Property Name="TextItemText[0]" Value="The DataRecorder reported file close error {MSG_DATA}."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1052,7 +1052,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="835"/>
-  <Property Name="TextItemText[0]" Value="The DataRecorder reported file space query error {Data27}."/>
+  <Property Name="TextItemText[0]" Value="The DataRecorder reported file space query error {MSG_DATA}."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1092,7 +1092,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="808"/>
-  <Property Name="TextItemText[0]" Value="The Statisics calculator reported a Get_Time error {Data28}."/>
+  <Property Name="TextItemText[0]" Value="The Statisics calculator reported a Get_Time error {MSG_DATA}."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1132,7 +1132,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="890"/>
-  <Property Name="TextItemText[0]" Value="{DevText29} sensor {Device29} reported a reading of {Data29} which is below the min stop limit."/>
+  <Property Name="TextItemText[0]" Value="{DESC} sensor {DEV_NUM} reported a reading of {MSG_DATA} which is below the min stop limit."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1172,7 +1172,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="891"/>
-  <Property Name="TextItemText[0]" Value="{DevText30} sensor {Device30} reported a reading of {Data30} which is below the min warning limit."/>
+  <Property Name="TextItemText[0]" Value="{DESC} sensor {DEV_NUM} reported a reading of {MSG_DATA} which is below the min warning limit."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1212,7 +1212,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="893"/>
-  <Property Name="TextItemText[0]" Value="{DevText31} sensor {Device31} reporeted a reading of {Data31} which is above the max warning limit."/>
+  <Property Name="TextItemText[0]" Value="{DESC} sensor {DEV_NUM} reporeted a reading of {MSG_DATA} which is above the max warning limit."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1252,7 +1252,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="892"/>
-  <Property Name="TextItemText[0]" Value="{DevText32} sensor {Device32} reported a reading of {Data32} which is above the max stop limit."/>
+  <Property Name="TextItemText[0]" Value="{DESC} sensor {DEV_NUM} reported a reading of {MSG_DATA} which is above the max stop limit."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1292,7 +1292,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="898"/>
-  <Property Name="TextItemText[0]" Value="Cartridge {Device33} reported a voltage drain error. Check the power cable connections.  {DevText33}"/>
+  <Property Name="TextItemText[0]" Value="Cartridge {DEV_NUM} reported a voltage drain error. Check the power cable connections.  {DESC}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1332,7 +1332,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="899"/>
-  <Property Name="TextItemText[0]" Value="Cartridge {Device34} reported a sudden power drop. Check the sense wires connections.  {DevText34}"/>
+  <Property Name="TextItemText[0]" Value="Cartridge {DEV_NUM} reported a sudden power drop. Check the sense wires connections.  {DESC}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1372,7 +1372,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="900"/>
-  <Property Name="TextItemText[0]" Value="Cartridge {Device35} reported a charging polarity error. Check for reversed wires.  {DevText35}"/>
+  <Property Name="TextItemText[0]" Value="Cartridge {DEV_NUM} reported a charging polarity error. Check for reversed wires.  {DESC}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1412,7 +1412,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="901"/>
-  <Property Name="TextItemText[0]" Value="Cartridge {Device36} reported that cartridges are shorted or the sense wires are miswired.  {DevText36}"/>
+  <Property Name="TextItemText[0]" Value="Cartridge {DEV_NUM} reported that cartridges are shorted or the sense wires are miswired.  {DESC}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1452,7 +1452,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="902"/>
-  <Property Name="TextItemText[0]" Value="Cartridge {Device37} reported that the sense wires are shorted or disconnected.  {DevText37}"/>
+  <Property Name="TextItemText[0]" Value="Cartridge {DEV_NUM} reported that the sense wires are shorted or disconnected.  {DESC}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1492,7 +1492,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="903"/>
-  <Property Name="TextItemText[0]" Value="Cartridge {Device38} reported that it's memory card cannot be accessed."/>
+  <Property Name="TextItemText[0]" Value="Cartridge {DEV_NUM} reported that it's memory card cannot be accessed."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1532,7 +1532,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="904"/>
-  <Property Name="TextItemText[0]" Value="Cartridge {Device39} reported that it is not attached to its power board."/>
+  <Property Name="TextItemText[0]" Value="Cartridge {DEV_NUM} reported that it is not attached to its power board."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1572,7 +1572,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="905"/>
-  <Property Name="TextItemText[0]" Value="Cartridge {Device40} has exceeded its service life and needs to be replaced."/>
+  <Property Name="TextItemText[0]" Value="Cartridge {DEV_NUM} has exceeded its service life and needs to be replaced."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1612,7 +1612,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="906"/>
-  <Property Name="TextItemText[0]" Value="Cartridge {Device41} reported an electrical calibration error. {DevText41}"/>
+  <Property Name="TextItemText[0]" Value="Cartridge {DEV_NUM} reported an electrical calibration error. {DESC}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1652,7 +1652,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="907"/>
-  <Property Name="TextItemText[0]" Value="Cartridge {Device42} has lost its 12 volt power and is inoperable. {DevText42}"/>
+  <Property Name="TextItemText[0]" Value="Cartridge {DEV_NUM} has lost its 12 volt power and is inoperable. {DESC}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1692,7 +1692,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="908"/>
-  <Property Name="TextItemText[0]" Value="Cartridge {Device43} reported a power board overtemperature condition and has shutdown.  {DevText43}"/>
+  <Property Name="TextItemText[0]" Value="Cartridge {DEV_NUM} reported a power board overtemperature condition and has shutdown.  {DESC}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1732,7 +1732,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="909"/>
-  <Property Name="TextItemText[0]" Value="Cartridge {Device44} has lost its communication connection.  {DevText44}"/>
+  <Property Name="TextItemText[0]" Value="Cartridge {DEV_NUM} has lost its communication connection.  {DESC}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1772,7 +1772,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="910"/>
-  <Property Name="TextItemText[0]" Value="Cartridge {Device45} reported a communication timeout error.  {DevText45}"/>
+  <Property Name="TextItemText[0]" Value="Cartridge {DEV_NUM} reported a communication timeout error.  {DESC}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1812,7 +1812,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="911"/>
-  <Property Name="TextItemText[0]" Value="Cartridge {Device46} reported a general power board error. {DevText46}"/>
+  <Property Name="TextItemText[0]" Value="Cartridge {DEV_NUM} reported a general power board error. {DESC}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1852,7 +1852,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="919"/>
-  <Property Name="TextItemText[0]" Value="Pump {Device47} reported a flow limiting pressure condition from the {DevText47} "/>
+  <Property Name="TextItemText[0]" Value="Pump {DEV_NUM} reported a flow limiting pressure condition from the {DESC} "/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1892,7 +1892,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="923"/>
-  <Property Name="TextItemText[0]" Value="Cell {Device48}  has exceed its 3.2v limit  {DevText48}"/>
+  <Property Name="TextItemText[0]" Value="Cell {DEV_NUM}  has exceed its 3.2v limit  {DESC}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1932,7 +1932,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="924"/>
-  <Property Name="TextItemText[0]" Value="POL {Device49}  has exceeded its 3.6v limit  {DevText49}"/>
+  <Property Name="TextItemText[0]" Value="POL {DEV_NUM}  has exceeded its 3.6v limit  {DESC}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -1972,7 +1972,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="925"/>
-  <Property Name="TextItemText[0]" Value="Cell {Device50}  had exceeded its 60amp limit  {DevText50}"/>
+  <Property Name="TextItemText[0]" Value="Cell {DEV_NUM}  had exceeded its 60amp limit  {DESC}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -2012,7 +2012,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="962"/>
-  <Property Name="TextItemText[0]" Value="ALARM_CONFIG_FILE_DEVICE_ERROR  {DevText51} "/>
+  <Property Name="TextItemText[0]" Value="ALARM_CONFIG_FILE_DEVICE_ERROR  {DESC} "/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -2052,7 +2052,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="961"/>
-  <Property Name="TextItemText[0]" Value="ALARM_CONFIG_FILE_PARSING_ERROR  {DevText52} "/>
+  <Property Name="TextItemText[0]" Value="ALARM_CONFIG_FILE_PARSING_ERROR  {DESC} "/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -2092,7 +2092,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="960"/>
-  <Property Name="TextItemText[0]" Value="ALARM_CONFIG_CONFIG_FOLDER_ERROR  {DevText53} "/>
+  <Property Name="TextItemText[0]" Value="ALARM_CONFIG_CONFIG_FOLDER_ERROR  {DESC} "/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -2132,7 +2132,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="959"/>
-  <Property Name="TextItemText[0]" Value="ALARM_CONFIG_DIR_INFO_ERROR  {DevText54} "/>
+  <Property Name="TextItemText[0]" Value="ALARM_CONFIG_DIR_INFO_ERROR  {DESC} "/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -2172,7 +2172,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="971"/>
-  <Property Name="TextItemText[0]" Value="ALARM_CONFIG_DIR_READ_ERROR  {DevText55} "/>
+  <Property Name="TextItemText[0]" Value="ALARM_CONFIG_DIR_READ_ERROR  {DESC} "/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -2212,7 +2212,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="954"/>
-  <Property Name="TextItemText[0]" Value="ALARM_CONFIG_PARSE_FAILED  {DevText56} "/>
+  <Property Name="TextItemText[0]" Value="ALARM_CONFIG_PARSE_FAILED  {DESC} "/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -2252,7 +2252,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="929"/>
-  <Property Name="TextItemText[0]" Value="An Operator could not be understood by the recipe system. Line = {Data57}"/>
+  <Property Name="TextItemText[0]" Value="An Operator could not be understood by the recipe system. Line = {MSG_DATA}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -2292,7 +2292,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="931"/>
-  <Property Name="TextItemText[0]" Value="The type of a variable could not be understood by the recipe system. Line = {Data58}"/>
+  <Property Name="TextItemText[0]" Value="The type of a variable could not be understood by the recipe system. Line = {MSG_DATA}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -2332,7 +2332,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="932"/>
-  <Property Name="TextItemText[0]" Value="A recipe variable could not be found by it's name in the recipe system. Line = {Data59}"/>
+  <Property Name="TextItemText[0]" Value="A recipe variable could not be found by it's name in the recipe system. Line = {MSG_DATA}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -2372,7 +2372,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="950"/>
-  <Property Name="TextItemText[0]" Value="The recipe has posted an alarm with description = {DevText60} , with message  = {Data60}"/>
+  <Property Name="TextItemText[0]" Value="The recipe has posted an alarm with description = {DESC} , with message  = {MSG_DATA}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -2412,7 +2412,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="933"/>
-  <Property Name="TextItemText[0]" Value="A change of state command was issued to a state that does not exist. Line = {Data61}"/>
+  <Property Name="TextItemText[0]" Value="A change of state command was issued to a state that does not exist. Line = {MSG_DATA}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -2452,7 +2452,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="976"/>
-  <Property Name="TextItemText[0]" Value="The Hardware Config did not match starting at device {Data62}. Reboot Required.  {DevText62}"/>
+  <Property Name="TextItemText[0]" Value="The Hardware Config did not match starting at device {MSG_DATA}. Reboot Required.  {DESC}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -2492,7 +2492,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="977"/>
-  <Property Name="TextItemText[0]" Value="The Hadware Config has been replaced starting at device {Data63} -  {DevText63}"/>
+  <Property Name="TextItemText[0]" Value="The Hardware Config has been replaced starting at device {MSG_DATA} -  {DESC}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -2532,7 +2532,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="983"/>
-  <Property Name="TextItemText[0]" Value="The was a power failure while running system state {Device65}, with regen state {Data65}, and at reciple state -  {DevText65}"/>
+  <Property Name="TextItemText[0]" Value="The was a power failure while running system state {DEV_NUM}, with regen state {MSG_DATA}, and at reciple state -  {DESC}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -2572,7 +2572,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="988"/>
-  <Property Name="TextItemText[0]" Value="The system was stopped with message {DevText66} {Data66}"/>
+  <Property Name="TextItemText[0]" Value="The system was stopped with message {DESC} {MSG_DATA}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -2612,7 +2612,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="992"/>
-  <Property Name="TextItemText[0]" Value="A regen was stopped in state {Data67} wiithout being completed. A Regen Now and Manual Start is needed to finish th process."/>
+  <Property Name="TextItemText[0]" Value="A regen was stopped in state {MSG_DATA} wiithout being completed. A Regen Now and Manual Start is needed to finish the process."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -2732,7 +2732,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="937"/>
-  <Property Name="TextItemText[0]" Value="IOMap destination and source variables have different types. Line + {Data70}"/>
+  <Property Name="TextItemText[0]" Value="IOMap destination and source variables have different types. Line + {MSG_DATA}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -2772,7 +2772,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="938"/>
-  <Property Name="TextItemText[0]" Value="IOMap variable name not found. Line = {Data71}"/>
+  <Property Name="TextItemText[0]" Value="IOMap variable name not found. Line = {MSG_DATA}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -2812,7 +2812,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="939"/>
-  <Property Name="TextItemText[0]" Value="IOMap input or output vairable on the wrong side. Line = {Data72}"/>
+  <Property Name="TextItemText[0]" Value="IOMap input or output vairable on the wrong side. Line = {MSG_DATA}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -2852,7 +2852,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="940"/>
-  <Property Name="TextItemText[0]" Value="IOMap vairable is of an unsupported type. Line = {Data73}"/>
+  <Property Name="TextItemText[0]" Value="IOMap variable is of an unsupported type. Line = {MSG_DATA}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -2932,7 +2932,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="966"/>
-  <Property Name="TextItemText[0]" Value="The notify alarm email system is not working Error = {Data75}, Subject = {DevText75}"/>
+  <Property Name="TextItemText[0]" Value="The notify alarm email system is not working Error = {MSG_DATA}, Subject = {DESC}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -2957,6 +2957,162 @@
       <Property Name="InputMethod" Value="None"/>
       <Property Name="LanguageInfo" Value="en"/>
     </Language>
+  </LanguageMngr>
+</AlarmItem>
+<Property Name="Acknowledge" Value="Possible"/>
+
+  <Property Name="AcknowledgeActive" Value="Enabled"/>
+
+  <Property Name="Bypass" Value="Enabled"/>
+
+  <Property Name="Description" Value=""/>
+
+  <Property Name="Index" Value="76"/>
+
+  <Property Name="Latched" Value="False"/>
+
+  <Property Name="Name" Value="AlarmItem_76"/>
+
+  <Property Name="RecordAcknowledge" Value="True"/>
+
+  <Property Name="RecordBypass" Value="All"/>
+
+  <Property Name="RecordReset" Value="All"/>
+
+  <Property Name="RecordTrigger" Value="True"/>
+
+  <Property Name="TextID" Value="1002"/>
+
+  <Property Name="TextItemText[0]" Value="The output voltage is being limited because amps are starting to apporach maximum amperage. {DESC}"/>
+
+  <Property Name="TriggerGroupAlarm" Value="False"/>
+
+  <LanguageMngr>
+
+    <Property Name="FallBackLanguage" Value="None"/>
+
+    <Language Name="English (UNITED STATES)">
+
+      <Property Name="BidiMode" Value="False"/>
+
+      <Property Name="Compile" Value="True"/>
+
+      <Property Name="CountryInfo" Value="US"/>
+
+      <Property Name="Description" Value="English Language"/>
+
+      <Property Name="Index" Value="0"/>
+
+      <Property Name="InputMethod" Value="None"/>
+
+      <Property Name="LanguageInfo" Value="en"/>
+
+    </Language>
+
+  </LanguageMngr>
+
+  <LanguageMngr>
+
+    <Property Name="FallBackLanguage" Value="None"/>
+
+    <Language Name="English (UNITED STATES)">
+
+      <Property Name="BidiMode" Value="False"/>
+
+      <Property Name="Compile" Value="True"/>
+
+      <Property Name="CountryInfo" Value="US"/>
+
+      <Property Name="Description" Value="English Language"/>
+
+      <Property Name="Index" Value="0"/>
+
+      <Property Name="InputMethod" Value="None"/>
+
+      <Property Name="LanguageInfo" Value="en"/>
+
+    </Language>
+
+  </LanguageMngr>
+
+</AlarmItem>
+
+<AlarmItem>
+
+  <Property Name="Acknowledge" Value="Possible"/>
+
+  <Property Name="AcknowledgeActive" Value="Enabled"/>
+
+  <Property Name="Bypass" Value="Enabled"/>
+
+  <Property Name="Description" Value=""/>
+
+  <Property Name="Index" Value="77"/>
+
+  <Property Name="Latched" Value="False"/>
+
+  <Property Name="Name" Value="AlarmItem_77"/>
+
+  <Property Name="RecordAcknowledge" Value="True"/>
+
+  <Property Name="RecordBypass" Value="All"/>
+
+  <Property Name="RecordReset" Value="All"/>
+
+  <Property Name="RecordTrigger" Value="True"/>
+
+  <Property Name="TextID" Value="1003"/>
+
+  <Property Name="TextItemText[0]" Value="The output voltage is being limited because the input power supply is starting to approach the maximum power draw of 15amps at 12v. {DESC}"/>
+
+  <Property Name="TriggerGroupAlarm" Value="False"/>
+
+  <LanguageMngr>
+
+    <Property Name="FallBackLanguage" Value="None"/>
+
+    <Language Name="English (UNITED STATES)">
+
+      <Property Name="BidiMode" Value="False"/>
+
+      <Property Name="Compile" Value="True"/>
+
+      <Property Name="CountryInfo" Value="US"/>
+
+      <Property Name="Description" Value="English Language"/>
+
+      <Property Name="Index" Value="0"/>
+
+      <Property Name="InputMethod" Value="None"/>
+
+      <Property Name="LanguageInfo" Value="en"/>
+
+    </Language>
+
+  </LanguageMngr>
+
+  <LanguageMngr>
+
+    <Property Name="FallBackLanguage" Value="None"/>
+
+    <Language Name="English (UNITED STATES)">
+
+      <Property Name="BidiMode" Value="False"/>
+
+      <Property Name="Compile" Value="True"/>
+
+      <Property Name="CountryInfo" Value="US"/>
+
+      <Property Name="Description" Value="English Language"/>
+
+      <Property Name="Index" Value="0"/>
+
+      <Property Name="InputMethod" Value="None"/>
+
+      <Property Name="LanguageInfo" Value="en"/>
+
+    </Language>
+
   </LanguageMngr>
 </AlarmItem>
 </ClipboardData>
