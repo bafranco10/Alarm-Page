@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Fetch and Update Graphic</title>
+    <title>Alarms</title>
     <!--These are necessary for bootstrap -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -133,7 +133,7 @@
         </div>
     </div>
     <!-- Tab content -->
-    <div id="Current Alarms" class="tabcontent">
+    <div id="Current Alarms" class="tabcontent border-bottom-0">
         <h1>Current Alarms</h1>
         <button type="button" class="btn btn-primary" id="acknowledgeAllButton"
             onclick="acknowledgeAllAlarms();">Acknowledge
@@ -151,11 +151,14 @@
             </thead>
             <tbody>
                 <!-- Data will be displayed here -->
+                <tr class="table-no-border-bottom">
+                    <!-- Your table data goes here -->
+                </tr>
             </tbody>
         </table>
     </div>
 
-    <div id="Alarm History" class="tabcontent">
+    <div id="Alarm History" class="tabcontent border-bottom-0">
         <h1>Alarm History</h1>
 
         <input id="searchbar" onkeyup="search_code()" type="text" name="search"
@@ -179,7 +182,6 @@
             <button class="btn btn-primary submit-button" type="button" onclick="clearDateRange()">Clear
                 Filters</button>
         </form>
-
 
         <script>
             $('#datepicker1').datepicker({
@@ -238,7 +240,7 @@
             '172.16.1.107': false
         };
 
-        const retryDelay = 1000;
+        const retryDelay = 500;
         let currentServerIndex = 0;
         const ipAddressByEndpoint = {};
 
@@ -270,7 +272,7 @@
                 const ipAddress = ipAddressByEndpoint[fetchEndpoints[index]];
 
                 let requestCompleted = false; // Flag to track if the request has completed
-                const timeoutDuration = 1000; // Set a timeout of 1 second
+                const timeoutDuration = 5000; // Set a timeout of 5 seconds 
 
                 const timeoutId = setTimeout(function () {
                     if (!requestCompleted) {
@@ -320,18 +322,10 @@
             }
         }
 
-
         function checkServerAvailability() {
             const serverUrl = fetchEndpoints[currentServerIndex];
             const scriptElement = document.createElement("script");
             const ipAddress = getIpAddressFromEndpoint(serverUrl);
-            /*
-            if (isFetching[currentServerIndex]) {
-                // If a fetch is already in progress for this index, skip this server for now.
-                console.log(`Fetch is already in progress for ${serverUrl}`);
-                currentServerIndex = (currentServerIndex + 1) % fetchEndpoints.length; // Move to the next server
-                return;
-            } */
 
             isFetching[currentServerIndex] = true;
 
@@ -345,7 +339,7 @@
                 fetchData(currentServerIndex);
             };
             scriptElement.onload = function () {
-                console.log("Server is available:", serverUrl);
+               // console.log("Server is available:", serverUrl);
                 checkIfTrainAlarmNeedsToBeRemoved(ipAddress);
                 fetchData(currentServerIndex); // Fetch data from the available server
                 currentServerIndex = (currentServerIndex + 1) % fetchEndpoints.length;
@@ -360,11 +354,17 @@
             document.body.appendChild(scriptElement);
         }
 
-        const serverCheckInterval = setInterval(checkServerAvailability, 1000); // Adjust the interval as needed
+        const serverCheckInterval = setInterval(checkServerAvailability, 500); // Adjust the interval as needed
         function postErrorMessage(errorMessage) {
             const errorContainer = document.getElementById("errorContainer");
 
             if (errorContainer) {
+                // Create a new paragraph for the error message
+                const errorMessageElement = document.createElement("p");
+                errorMessageElement.textContent = errorMessage;
+
+                // Append it to the error container
+                errorContainer.appendChild(errorMessageElement);
             }
         }
 
@@ -401,6 +401,7 @@
 
         const activeAlarms = new Set();
         const existingAlarms = new Set();
+
         function getTrainFromIP(ipAddress) {
             if (ipAddress === "172.16.1.101") {
                 return 1;
@@ -422,7 +423,6 @@
                 return 7
             }
             else {
-                // Handle other cases or defaults
                 return error; // returns an error if message 
             }
         }
@@ -484,7 +484,8 @@
 
             //console.log(dataArray);
         }
-        // after every successfu fetch this is called with ipaddrress to ensure we dont have any communication warnings when there is in fact no warning
+
+        // after every successful fetch this is called with ipaddress to ensure we dont have any communication warnings when there is in fact no warning
         // if there is no communicationn issue then remove it 
         function checkIfTrainAlarmNeedsToBeRemoved(ipAddress) {
             const trainToRemove = getTrainFromIP(ipAddress); // Get the train from the IP address
@@ -494,7 +495,7 @@
             const missingAlarm = dataArray.find(entry => entry.Train === trainToRemove && entry.Code === alarmCodeToRemove);
 
             if (missingAlarm) {
-                moveAlarmToHistory(trainToRemove, alarmCodeToRemove);
+                moveCommunicationAlarmToHistory(trainToRemove, alarmCodeToRemove);
             }
         }
 
@@ -629,7 +630,7 @@
                         if (matchingAlarm && !matchingAlarm.stopAlarm) {
                             matchingAlarm.active = false;
                             console.log("Removing alarm", matchingAlarm);
-                            moveAlarmToHistory(alarmTrain, alarmCode);
+                            moveAlarmToHistory(alarmTrain, alarmCode,DateTime);
                             keysToRemove.forEach(alarmKey => {
                                 const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('-');
                                 const alarmCode = parseInt(code);
@@ -644,7 +645,7 @@
                                     const removedData = dataArray.splice(indexToRemove, 1);
                                     console.log("Removed from dataArray:", removedData);
                                 }
-                                moveAlarmToHistory(alarmTrain, alarmCode);
+                                moveAlarmToHistory(alarmTrain, alarmCode, DateTime);
                             });
                         }
                         if (matchingAlarm && matchingAlarm.stopAlarm && !matchingAlarm.Acknowledged) {
@@ -654,7 +655,7 @@
 
                         if (matchingAlarm && matchingAlarm.stopAlarm && matchingAlarm.Acknowledged) {
                             console.log("removing critical alarm");
-                            moveAlarmToHistory(alarmTrain, alarmCode);
+                            moveAlarmToHistory(alarmTrain, alarmCode, DateTime);
                             keysToRemove.forEach(alarmKey => {
                                 const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('-');
                                 const alarmCode = parseInt(code);
@@ -669,7 +670,7 @@
                                     const removedData = dataArray.splice(indexToRemove, 1);
                                     console.log("Removed from dataArray:", removedData);
                                 }
-                                moveAlarmToHistory(alarmTrain, alarmCode);
+                                moveAlarmToHistory(alarmTrain, alarmCode, DateTime);
                             });
                         }
                     }
@@ -696,14 +697,14 @@
 
             if (row) {
                 var cells = row.cells;
-                var activeCell = cells[cells.length - 2]; // Access the last cell in the row
+                var activeCell = cells[cells.length - 2]; // Access the second to last cell in the row
                 activeCell.textContent = newText;
             }
         }
 
-        // finds alarm in dataArray and removes it from here
+        // finds communication alarm in dataArray and removes it from here
         //once it is removed it moves the data to the historyArray where it can now be displayed in history
-        function moveAlarmToHistory(trainData, alarmCode) {
+        function moveCommunicationAlarmToHistory(trainData, alarmCode) {
             // Find the alarm in dataArray and move it to historyArray
             const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === trainData);
             if (indexToRemove !== -1) {
@@ -718,8 +719,25 @@
             }
         }
 
+        // finds alarm with matching code and datetime and moves it to history
+        function moveAlarmToHistory(trainData, alarmCode, dateTime) {
+            // Find the alarm in dataArray and move it to historyArray
+            const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === trainData && data.DateTime === dateTime);
+            if (indexToRemove !== -1) {
+                const removedAlarm = dataArray.splice(indexToRemove, 1)[0];
+                historyArray.push(removedAlarm);
+                // Update the history array in cookies with both existing and new data
+                updateHistoryInCookies(historyArray);
+                // Update the display
+                updateDisplay();
+                // Remove the corresponding row from the table 
+                deleteRow("row" + removedAlarm.Train + removedAlarm.Code + removedAlarm.Desc + removedAlarm.DateTime);
+            }
+        }
+
         // delete a row by its ID effectively removing it from display
         function deleteRow(rowId) {
+            console.log(rowId);
             var row = document.getElementById(rowId);
             if (row) {
                 row.remove();
@@ -729,10 +747,9 @@
         //creates each individual row for the display logging each entry in the dataArray
         // this also applies specific css classes and updates acknowledged/active status 
         function updateDisplay() {
-            var tableBody = document.querySelector("#alarmTable tbody");
-            //console.log(dataArray);
+            var tableBody = document.querySelector("#alarmTable tbody");            
             dataArray.forEach(entry => {
-                // Create a unique row ID by concatenating "train" and "alarm code"
+                // Create a unique row ID by concatenating "train" and "alarm code" and datetime
                 var rowId = "row" + entry.Train + entry.Code + entry.Desc + entry.DateTime;
                 // Check if the row already exists
                 var existingRow = document.getElementById(rowId);
@@ -802,7 +819,9 @@
                 rowIdToData[rowId] = entry;
             });
         }
-
+        
+        //this function is not working correctly 
+        // double check acknowledgeAlarm and moveAlarmToHistory
         function acknowledgeAlarm(buttonId, alarmData) {
             // Disable the Acknowledge button and change its text
             var buttonElement = document.getElementById(buttonId);
@@ -810,7 +829,7 @@
             buttonElement.textContent = "Acknowledged";
 
             // Find the corresponding alarm in dataArray and update its `acknowledged` status
-            const matchingAlarm = dataArray.find(data => data.Code === alarmData.Code && data.Train === alarmData.Train);
+            const matchingAlarm = dataArray.find(data => data.Code === alarmData.Code && data.Train === alarmData.Train && data.DateTime === alarmData.DateTime);
             if (matchingAlarm) {
                 // Update the `acknowledged` status for the corresponding alarm in dataArray
                 matchingAlarm.Acknowledged = true;
@@ -818,8 +837,8 @@
                 // Check if the alarm was flagged for removal
                 if (matchingAlarm.flagForRemoval) {
                     // Alarm was flagged for removal, remove it from active alarms and move to history
-                    activeAlarms.delete(alarmData.Train + '-' + alarmData.Code);
-                    moveAlarmToHistory(alarmData.Code);
+                    existingAlarms.delete(alarmData.Train + '-' + alarmData.Code + '-' + alarmData.MSG_Data + "-" + alarmData.Desc + "-" + alarmData.Dev_Num + "-" + alarmData.ip); 
+                    moveAlarmToHistory(alarmData.Train, alarmData.Code, alarmData.DateTime);
                 }
                 // Update the history array in cookies with both existing and new data
                 updateHistoryInCookies(historyArray);
@@ -924,11 +943,15 @@
                 historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
                 historyRow.insertCell().textContent = alarmData.Train;
                 historyRow.insertCell().textContent = alarmData.Code;
-
-                // Fetch and display the alarm message text
-                fetchAndProcessXML(alarmData.Code, alarmData, function (alarmDescription) {
-                    historyRow.insertCell().textContent = alarmDescription;
-                });
+                if (alarmData.Code === 78) {
+                    historyRow.insertCell().textContent = alarmData.Message;
+                }
+                else {
+                    // Fetch and display the alarm message text
+                    fetchAndProcessXML(alarmData.Code, alarmData, function (alarmDescription) {
+                        historyRow.insertCell().textContent = alarmDescription;
+                    });
+                }
 
                 historyRow.classList.add('table-success');
             });
@@ -955,9 +978,10 @@
                 historyRow.insertCell().textContent = alarmData.Train;
                 historyRow.insertCell().textContent = alarmData.Code;
                 if (alarmData.Code === 78) {
-                    // Display alarm.Message if Code is 78
+                    //Display alarm.Message if Code is 78
                     historyRow.insertCell().textContent = alarmData.Message;
-                } else {
+                }
+                else {
                     // Display alarmDescription for other alarm codes
                     fetchAndProcessXML(alarmData.Code, alarmData, function (alarmDescription) {
                         historyRow.insertCell().textContent = alarmDescription;
