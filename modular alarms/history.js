@@ -12,6 +12,11 @@ function moveCommunicationAlarmToHistory(trainData, alarmCode) {
         updateDisplay();
         // Remove the corresponding row from the table 
         deleteRow("row" + removedAlarm.Train + removedAlarm.Code + removedAlarm.Desc + removedAlarm.DateTime);
+
+        var currentTab = document.querySelector(".tablinks.active").textContent.trim();
+        if (currentTab === "Alarm History") {
+            updateHistory();
+        }
     }
 }
 
@@ -21,6 +26,7 @@ function moveAlarmToHistory(trainData, alarmCode, dateTime) {
     const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === trainData && data.DateTime === dateTime);
     if (indexToRemove !== -1) {
         const removedAlarm = dataArray.splice(indexToRemove, 1)[0];
+        console.log("removing alarm", removedAlarm);
         historyArray.push(removedAlarm);
         // Update the history array in cookies with both existing and new data
         updateHistoryInCookies(historyArray);
@@ -28,6 +34,11 @@ function moveAlarmToHistory(trainData, alarmCode, dateTime) {
         updateDisplay();
         // Remove the corresponding row from the table 
         deleteRow("row" + removedAlarm.Train + removedAlarm.Code + removedAlarm.Desc + removedAlarm.DateTime);
+
+        var currentTab = document.querySelector(".tablinks.active").textContent.trim();
+        if (currentTab === "Alarm History") {
+            updateHistory();
+        }
     }
 }
 
@@ -90,18 +101,24 @@ function displayFilteredHistory(filteredHistory) {
     });
 }
 
+function updateHistory() {
+    var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+    historyTable.innerHTML = ''; // Clear the existing history table
+    displayAlarmHistory();
+}
+
 //gets history array and displays all data to table
 function displayAlarmHistory() {
     var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
     historyTable.innerHTML = ''; // Clear the existing history table
-
     // Sort the historyArray based on the DateTime property, from newest to oldest
     historyArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
 
     // Ensure that historyArray contains at most 100 alarms
     if (historyArray.length > 100) {
-        historyArray = historyArray.slice(0, 100);
-    }
+        const elementsToRemove = historyArray.length - 100;
+        historyArray.splice(0, elementsToRemove);
+    }    
 
     //output all necessary fields for history
     historyArray.forEach(alarmData => {

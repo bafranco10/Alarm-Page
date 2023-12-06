@@ -132,7 +132,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="820"/>
-  <Property Name="TextItemText[0]" Value="{MSG_DATA} cartrdige(s) is/are available.  {DEV_NUM} are required to run the system. Fix or modify config parameters."/>
+  <Property Name="TextItemText[0]" Value="{MSG_DATA} cartridge(s) is/are available.  {DEV_NUM} are required to run the system. Fix or modify config parameters."/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>

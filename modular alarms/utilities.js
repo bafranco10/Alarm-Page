@@ -4,7 +4,7 @@ var xmlFileUrl = 'alarms.xml';
 var alarmActive = false;
 var isAcknowledged = false;
 var rowIdToData = {};
-var stopAlarmCodes = [19, 1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 18, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 68, 69];
+var stopAlarmCodes = [19,1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 18, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 68, 69];
 var buttonArray = []; //stores button ids
 const activeAlarms = new Set();
 const existingAlarms = new Set();
@@ -136,6 +136,7 @@ function deleteRow(rowId) {
     }
 }
 
+//still has a bug
 //this function is not working correctly 
 // double check acknowledgeAlarm and moveAlarmToHistory
 function acknowledgeAlarm(buttonId, alarmData) {
@@ -161,6 +162,7 @@ function acknowledgeAlarm(buttonId, alarmData) {
     }
 }
 
+//maybe has a bug
 //disable button and change text after acknowledgement
 function removeButton(...ids) {
     ids.forEach(id => {
@@ -201,10 +203,11 @@ function openPage(evt, AlarmPageName) {
 
     // Call the displayAlarmHistory function when the "Alarm History" tab is selected
     if (AlarmPageName === "Alarm History") {
-        displayAlarmHistory();
+        updateHistory();
     }
 }
 
+//has bugs
 // disables all buttons and removes flashing from each alarm
 function acknowledgeAllAlarms() {
     buttonArray.forEach(buttonId => {

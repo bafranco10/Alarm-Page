@@ -26,7 +26,6 @@ async function fetchAndProcessAlarm(trainData, alarm, alarmKey) {
         };
 
         // Pass alarmData to checkStopAlarm function
-        console.log(alarmData);
         checkStopAlarm(alarmData);
         dataArray.push(alarmData);
         existingAlarms.add(alarmKey);
@@ -90,11 +89,9 @@ function checkInactiveAlarms(trainData, alarms) {
                 keysToRemove.push(alarmKey);
                 const matchingAlarm = dataArray.find(data => data.Code === alarmCode && data.Train === alarmTrain && data.DateTime === DateTime && data.Desc === Desc && data.Msg_Data == Msg_Data &&
                     data.Dev_Num == Dev_Num);
-                // console.log("matching alarm value", matchingAlarm.active);
-                console.log("here is matching alarm", matchingAlarm);
+
                 if (matchingAlarm && !matchingAlarm.stopAlarm) {
                     matchingAlarm.active = false;
-                    console.log("Removing alarm", matchingAlarm);
                     moveAlarmToHistory(alarmTrain, alarmCode, DateTime);
                     keysToRemove.forEach(alarmKey => {
                         const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('-');
@@ -108,18 +105,15 @@ function checkInactiveAlarms(trainData, alarms) {
                         const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === alarmTrain && data.ip === alarmIp && data.DateTime === DateTime);
                         if (indexToRemove !== -1) {
                             const removedData = dataArray.splice(indexToRemove, 1);
-                            console.log("Removed from dataArray:", removedData);
                         }
                         moveAlarmToHistory(alarmTrain, alarmCode, DateTime);
                     });
                 }
                 if (matchingAlarm && matchingAlarm.stopAlarm && !matchingAlarm.Acknowledged) {
-                    console.log("updating staus to inactive");
                     updateActiveCellText(matchingAlarm.Code, matchingAlarm.Train, "Inactive", matchingAlarm.Desc, matchingAlarm.DateTime);
                 }
 
                 if (matchingAlarm && matchingAlarm.stopAlarm && matchingAlarm.Acknowledged) {
-                    console.log("removing critical alarm");
                     moveAlarmToHistory(alarmTrain, alarmCode, DateTime);
                     keysToRemove.forEach(alarmKey => {
                         const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('-');
@@ -133,7 +127,6 @@ function checkInactiveAlarms(trainData, alarms) {
                         const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === alarmTrain && data.ip === alarmIp && data.DateTime === DateTime);
                         if (indexToRemove !== -1) {
                             const removedData = dataArray.splice(indexToRemove, 1);
-                            console.log("Removed from dataArray:", removedData);
                         }
                         moveAlarmToHistory(alarmTrain, alarmCode, DateTime);
                     });

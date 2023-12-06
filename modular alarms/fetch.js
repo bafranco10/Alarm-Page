@@ -20,7 +20,7 @@ const ipAddresses = {
     '172.16.1.107': false
 };
 
-const retryDelay = 500;
+const retryDelay = 3000;
 let currentServerIndex = 0;
 const ipAddressByEndpoint = {};
 
@@ -178,5 +178,4 @@ function addTrainDownAlarm(ipAddress) {
         updateDisplay();
     }
 
-    //console.log(dataArray);
 }
