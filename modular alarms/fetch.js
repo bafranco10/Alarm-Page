@@ -49,7 +49,7 @@ async function fetchData(index) {
         }
 
         isFetching[index] = true;
-        const scriptElement = document.createElement("script");
+        const scriptElement = document.getElementById("dataScript") || document.createElement("script");
         const ipAddress = ipAddressByEndpoint[fetchEndpoints[index]];
 
         let requestCompleted = false; // Flag to track if the request has completed
@@ -66,8 +66,8 @@ async function fetchData(index) {
         scriptElement.onerror = function () {
             clearTimeout(timeoutId); // Clear the timeout
 
-            console.error("Error loading script:", scriptElement.src);
-            console.error("IP Address:", ipAddress);
+            //console.error("Error loading script:", scriptElement.src);
+            //console.error("IP Address:", ipAddress);
             isFetching[index] = false;
             addTrainDownAlarm(ipAddress);
 
@@ -76,7 +76,7 @@ async function fetchData(index) {
                 fetchData(index);
                 retryCount++;
             } else {
-                console.error("Max retry count reached. No more retries.");
+                //console.error("Max retry count reached. No more retries.");
                 retryCount = 0; // Reset the retry count if needed
             }
         };
@@ -89,15 +89,12 @@ async function fetchData(index) {
             fetchData(index); // Fetch from the same source immediately after success
         };
 
-        const existingScript = document.getElementById("dataScript");
-        if (existingScript) {
-            existingScript.remove();
+        if (!document.getElementById("dataScript")) {
+            scriptElement.id = "dataScript";
+            document.body.appendChild(scriptElement);
         }
-
-        scriptElement.id = "dataScript";
-        document.body.appendChild(scriptElement);
     } catch (error) {
-        console.error("An error occurred:", error);
+        //console.error("An error occurred:", error);
         addTrainDownAlarm(ipAddress);
         fetchData(index); // Retry immediately on error
     }
@@ -109,7 +106,7 @@ function parseResponse(jsonData) {
         checkStopAlarm();
         checkInactiveAlarms();
     } catch (error) {
-        console.error("Error while updating graphic:", error);
+        // console.error("Error while updating graphic:", error);
     }
 }
 
@@ -177,5 +174,4 @@ function addTrainDownAlarm(ipAddress) {
         // Update the display with the new alarm
         updateDisplay();
     }
-
 }

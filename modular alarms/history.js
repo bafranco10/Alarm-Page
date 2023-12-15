@@ -20,26 +20,27 @@ function moveCommunicationAlarmToHistory(trainData, alarmCode) {
     }
 }
 
-// finds alarm with matching code and datetime and moves it to history
-function moveAlarmToHistory(trainData, alarmCode, dateTime) {
-    // Find the alarm in dataArray and move it to historyArray
-    const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === trainData && data.DateTime === dateTime);
+function moveAlarmToHistory(indexToRemove) {
+    // Use the provided index to remove the alarm from dataArray and move it to historyArray
     if (indexToRemove !== -1) {
-        const removedAlarm = dataArray.splice(indexToRemove, 1)[0];
-        console.log("removing alarm", removedAlarm);
-        historyArray.push(removedAlarm);
-        // Update the history array in cookies with both existing and new data
-        updateHistoryInCookies(historyArray);
-        // Update the display
-        updateDisplay();
-        // Remove the corresponding row from the table 
-        deleteRow("row" + removedAlarm.Train + removedAlarm.Code + removedAlarm.Desc + removedAlarm.DateTime);
-
-        var currentTab = document.querySelector(".tablinks.active").textContent.trim();
-        if (currentTab === "Alarm History") {
-            updateHistory();
+        const alarmToRemove = dataArray[indexToRemove];
+        // Check if the alarm is acknowledged before removing it
+        if (alarmToRemove && alarmToRemove.Acknowledged) {
+            const removedAlarm = dataArray.splice(indexToRemove, 1)[0];
+            historyArray.push(removedAlarm);
+            updateHistoryInCookies(historyArray);
+            updateDisplay();
+            deleteRow("row" + removedAlarm.Train + removedAlarm.Code + removedAlarm.Desc + removedAlarm.DateTime.trim());
+    
+            var currentTab = document.querySelector(".tablinks.active").textContent.trim();
+            if (currentTab === "Alarm History") {
+                updateHistory();
+            }
+            return true;
+        } else {
+            return false; 
         }
-    }
+    }    
 }
 
 // takes in an input from search bar if it is a number it searches for an alarm code with a matching number
@@ -48,26 +49,21 @@ function moveAlarmToHistory(trainData, alarmCode, dateTime) {
 function search_code() {
     // Get the search input
     let input = document.getElementById('searchbar').value.trim().toLowerCase(); // Convert input to lowercase
-
     if (input !== "") {
         // Split the input into individual words
         const inputWords = input.split(' ');
-
         // Search by code or keyword
         const filteredHistory = historyArray.filter(alarmData => {
             const codeMatch = String(alarmData.Code).includes(input); // Check for partial code match
-
             if (codeMatch) {
                 return true; // Return true if there's a code match
             }
-
             if (inputWords.length > 0 && alarmData.Message && typeof alarmData.Message === 'string') {
                 // Check for partial message match for each word in the input
                 const messageWords = alarmData.Message.toLowerCase().split(' ');
                 return inputWords.every(word => messageWords.some(messageWord => messageWord.includes(word)));
             }
-
-            return false; // Handle other cases
+            return false; 
         });
 
         displayFilteredHistory(filteredHistory);

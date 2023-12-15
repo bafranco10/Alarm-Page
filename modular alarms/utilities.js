@@ -4,12 +4,13 @@ var xmlFileUrl = 'alarms.xml';
 var alarmActive = false;
 var isAcknowledged = false;
 var rowIdToData = {};
-var stopAlarmCodes = [19,1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 18, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 68, 69];
+var stopAlarmCodes = [19, 1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 18, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 68, 69];
 var buttonArray = []; //stores button ids
 const activeAlarms = new Set();
 const existingAlarms = new Set();
 
 // formats date for my custom alarm
+// takes in a standard javascript date and returns a date formatted to match the other ones
 function formatDateToCustomString(date) {
     const options = {
         year: 'numeric',
@@ -38,9 +39,10 @@ function checkIfTrainAlarmNeedsToBeRemoved(ipAddress) {
     }
 }
 
+//takes in the data from parseResponse
 //checks if data is not undefined and stores ip depending on train source
 //it also checks the status of the alarm deciding whether or not it should be moved
-function updateGraphic(data, alarmData) {
+function updateGraphic(data) {
     //call this function before processing alarms so it will have to have two ways of processing
     var trainData = data.Train;
     var alarms = data.Alarms;
@@ -57,12 +59,9 @@ function updateGraphic(data, alarmData) {
                 ip = ipAddressByEndpoint[fetchEndpoints[2]];
             }
 
-            var alarmKey = trainData + "-" + alarm.DateTime + "-" + alarm.Code + "-" + alarm.Msg_Data + "-" + alarm.Desc + "-" + alarm.Dev_Num + "-" + ip;
-            // Check if the alarm is already in dataArray
-            /*var alarmExistsInDataArray = dataArray.some(existingAlarm => {
-                return existingAlarm.Train === trainData && existingAlarm.Code === alarm.Code && existingAlarm.ip === ip;
-            }); */
-
+            var alarmKey = trainData + "-" + alarm.DateTime.trim() + "-" + alarm.Code
+                + "-" + alarm.Msg_Data + "-" + alarm.Desc + "-" + alarm.Dev_Num +
+                "-" + ip;
             if (!existingAlarms.has(alarmKey)) {
                 fetchAndProcessAlarm(trainData, alarm, alarmKey);
             }
@@ -70,6 +69,7 @@ function updateGraphic(data, alarmData) {
     }
 }
 
+// iterates through the endpoints given in the script. After iteration it 
 function checkServerAvailability() {
     const serverUrl = fetchEndpoints[currentServerIndex];
     const scriptElement = document.createElement("script");
@@ -79,8 +79,6 @@ function checkServerAvailability() {
 
     scriptElement.src = `${serverUrl}&IPAddress=${ipAddress}`;
     scriptElement.onerror = function () {
-        console.error("Error loading script:", scriptElement.src);
-        console.error("IP Address:", ipAddress);
         isFetching[currentServerIndex] = false;
         addTrainDownAlarm(ipAddress);
         currentServerIndex = (currentServerIndex + 1) % fetchEndpoints.length;
@@ -101,23 +99,11 @@ function checkServerAvailability() {
     document.body.appendChild(scriptElement);
 }
 
-const serverCheckInterval = setInterval(checkServerAvailability, 500); // Adjust the interval as needed
-function postErrorMessage(errorMessage) {
-    const errorContainer = document.getElementById("errorContainer");
-
-    if (errorContainer) {
-        // Create a new paragraph for the error message
-        const errorMessageElement = document.createElement("p");
-        errorMessageElement.textContent = errorMessage;
-
-        // Append it to the error container
-        errorContainer.appendChild(errorMessageElement);
-    }
-}
+const serverCheckInterval = setInterval(checkServerAvailability, 5000); // Adjust the interval as needed
 
 // function to change text in active column to inactive if a stop alarm is inactive but needs to be acknowledged
 function updateActiveCellText(alarmCode, trainData, newText, Desc, DateTime) {
-    var rowId = "row" + trainData + alarmCode + Desc + DateTime;
+    var rowId = "row" + trainData + alarmCode + Desc + DateTime.trim();
     var row = document.getElementById(rowId);
 
     if (row) {
@@ -129,61 +115,41 @@ function updateActiveCellText(alarmCode, trainData, newText, Desc, DateTime) {
 
 // delete a row by its ID effectively removing it from display
 function deleteRow(rowId) {
-    console.log(rowId);
     var row = document.getElementById(rowId);
     if (row) {
+        // Remove event listeners from elements within the row
+        var acknowledgeButton = row.querySelector('.btn');
+        if (acknowledgeButton) {
+            // Remove the event listener
+            acknowledgeButton.removeEventListener('click', acknowledgeAlarm);
+        }
+        
+        // Remove the row from the DOM
         row.remove();
     }
 }
 
-//still has a bug
-//this function is not working correctly 
-// double check acknowledgeAlarm and moveAlarmToHistory
+// takes in a button id and alarm data these are the ids defined in updateDisplay
 function acknowledgeAlarm(buttonId, alarmData) {
     // Disable the Acknowledge button and change its text
     var buttonElement = document.getElementById(buttonId);
-    buttonElement.disabled = true;
-    buttonElement.textContent = "Acknowledged";
-
-    // Find the corresponding alarm in dataArray and update its `acknowledged` status
-    const matchingAlarm = dataArray.find(data => data.Code === alarmData.Code && data.Train === alarmData.Train && data.DateTime === alarmData.DateTime);
-    if (matchingAlarm) {
-        // Update the `acknowledged` status for the corresponding alarm in dataArray
-        matchingAlarm.Acknowledged = true;
-
-        // Check if the alarm was flagged for removal
-        if (matchingAlarm.flagForRemoval) {
-            // Alarm was flagged for removal, remove it from active alarms and move to history
-            existingAlarms.delete(alarmData.Train + '-' + alarmData.Code + '-' + alarmData.MSG_Data + "-" + alarmData.Desc + "-" + alarmData.Dev_Num + "-" + alarmData.ip);
-            moveAlarmToHistory(alarmData.Train, alarmData.Code, alarmData.DateTime);
-        }
-        // Update the history array in cookies with both existing and new data
-        updateHistoryInCookies(historyArray);
-    }
-}
-
-//maybe has a bug
-//disable button and change text after acknowledgement
-function removeButton(...ids) {
-    ids.forEach(id => {
-        var buttonElement = document.getElementById(id);
-        console.log("Button Element:", buttonElement);
-        // change button after it is clicked
+    if (buttonElement) {
         buttonElement.disabled = true;
-        buttonElement.innerText = "Acknowledged";
-
+        buttonElement.textContent = "Acknowledged";
+        buttonElement.onclick = null;
         // Remove the buttonId from buttonArray
-        buttonArray = buttonArray.filter(buttonId => buttonId !== id);
-
-        if (id == "historyButton" || id == "mainButton") {
-            buttonElement.style.display = 'none';
+        buttonArray = buttonArray.filter(id => id !== buttonId);
+        // Find the corresponding alarm in dataArray and update its `acknowledged` status
+        const matchingAlarm = dataArray.find(data => data.Code === alarmData.Code && data.Train === alarmData.Train && data.DateTime === alarmData.DateTime);
+        if (matchingAlarm) {
+            // Update theacknowledged status for the corresponding alarm in dataArray
+            matchingAlarm.Acknowledged = true;
         }
-    });
+    }
 }
 
 // this function opens up page depending on which tab is clicked
 function openPage(evt, AlarmPageName) {
-    // Declare all variables
     var i, tabcontent, tablinks;
     // Get all elements with class="tabcontent" and hide them
     tabcontent = document.getElementsByClassName("tabcontent");
@@ -207,18 +173,20 @@ function openPage(evt, AlarmPageName) {
     }
 }
 
-//has bugs
-// disables all buttons and removes flashing from each alarm
+// this function takes in no parameters
+//it has an event handler tied to it in the html doc
+//everytime this is clicked it iterates through the button array and for each element in the list it 
 function acknowledgeAllAlarms() {
     buttonArray.forEach(buttonId => {
         const alarmData = rowIdToData[buttonId.replace("button", "")];
-        if (alarmData) {
+        if (alarmData && !alarmData.Acknowledged) {
             acknowledgeAlarm(buttonId, alarmData);
         }
     });
 }
 
 // Function to format a Date object as "MM/DD/YYYY HH:MM:SS" (e.g., "09/11/2023 08:25:22")
+//takes in a data object and reformats it to ensure consistency with the PLC data output
 function formatDate(date) {
     const options = {
         year: 'numeric',
