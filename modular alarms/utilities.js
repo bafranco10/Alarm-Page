@@ -49,7 +49,7 @@ function updateGraphic(data) {
     checkInactiveAlarms(trainData, alarms);
     if (data.Train !== undefined && data.Alarms !== undefined && Array.isArray(data.Alarms)) {
         alarms.forEach(alarm => {
-            var ip = ''; // Declare 'ip' here
+            var ip = ''; 
 
             if (trainData === 1) {
                 ip = ipAddressByEndpoint[fetchEndpoints[0]];
@@ -69,7 +69,7 @@ function updateGraphic(data) {
     }
 }
 
-// iterates through the endpoints given in the script. After iteration it 
+// iterates through the endpoints given in the script. After iteration it replaces the script to either have 
 function checkServerAvailability() {
     const serverUrl = fetchEndpoints[currentServerIndex];
     const scriptElement = document.createElement("script");
@@ -90,16 +90,15 @@ function checkServerAvailability() {
         currentServerIndex = (currentServerIndex + 1) % fetchEndpoints.length;
     };
 
-    // Replace existing script, if any
+    // Replace existing script only if it doesn't exist
     const existingScript = document.getElementById("serverCheckScript");
-    if (existingScript) {
-        existingScript.remove();
+    if (!existingScript) {
+        scriptElement.id = "serverCheckScript";
+        document.body.appendChild(scriptElement);
     }
-    scriptElement.id = "serverCheckScript";
-    document.body.appendChild(scriptElement);
 }
 
-const serverCheckInterval = setInterval(checkServerAvailability, 5000); // Adjust the interval as needed
+const serverCheckInterval = setInterval(checkServerAvailability, 5000); 
 
 // function to change text in active column to inactive if a stop alarm is inactive but needs to be acknowledged
 function updateActiveCellText(alarmCode, trainData, newText, Desc, DateTime) {
