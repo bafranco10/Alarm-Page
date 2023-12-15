@@ -94,3 +94,8 @@
         input[type=text]:focus {
             width: 70%;
         }
+
+        #alarmTable {
+            border-right: none;
+        }
+        

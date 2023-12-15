@@ -42,16 +42,17 @@
     <!-- Tab content -->
     <div id="Current Alarms" class="tabcontent border-bottom-0">
         <h1>Current Alarms</h1>
-        <button type="button" class="btn btn-primary" id="acknowledgeAllButton"
-            onclick="acknowledgeAllAlarms();">Acknowledge
-            All</button>
-        <table id="alarmTable" class="table">
+    
+        <button type="button" class="btn btn-primary" id="acknowledgeAllButton" onclick="acknowledgeAllAlarms();" style="margin-right: 140px;">Acknowledge All</button>
+    
+        <table id="alarmTable" class="table border-0">
             <thead>
                 <tr>
                     <th>Date/Time</th>
                     <th>Train</th>
                     <th>Code</th>
                     <th>Message</th>
+                    <th>Type</th>
                     <th>Status</th>
                     <th>Acknowledged?</th>
                 </tr>
@@ -64,7 +65,7 @@
             </tbody>
         </table>
     </div>
-
+    
     <div id="Alarm History" class="tabcontent border-bottom-0">
         <h1>Alarm History</h1>
 
@@ -153,4 +154,5 @@
 
         // Get the element with id="defaultOpen" and click on it
         document.getElementById("defaultOpen").click();
+        
     </script>

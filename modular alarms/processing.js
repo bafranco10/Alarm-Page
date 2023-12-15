@@ -111,7 +111,7 @@ function checkInactiveAlarms(trainData, alarms) {
                     matchingAlarm.active = false;
                     updateActiveCellText(matchingAlarm.Code, matchingAlarm.Train, "Inactive", matchingAlarm.Desc, matchingAlarm.DateTime);
                 }
-               
+
                 if (
                     matchingAlarm &&
                     matchingAlarm.stopAlarm &&
@@ -165,13 +165,17 @@ function updateDisplay() {
         if (!existingRow) {
             // If the row doesn't exist, create a new one
             var row = tableBody.insertRow();
+            // Add this CSS style to ensure consistent cell padding
+            row.style.padding = "0";
+
             row.id = rowId;
 
             // Create individual cell elements
             var dateCell = row.insertCell();
             var trainCell = row.insertCell();
             var codeCell = row.insertCell();
-            var msgDataCell = row.insertCell();
+            var msgDataCell = row.insertCell()
+            var alarmTypeCell = row.insertCell();;
             var activeCell = row.insertCell();
 
             // Set text content for each cell
@@ -187,7 +191,7 @@ function updateDisplay() {
                 // Create a cell for the Acknowledge button.
                 var buttonCell = row.insertCell();
                 var acknowledgeButton = document.createElement("button");
-
+                alarmTypeCell.textContent = "Critical";
                 // Use a unique ID for each button based on k
                 acknowledgeButton.id = "button" + rowId;
                 buttonArray.push(acknowledgeButton.id);
@@ -200,7 +204,7 @@ function updateDisplay() {
                 // Create a cell for the Acknowledge button.
                 var buttonCell = row.insertCell();
                 var acknowledgeButton = document.createElement("button");
-
+                alarmTypeCell.textContent = "Warning";
                 // Use a unique ID for each button based on k
                 acknowledgeButton.id = "button" + rowId;
                 buttonArray.push(acknowledgeButton.id);
