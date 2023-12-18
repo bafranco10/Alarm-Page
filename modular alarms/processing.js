@@ -115,10 +115,9 @@ function checkInactiveAlarms(trainData, alarms) {
                 if (
                     matchingAlarm &&
                     matchingAlarm.stopAlarm &&
-                    matchingAlarm.Acknowledged === true &&
-                    !matchingAlarm.active
+                    matchingAlarm.Acknowledged === true
                 ) {
-
+                    matchingAlarm.active = false;
                     keysToRemove.forEach(alarmKey => {
                         const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('-');
                         const alarmCode = parseInt(code);
@@ -140,7 +139,9 @@ function checkInactiveAlarms(trainData, alarms) {
     });
 }
 
+//takes in the alarm data from the plc
 // checks if an alarm code matches any in the database for stop alarm codes
+// if it does it changes the stopAlarm field to true otherwise it is false
 function checkStopAlarm(alarmData) {
     if (alarmData && alarmData.Code) {
         if (stopAlarmCodes.includes(alarmData.Code)) {

@@ -118,16 +118,17 @@
     <div id="errorContainer"></div>
     <script>
         initializeHistoryFromCookies();
-        setTimeout(() => {
+       /* setTimeout(() => {
             fetchData(0);
-        }, 1000);
+        }, 1000); */ 
         setTimeout(() => {
             fetchData(1);
         }, 1000);
+        /*
         setTimeout(() => {
             fetchData(2);
         }, 1500);
-
+*/
         // fetch xml data
         // Define the URL of XML file
         var xmlFileUrl = 'alarms.xml'; // Replace with the actual URL of your XML file if it changes 
@@ -154,5 +155,9 @@
 
         // Get the element with id="defaultOpen" and click on it
         document.getElementById("defaultOpen").click();
+
+        window.onload = function () {
+            initializeHistoryFromCookies();
+        };
         
     </script>

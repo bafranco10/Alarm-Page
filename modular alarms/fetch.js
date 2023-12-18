@@ -49,7 +49,7 @@ async function fetchData(index) {
         }
 
         isFetching[index] = true;
-        const scriptElement = document.getElementById("dataScript") || document.createElement("script");
+        const scriptElement = document.createElement("script");
         const ipAddress = ipAddressByEndpoint[fetchEndpoints[index]];
 
         let requestCompleted = false; // Flag to track if the request has completed
@@ -65,9 +65,6 @@ async function fetchData(index) {
         scriptElement.src = `${fetchEndpoints[index]}&IPAddress=${ipAddress}`;
         scriptElement.onerror = function () {
             clearTimeout(timeoutId); // Clear the timeout
-
-            //console.error("Error loading script:", scriptElement.src);
-            //console.error("IP Address:", ipAddress);
             isFetching[index] = false;
             addTrainDownAlarm(ipAddress);
 
@@ -76,7 +73,7 @@ async function fetchData(index) {
                 fetchData(index);
                 retryCount++;
             } else {
-                //console.error("Max retry count reached. No more retries.");
+                console.error("Max retry count reached. No more retries.");
                 retryCount = 0; // Reset the retry count if needed
             }
         };
@@ -89,12 +86,14 @@ async function fetchData(index) {
             fetchData(index); // Fetch from the same source immediately after success
         };
 
-        if (!document.getElementById("dataScript")) {
-            scriptElement.id = "dataScript";
-            document.body.appendChild(scriptElement);
+        const existingScript = document.getElementById("dataScript");
+        if (existingScript) {
+            existingScript.remove();
         }
+        scriptElement.id = "dataScript";
+        document.body.appendChild(scriptElement);
     } catch (error) {
-        //console.error("An error occurred:", error);
+        console.error("An error occurred:", error);
         addTrainDownAlarm(ipAddress);
         fetchData(index); // Retry immediately on error
     }
@@ -106,7 +105,7 @@ function parseResponse(jsonData) {
         checkStopAlarm();
         checkInactiveAlarms();
     } catch (error) {
-        // console.error("Error while updating graphic:", error);
+        console.error("Error while updating graphic:", error);
     }
 }
 
@@ -119,16 +118,16 @@ function getTrainFromIP(ipAddress) {
         return 3;
     }
     else if (ipaddress === "172.16.1.104") {
-        return 4
+        return 4;
     }
     else if (ipaddress === "172.16.1.105") {
-        return 5
+        return 5;
     }
     else if (ipaddress === "172.16.1.106") {
-        return 6
+        return 6;
     }
     else if (ipaddress === "172.16.1.107") {
-        return 7
+        return 7;
     }
     else {
         return error; // returns an error if message 
@@ -174,4 +173,5 @@ function addTrainDownAlarm(ipAddress) {
         // Update the display with the new alarm
         updateDisplay();
     }
+
 }

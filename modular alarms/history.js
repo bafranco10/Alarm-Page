@@ -5,18 +5,10 @@ function moveCommunicationAlarmToHistory(trainData, alarmCode) {
     const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === trainData);
     if (indexToRemove !== -1) {
         const removedAlarm = dataArray.splice(indexToRemove, 1)[0];
-        historyArray.push(removedAlarm);
-        // Update the history array in cookies with both existing and new data
-        updateHistoryInCookies(historyArray);
         // Update the display
         updateDisplay();
         // Remove the corresponding row from the table 
         deleteRow("row" + removedAlarm.Train + removedAlarm.Code + removedAlarm.Desc + removedAlarm.DateTime);
-
-        var currentTab = document.querySelector(".tablinks.active").textContent.trim();
-        if (currentTab === "Alarm History") {
-            updateHistory();
-        }
     }
 }
 
@@ -180,22 +172,14 @@ function getCookie(name) {
     return null;
 }
 
-//adds history to cookies and if we have a cookie that reaches max size we create new one once we reach 300 cookies we will need to clear them
 function updateHistoryInCookies(historyArray) {
     // Convert the historyArray to JSON and encodeURIComponent
     const cookieValue = encodeURIComponent(JSON.stringify(historyArray));
 
-    // Check the length of the cookie value
-    if (cookieValue.length <= 4096) {
-        // If the cookie value is within the limit, update the cookie
-        document.cookie = `history=${cookieValue}; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/`;
-    } else {
-        // If it exceeds the limit, create a new cookie with a different name
-        const currentDate = new Date();
-        const newCookieName = `history_${currentDate.getTime()}`;
-        document.cookie = `${newCookieName}=${cookieValue}; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/`;
-    }
+    // Always update the cookie with the current historyArray value
+    document.cookie = `history=${cookieValue}; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/`;
 }
+
 //get history array from cookies on startup
 function initializeHistoryFromCookies() {
     const historyData = getCookie("history");
