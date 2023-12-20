@@ -21,9 +21,8 @@ function moveAlarmToHistory(indexToRemove) {
             const removedAlarm = dataArray.splice(indexToRemove, 1)[0];
             historyArray.push(removedAlarm);
             updateHistoryInCookies(historyArray);
-            updateDisplay();
             deleteRow("row" + removedAlarm.Train + removedAlarm.Code + removedAlarm.Desc + removedAlarm.DateTime.trim());
-    
+            updateDisplay();
             var currentTab = document.querySelector(".tablinks.active").textContent.trim();
             if (currentTab === "Alarm History") {
                 updateHistory();

@@ -6,11 +6,10 @@ async function fetchAndProcessAlarm(trainData, alarm, alarmKey) {
         if (trainData === 1) {
             ip = ipAddressByEndpoint[fetchEndpoints[0]];
         } else if (trainData === 2) {
-            ip = ipAddressByEndpoint[fetchEndpoints[1]];
+            ip = ipAddressByEndpoint[fetchEndpoints[0]];
         } else if (trainData === 3) {
             ip = ipAddressByEndpoint[fetchEndpoints[2]];
         }
-
         var alarmData = {
             "Train": trainData,
             "DateTime": alarm.DateTime,
@@ -24,7 +23,6 @@ async function fetchAndProcessAlarm(trainData, alarm, alarmKey) {
             "ip": ip, // Add the "ip" field based on trainData
             "active": true
         };
-
         // Pass alarmData to checkStopAlarm function
         checkStopAlarm(alarmData);
         dataArray.push(alarmData);
@@ -72,6 +70,7 @@ function checkInactiveAlarms(trainData, alarms) {
     // Iterate through alarms in existingAlarms
     existingAlarms.forEach(alarmKey => {
         const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('-');
+        console.log(alarmIp);
         const alarmCode = parseInt(code);
         const alarmTrain = parseInt(train);
         // Check if the alarm's train data matches the provided trainData
@@ -88,6 +87,7 @@ function checkInactiveAlarms(trainData, alarms) {
             // If the alarm is not found in the current data, mark it for removal
             // the problem is inside this for each loop
             if (!found) {
+                console.log(alarmKey);
                 keysToRemove.push(alarmKey);
                 const matchingAlarm = dataArray.find(data => data.Code === alarmCode && data.Train === alarmTrain && data.DateTime === DateTime && data.Desc === Desc && data.Msg_Data == Msg_Data &&
                     data.Dev_Num == Dev_Num);
@@ -127,6 +127,8 @@ function checkInactiveAlarms(trainData, alarms) {
                         const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === alarmTrain && data.ip === alarmIp && String(data.DateTime) === String(DateTime)
                             && data.Desc === Desc && data.Msg_Data == Msg_Data && data.Dev_Num == Dev_Num);
                         removed = moveAlarmToHistory(indexToRemove);
+                        console.log(matchingAlarm);
+                        console.log("removed",removed);
                         if (removed) {
                             // Remove from activeAlarms set
                             existingAlarms.delete(alarmKey);

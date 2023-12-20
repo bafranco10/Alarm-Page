@@ -54,7 +54,7 @@ function updateGraphic(data) {
             if (trainData === 1) {
                 ip = ipAddressByEndpoint[fetchEndpoints[0]];
             } else if (trainData === 2) {
-                ip = ipAddressByEndpoint[fetchEndpoints[1]];
+                ip = ipAddressByEndpoint[fetchEndpoints[0]];
             } else if (trainData === 3) {
                 ip = ipAddressByEndpoint[fetchEndpoints[2]];
             }
