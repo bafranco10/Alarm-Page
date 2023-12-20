@@ -1,8 +1,8 @@
 
 const fetchEndpoints = [
-    "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=0",
-    "http://172.16.1.102/Get_Alarms.cgi?Acknowledge=0",
-    "http://172.16.1.103/Get_Alarms.cgi?Acknowledge=0"
+    "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=0"
+    //"http://172.16.1.102/Get_Alarms.cgi?Acknowledge=0",
+    //"http://172.16.1.103/Get_Alarms.cgi?Acknowledge=0"
     //"http://172.16.1.104/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.105/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.106/Get_Alarms.cgi?Acknowledge=0",
@@ -42,9 +42,10 @@ let retryCount = 0;
 
 //fetches data and moves between indexes of sources
 // Inside fetchData function
-async function fetchData(index) {
-    try {
+function fetchData(index) {
+    return new Promise((resolve, reject) => {
         if (isFetching[index]) {
+            reject(new Error('Already fetching data'));
             return;
         }
 
@@ -53,7 +54,7 @@ async function fetchData(index) {
         const ipAddress = ipAddressByEndpoint[fetchEndpoints[index]];
 
         let requestCompleted = false; // Flag to track if the request has completed
-        const timeoutDuration = 5000; // Set a timeout of 5 seconds 
+        const timeoutDuration = 5000; // Set a timeout of 5 seconds
 
         const timeoutId = setTimeout(function () {
             if (!requestCompleted) {
@@ -70,20 +71,28 @@ async function fetchData(index) {
 
             if (retryCount < 3) {
                 // Retry fetching from the same source immediately
-                fetchData(index);
+                fetchData(index)
+                    .then(() => resolve()) // Resolve the promise on success
+                    .catch(() => reject()); // Reject the promise on error
                 retryCount++;
             } else {
-                console.error("Max retry count reached. No more retries.");
+                //console.error("Max retry count reached. No more retries.");
                 retryCount = 0; // Reset the retry count if needed
+                reject(new Error('Max retry count reached. No more retries.'));
             }
         };
 
         scriptElement.onload = function () {
-            clearTimeout(timeoutId); // Clear the timeout
-            requestCompleted = true; // Mark the request as completed
+            clearTimeout(timeoutId);
+            requestCompleted = true;
             isFetching[index] = false;
             checkIfTrainAlarmNeedsToBeRemoved(ipAddress);
-            fetchData(index); // Fetch from the same source immediately after success
+            // Add a 3-second delay before retrying
+            setTimeout(() => {
+                fetchData(index)
+                    .then(() => resolve())  // Resolve the promise on success
+                    .catch(() => reject()); // Reject the promise on error
+            }, 3000); // 3-second delay
         };
 
         const existingScript = document.getElementById("dataScript");
@@ -92,11 +101,7 @@ async function fetchData(index) {
         }
         scriptElement.id = "dataScript";
         document.body.appendChild(scriptElement);
-    } catch (error) {
-        console.error("An error occurred:", error);
-        addTrainDownAlarm(ipAddress);
-        fetchData(index); // Retry immediately on error
-    }
+    });
 }
 
 function parseResponse(jsonData) {
