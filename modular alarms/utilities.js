@@ -27,6 +27,7 @@ function formatDateToCustomString(date) {
 
 // after every successful fetch this is called with ipaddress to ensure we dont have any communication warnings when there is in fact no warning
 // if there is no communicationn issue then remove it 
+// communication warning are not logged in history because they dont serve a purpose
 function checkIfTrainAlarmNeedsToBeRemoved(ipAddress) {
     const trainToRemove = getTrainFromIP(ipAddress); // Get the train from the IP address
     const alarmCodeToRemove = 78;
@@ -49,16 +50,8 @@ function updateGraphic(data) {
     checkInactiveAlarms(trainData, alarms);
     if (data.Train !== undefined && data.Alarms !== undefined && Array.isArray(data.Alarms)) {
         alarms.forEach(alarm => {
-            var ip = ''; 
-
-            if (trainData === 1) {
-                ip = ipAddressByEndpoint[fetchEndpoints[0]];
-            } else if (trainData === 2) {
-                ip = ipAddressByEndpoint[fetchEndpoints[0]];
-            } else if (trainData === 3) {
-                ip = ipAddressByEndpoint[fetchEndpoints[2]];
-            }
-
+            var ip = '';
+            ip = getIpAddress(trainData);
             var alarmKey = trainData + "-" + alarm.DateTime.trim() + "-" + alarm.Code
                 + "-" + alarm.Msg_Data + "-" + alarm.Desc + "-" + alarm.Dev_Num +
                 "-" + ip;
@@ -68,7 +61,30 @@ function updateGraphic(data) {
         });
     }
 }
-/*
+
+//takes in the train information and finds which ip is tied to it depending on what the endpoint is
+function getIpAddress(trainData) {
+    var ip = '';
+    if (trainData === 1) {
+        ip = ipAddressByEndpoint[fetchEndpoints[0]];
+    } else if (trainData === 2) {
+        ip = ipAddressByEndpoint[fetchEndpoints[0]];
+    } else if (trainData === 3) {
+        ip = ipAddressByEndpoint[fetchEndpoints[2]];
+    }
+    else if (trainData === 4) {
+        ip = ipAddressByEndpoint[fetchEndpoints[3]];
+    }
+    else if (trainData === 5) {
+        ip = ipAddressByEndpoint[fetchEndpoints[4]];
+    }
+    else if (trainData === 6) {
+        ip = ipAddressByEndpoint[fetchEndpoints[5]];
+    }
+    return ip; 
+}
+
+/* may be needed again later for error checking when a train goes down 
 // iterates through the endpoints given in the script. After iteration it replaces the script to either have 
 function checkServerAvailability() {
     const serverUrl = fetchEndpoints[currentServerIndex];
@@ -123,7 +139,7 @@ function deleteRow(rowId) {
             // Remove the event listener
             acknowledgeButton.removeEventListener('click', acknowledgeAlarm);
         }
-        
+
         // Remove the row from the DOM
         row.remove();
     }

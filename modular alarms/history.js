@@ -12,6 +12,9 @@ function moveCommunicationAlarmToHistory(trainData, alarmCode) {
     }
 }
 
+//takes in the index of the alarm that is no longer needed in the dataArray
+// if the index is a valid index is checks if the alarm exists and that it is acknowledged
+// if these conditions are met then remove the alarm 
 function moveAlarmToHistory(indexToRemove) {
     // Use the provided index to remove the alarm from dataArray and move it to historyArray
     if (indexToRemove !== -1) {
@@ -88,12 +91,15 @@ function displayFilteredHistory(filteredHistory) {
     });
 }
 
+//takes no parameters
+// every time a new alarm is added to history it adds it to dataArray and displays the new table
 function updateHistory() {
     var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
     historyTable.innerHTML = ''; // Clear the existing history table
     displayAlarmHistory();
 }
 
+//takes no paramters
 //gets history array and displays all data to table
 function displayAlarmHistory() {
     var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
@@ -125,6 +131,7 @@ function displayAlarmHistory() {
             });
         }
         historyRow.classList.add('table-success');
+        console.log(historyArray);
     });
 }
 
@@ -159,7 +166,7 @@ function clearDateRange() {
     displayFilteredHistory(historyArray);
 }
 
-//gets cookies so we can display data 
+//gets cookies so we can display data from previous sessions 
 function getCookie(name) {
     const cookies = document.cookie.split(';');
     for (const cookie of cookies) {

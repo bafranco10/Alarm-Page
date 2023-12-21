@@ -1,15 +1,9 @@
-//receives alarm data and stores it in data array with corresponding values typed in and checks the type of alarm that it is
-//it then calls for display to be updated
+//receives alarm data in JSON form and stores it in data array with corresponding values typed in and checks the type of alarm that it is
+//it then calls for display to be updated 
 async function fetchAndProcessAlarm(trainData, alarm, alarmKey) {
     fetchAndProcessXML(alarm.Code, alarm, function (alarmDescription) {
         let ip = '';
-        if (trainData === 1) {
-            ip = ipAddressByEndpoint[fetchEndpoints[0]];
-        } else if (trainData === 2) {
-            ip = ipAddressByEndpoint[fetchEndpoints[0]];
-        } else if (trainData === 3) {
-            ip = ipAddressByEndpoint[fetchEndpoints[2]];
-        }
+        ip = getIpAddress(trainData);
         var alarmData = {
             "Train": trainData,
             "DateTime": alarm.DateTime,
@@ -31,10 +25,10 @@ async function fetchAndProcessAlarm(trainData, alarm, alarmKey) {
     updateDisplay();
 }
 
-// finds the corresponding alarm description and changes appropriate fields based on this 
+//takes in alarmCode, alarm information, and then returns the new informationn through a call back
+// finds the corresponding alarm description in the alarms.xml file and changes appropriate fields based on this 
 function fetchAndProcessXML(alarmCode, alarm, callback) {
     if (xmlDoc === null) {
-        console.error('XML data not available yet. Wait for the XML file to load.');
         return;
     }
 
@@ -62,15 +56,14 @@ function fetchAndProcessXML(alarmCode, alarm, callback) {
     callback(description);
 }
 
-//this function is not removing alarms correctly 
-// checks if an alarm is still being reported and if it is it does nothing, otherwise it marks it for removal and either moves it to historyArray or it marks it as inactive and waits for acknowledgement
+// takes in the train and alarm data in json format
+// checks if an alarm is still being reported and if it is it does nothing, otherwise it marks it for removal finds the matchingAlarm in the dataArray and calls the alarm handling function
 function checkInactiveAlarms(trainData, alarms) {
     // Create a list of alarm keys to remove
     const keysToRemove = [];
     // Iterate through alarms in existingAlarms
     existingAlarms.forEach(alarmKey => {
         const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('-');
-        console.log(alarmIp);
         const alarmCode = parseInt(code);
         const alarmTrain = parseInt(train);
         // Check if the alarm's train data matches the provided trainData
@@ -79,7 +72,7 @@ function checkInactiveAlarms(trainData, alarms) {
             // Iterate through alarms from the current data
             for (const alarm of alarms) {
                 // Check if the alarm from activeAlarms matches an alarm from the current data
-                if (alarm.DateTime === DateTime && alarm.Code === alarmCode && alarmIp === alarmIp && alarm.Desc === Desc && alarm.Msg_Data == Msg_Data) {
+                if (alarm.DateTime === DateTime && alarm.Code === alarmCode && alarm.Desc === Desc && alarm.Msg_Data == Msg_Data) {
                     found = true;
                     break;
                 }
@@ -87,58 +80,59 @@ function checkInactiveAlarms(trainData, alarms) {
             // If the alarm is not found in the current data, mark it for removal
             // the problem is inside this for each loop
             if (!found) {
-                console.log(alarmKey);
                 keysToRemove.push(alarmKey);
                 const matchingAlarm = dataArray.find(data => data.Code === alarmCode && data.Train === alarmTrain && data.DateTime === DateTime && data.Desc === Desc && data.Msg_Data == Msg_Data &&
                     data.Dev_Num == Dev_Num);
-
-                if (matchingAlarm && !matchingAlarm.stopAlarm) {
-                    matchingAlarm.active = false;
-                    keysToRemove.forEach(alarmKey => {
-                        const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('-');
-                        const alarmCode = parseInt(code);
-                        const alarmTrain = parseInt(train);
-
-                        // Remove from activeAlarms set
-                        existingAlarms.delete(alarmKey);
-                        // Remove from dataArray
-                        const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === alarmTrain && data.ip === alarmIp && data.DateTime === DateTime
-                            && data.Desc === Desc && data.Msg_Data == Msg_Data && data.Dev_Num == Dev_Num);
-                        moveAlarmToHistory(indexToRemove);
-                    });
-                }
-                if (matchingAlarm && matchingAlarm.stopAlarm && !matchingAlarm.Acknowledged) {
-                    matchingAlarm.active = false;
-                    updateActiveCellText(matchingAlarm.Code, matchingAlarm.Train, "Inactive", matchingAlarm.Desc, matchingAlarm.DateTime);
-                }
-
-                if (
-                    matchingAlarm &&
-                    matchingAlarm.stopAlarm &&
-                    matchingAlarm.Acknowledged === true
-                ) {
-                    matchingAlarm.active = false;
-                    keysToRemove.forEach(alarmKey => {
-                        const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('-');
-                        const alarmCode = parseInt(code);
-                        const alarmTrain = parseInt(train);
-
-                        // Remove from dataArray
-                        const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === alarmTrain && data.ip === alarmIp && String(data.DateTime) === String(DateTime)
-                            && data.Desc === Desc && data.Msg_Data == Msg_Data && data.Dev_Num == Dev_Num);
-                        removed = moveAlarmToHistory(indexToRemove);
-                        console.log(matchingAlarm);
-                        console.log("removed",removed);
-                        if (removed) {
-                            // Remove from activeAlarms set
-                            existingAlarms.delete(alarmKey);
-                        }
-
-                    });
-                }
+                inactiveAlarmHandling(existingAlarms,keysToRemove, matchingAlarm);
             }
         }
     });
+}
+
+//takes in the existingAlarms set as well as keys to remove list and the alarm that was not found 
+// it checks if the alarm is a stop alarm and if it is not it removes it from the display and existingAlarms set
+// if it is a stop alarm it changes the state from active to inactive and waits for acknowledgment
+// if it is acknowledged it removes it from the display and existingAlarms set
+function inactiveAlarmHandling(existingAlarms,keysToRemove,matchingAlarm) {
+   //warnings can be removed without acknowledgement so remove it
+    if (matchingAlarm && !matchingAlarm.stopAlarm) {
+        matchingAlarm.active = false;
+        keysToRemove.forEach(alarmKey => {
+            const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('-');
+            const alarmCode = parseInt(code);
+            const alarmTrain = parseInt(train);
+            existingAlarms.delete(alarmKey);
+            // Remove from dataArray
+            const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === alarmTrain && data.ip === alarmIp && data.DateTime === DateTime
+                && data.Desc === Desc && data.Msg_Data == Msg_Data && data.Dev_Num == Dev_Num);
+            moveAlarmToHistory(indexToRemove);
+        });
+    }
+    // stop alarms have to be acknowledged change text
+    if (matchingAlarm && matchingAlarm.stopAlarm && !matchingAlarm.Acknowledged) {
+        matchingAlarm.active = false;
+        updateActiveCellText(matchingAlarm.Code, matchingAlarm.Train, "Inactive", matchingAlarm.Desc, matchingAlarm.DateTime);
+    }
+    // stop alarm can be safely removed
+    if (
+        matchingAlarm &&
+        matchingAlarm.stopAlarm &&
+        matchingAlarm.Acknowledged === true
+    ) {
+        matchingAlarm.active = false;
+        keysToRemove.forEach(alarmKey => {
+            const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('-');
+            const alarmCode = parseInt(code);
+            const alarmTrain = parseInt(train);
+            const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === alarmTrain && data.ip === alarmIp && String(data.DateTime) === String(DateTime)
+                && data.Desc === Desc && data.Msg_Data == Msg_Data && data.Dev_Num == Dev_Num);
+            removed = moveAlarmToHistory(indexToRemove);
+            if (removed) {
+                existingAlarms.delete(alarmKey);
+            }
+
+        });
+    }
 }
 
 //takes in the alarm data from the plc
@@ -170,9 +164,7 @@ function updateDisplay() {
             var row = tableBody.insertRow();
             // Add this CSS style to ensure consistent cell padding
             row.style.padding = "0";
-
             row.id = rowId;
-
             // Create individual cell elements
             var dateCell = row.insertCell();
             var trainCell = row.insertCell();
@@ -216,17 +208,14 @@ function updateDisplay() {
                 acknowledgeButton.textContent = "Acknowledge";
 
             }
-
             // Store the current alarmData in a variable
             var currentAlarmData = entry;
-
             // Add an onclick event to the button using a closure
             acknowledgeButton.onclick = (function (buttonId, alarmData) {
                 return function () {
                     acknowledgeAlarm(buttonId, alarmData);
                 };
             })(acknowledgeButton.id, currentAlarmData);
-
             // Append the button to the cell
             buttonCell.appendChild(acknowledgeButton);
         }

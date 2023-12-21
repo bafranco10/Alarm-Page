@@ -76,7 +76,6 @@ function fetchData(index) {
                     .catch(() => reject()); // Reject the promise on error
                 retryCount++;
             } else {
-                //console.error("Max retry count reached. No more retries.");
                 retryCount = 0; // Reset the retry count if needed
                 reject(new Error('Max retry count reached. No more retries.'));
             }
@@ -130,9 +129,6 @@ function getTrainFromIP(ipAddress) {
     }
     else if (ipaddress === "172.16.1.106") {
         return 6;
-    }
-    else if (ipaddress === "172.16.1.107") {
-        return 7;
     }
     else {
         return error; // returns an error if message 
