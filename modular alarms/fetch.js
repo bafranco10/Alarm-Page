@@ -1,12 +1,19 @@
 
 const fetchEndpoints = [
-    "http://172.16.1.102/Get_Alarms.cgi?Acknowledge=0"
+    "http://172.16.1.102/Get_Alarms.cgi?Acknowledge=0",
+    "http://172.16.1.102/Get_Alarms.cgi?Acknowledge=1",
     //"http://172.16.1.102/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.103/Get_Alarms.cgi?Acknowledge=0"
     //"http://172.16.1.104/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.105/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.106/Get_Alarms.cgi?Acknowledge=0",
-    //"http://172.16.1.107/Get_Alarms.cgi?Acknowledge=0"
+    //"http://172.16.1.101/Get_Alarms.cgi?Acknowledge=1",
+    //"http://172.16.1.102/Get_Alarms.cgi?Acknowledge=1",
+    //"http://172.16.1.103/Get_Alarms.cgi?Acknowledge=1"
+    //"http://172.16.1.104/Get_Alarms.cgi?Acknowledge=1",
+    //"http://172.16.1.105/Get_Alarms.cgi?Acknowledge=1",
+    //"http://172.16.1.106/Get_Alarms.cgi?Acknowledge=1"
+
     //add any missing ips here 
 ];
 
@@ -87,11 +94,15 @@ function fetchData(index) {
             isFetching[index] = false;
             checkIfTrainAlarmNeedsToBeRemoved(ipAddress);
             // Add a 3-second delay before retrying
-            setTimeout(() => {
-                fetchData(index)
-                    .then(() => resolve())  // Resolve the promise on success
-                    .catch(() => reject()); // Reject the promise on error
-            }, 3000); // 3-second delay
+            //QUICK FIX THAT ENSURES ONLY UNACKNOWLEDGED INDEX IS FETCHED
+            // WILL NEED TO CHANGE IN THE FUTURE
+            if (index === 0) {
+                setTimeout(() => {
+                    fetchData(index)
+                        .then(() => resolve())  // Resolve the promise on success
+                        .catch(() => reject()); // Reject the promise on error
+                }, 3000); // 3-second delay
+            }
         };
 
         const existingScript = document.getElementById("dataScript");

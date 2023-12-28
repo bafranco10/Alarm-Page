@@ -23,7 +23,7 @@
     <script src="utilities.js" type="text/javascript"></script>
 
     <!-- linking the stylesheet(CSS) -->
-    <link href="https://unpkg.com/gijgo@1.9.14/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+   
 
 </head>
 
@@ -43,8 +43,7 @@
     <div id="Current Alarms" class="tabcontent border-bottom-0">
         <h1>Current Alarms</h1>
 
-        <button type="button" class="btn btn-primary" id="acknowledgeAllButton" onclick="acknowledgeAllAlarms();"
-            style="margin-right: 140px;">Acknowledge All</button>
+        <button type="button" class="btn btn-primary" id="acknowledgeAllButton" onclick="confirmAcknowledgeAll();">Acknowledge All</button>
 
         <table id="alarmTable" class="table border-0">
             <thead>
@@ -69,10 +68,8 @@
 
     <div id="Alarm History" class="tabcontent border-bottom-0">
         <h1>Alarm History</h1>
-
-        <input id="searchbar" onkeyup="search_code()" type="text" name="search"
-            placeholder="Search Alarms by code or keyword..">
-
+        <button type = "button" onclick = "displayStopAlarmHistory();"> Critical Alarms </button>
+        <button type = "button" onclick = "displayWarningHistory();"> Warnings </button>
         <!-- Calendar that filters alarm data-->
         <form id="dateRangeForm">
             <div class="datepicker-container form-group">
@@ -121,11 +118,14 @@
     </div>
     <div id="errorContainer"></div>
     <script>
-        initializeHistoryFromCookies();
-        /* 
-        fetchData(1)*/
-        fetchData(0);
+        initializeHistoryFromLocalStorage();
+        fetchData(0); 
+        //fetchData(1)
         //fetchData(2);
+        //fetchData(3);
+        //fetchData(4);
+        //fetchData(5);
+
         // fetch xml data
         // Define the URL of XML file
         var xmlFileUrl = 'alarms.xml'; // Replace with the actual URL of your XML file if it changes 
@@ -154,7 +154,7 @@
         document.getElementById("defaultOpen").click();
 
         window.onload = function () {
-            initializeHistoryFromCookies();
+            initializeHistoryFromLocalStorage();
         };
 
     </script>

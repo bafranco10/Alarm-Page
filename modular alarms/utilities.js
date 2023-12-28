@@ -4,7 +4,7 @@ var xmlFileUrl = 'alarms.xml';
 var alarmActive = false;
 var isAcknowledged = false;
 var rowIdToData = {};
-var stopAlarmCodes = [19, 1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 18, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 68, 69];
+var stopAlarmCodes = [19,1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 18, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 68, 69];
 var buttonArray = []; //stores button ids
 const activeAlarms = new Set();
 const existingAlarms = new Set();
@@ -120,8 +120,10 @@ const serverCheckInterval = setInterval(checkServerAvailability, 5000);
 // function to change text in active column to inactive if a stop alarm is inactive but needs to be acknowledged
 function updateActiveCellText(alarmCode, trainData, newText, Desc, DateTime) {
     var rowId = "row" + trainData + alarmCode + Desc + DateTime.trim();
+    var buttonId = "button" + rowId;
     var row = document.getElementById(rowId);
-
+    var buttonElement = document.getElementById(buttonId);
+    buttonElement.disabled = false;
     if (row) {
         var cells = row.cells;
         var activeCell = cells[cells.length - 2]; // Access the second to last cell in the row
@@ -160,6 +162,9 @@ function acknowledgeAlarm(buttonId, alarmData) {
         if (matchingAlarm) {
             // Update theacknowledged status for the corresponding alarm in dataArray
             matchingAlarm.Acknowledged = true;
+            //QUICK FIX THAT WILL NEED TO CHANGE
+            fetchData(1);
+            
         }
     }
 }
@@ -213,4 +218,10 @@ function formatDate(date) {
         second: '2-digit'
     };
     return date.toLocaleString(undefined, options);
+}
+
+function confirmAcknowledgeAll() {
+    if (confirm("Are you sure you want to acknowledge all alarms?")) {
+        acknowledgeAllAlarms();
+    }
 }

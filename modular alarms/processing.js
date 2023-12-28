@@ -83,7 +83,7 @@ function checkInactiveAlarms(trainData, alarms) {
                 keysToRemove.push(alarmKey);
                 const matchingAlarm = dataArray.find(data => data.Code === alarmCode && data.Train === alarmTrain && data.DateTime === DateTime && data.Desc === Desc && data.Msg_Data == Msg_Data &&
                     data.Dev_Num == Dev_Num);
-                inactiveAlarmHandling(existingAlarms,keysToRemove, matchingAlarm);
+                inactiveAlarmHandling(existingAlarms, keysToRemove, matchingAlarm);
             }
         }
     });
@@ -93,10 +93,12 @@ function checkInactiveAlarms(trainData, alarms) {
 // it checks if the alarm is a stop alarm and if it is not it removes it from the display and existingAlarms set
 // if it is a stop alarm it changes the state from active to inactive and waits for acknowledgment
 // if it is acknowledged it removes it from the display and existingAlarms set
-function inactiveAlarmHandling(existingAlarms,keysToRemove,matchingAlarm) {
-   //warnings can be removed without acknowledgement so remove it
+function inactiveAlarmHandling(existingAlarms, keysToRemove, matchingAlarm) {
+    //warnings can be removed without acknowledgement so remove it
     if (matchingAlarm && !matchingAlarm.stopAlarm) {
+        console.log("hi");
         matchingAlarm.active = false;
+        matchingAlarm.Acknowledged = true;
         keysToRemove.forEach(alarmKey => {
             const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('-');
             const alarmCode = parseInt(code);
@@ -153,6 +155,9 @@ function checkStopAlarm(alarmData) {
 // this also applies specific css classes and updates acknowledged/active status 
 function updateDisplay() {
     var tableBody = document.querySelector("#alarmTable tbody");
+
+    // Sort dataArray based on stopAlarm property (in descending order)
+    //dataArray.sort((a, b) => (b.stopAlarm ? 1 : 0) - (a.stopAlarm ? 1 : 0));
     dataArray.forEach(entry => {
         // Create a unique row ID by concatenating "train" and "alarm code" and datetime
         var rowId = "row" + entry.Train + entry.Code + entry.Desc + entry.DateTime.trim();
@@ -160,66 +165,105 @@ function updateDisplay() {
         var existingRow = document.getElementById(rowId);
 
         if (!existingRow) {
-            // If the row doesn't exist, create a new one
-            var row = tableBody.insertRow();
-            // Add this CSS style to ensure consistent cell padding
-            row.style.padding = "0";
-            row.id = rowId;
-            // Create individual cell elements
-            var dateCell = row.insertCell();
-            var trainCell = row.insertCell();
-            var codeCell = row.insertCell();
-            var msgDataCell = row.insertCell()
-            var alarmTypeCell = row.insertCell();;
-            var activeCell = row.insertCell();
-
-            // Set text content for each cell
-            trainCell.textContent = entry.Train;
-            const date = new Date(entry.DateTime);
-            dateCell.textContent = formatDate(date);
-            codeCell.textContent = entry.Code;
-            msgDataCell.textContent = entry.Message;
-            activeCell.textContent = "Active"
-
             if (entry.stopAlarm) {
-                row.classList.add('table-danger');
-                // Create a cell for the Acknowledge button.
-                var buttonCell = row.insertCell();
-                var acknowledgeButton = document.createElement("button");
-                alarmTypeCell.textContent = "Critical";
-                // Use a unique ID for each button based on k
-                acknowledgeButton.id = "button" + rowId;
-                buttonArray.push(acknowledgeButton.id);
-                acknowledgeButton.type = "button";
-                acknowledgeButton.className = "btn btn-danger";
-                acknowledgeButton.textContent = "Acknowledge";
+                createCriticalAlarmRow(tableBody, entry);
+            } else {
+                createWarningAlarmRow(tableBody, entry);
             }
-            else {
-                row.classList.add('table-warning');
-                // Create a cell for the Acknowledge button.
-                var buttonCell = row.insertCell();
-                var acknowledgeButton = document.createElement("button");
-                alarmTypeCell.textContent = "Warning";
-                // Use a unique ID for each button based on k
-                acknowledgeButton.id = "button" + rowId;
-                buttonArray.push(acknowledgeButton.id);
-                acknowledgeButton.type = "button";
-                acknowledgeButton.className = "btn btn-warning";
-                acknowledgeButton.textContent = "Acknowledge";
-
-            }
-            // Store the current alarmData in a variable
-            var currentAlarmData = entry;
-            // Add an onclick event to the button using a closure
-            acknowledgeButton.onclick = (function (buttonId, alarmData) {
-                return function () {
-                    acknowledgeAlarm(buttonId, alarmData);
-                };
-            })(acknowledgeButton.id, currentAlarmData);
-            // Append the button to the cell
-            buttonCell.appendChild(acknowledgeButton);
+            // Store the mapping between row ID and dataArray index
+            rowIdToData[rowId] = entry;
         }
-        // Store the mapping between row ID and dataArray index
-        rowIdToData[rowId] = entry;
     });
+}
+
+
+function createCriticalAlarmRow(tableBody, entry) {
+    // Create a unique row ID by concatenating "train" and "alarm code" and datetime
+    var rowId = "row" + entry.Train + entry.Code + entry.Desc + entry.DateTime.trim();
+    // If the row doesn't exist, create a new one
+    var row = tableBody.insertRow(0);
+    // Add this CSS style to ensure consistent cell padding
+    row.style.padding = "0";
+    row.id = rowId;
+    // Create individual cell elements
+    var dateCell = row.insertCell();
+    var trainCell = row.insertCell();
+    var codeCell = row.insertCell();
+    var msgDataCell = row.insertCell();
+    var alarmTypeCell = row.insertCell();
+    var activeCell = row.insertCell();
+
+    // Set text content for each cell
+    trainCell.textContent = entry.Train;
+    const date = new Date(entry.DateTime);
+    dateCell.textContent = formatDate(date);
+    codeCell.textContent = entry.Code;
+    msgDataCell.textContent = entry.Message;
+    activeCell.textContent = "Active";
+    row.classList.add('table-danger');
+    // Create a cell for the Acknowledge button.
+    var buttonCell = row.insertCell();
+    var acknowledgeButton = document.createElement("button");
+    alarmTypeCell.textContent = "Critical";
+    // Use a unique ID for each button based on k
+    acknowledgeButton.id = "button" + rowId;
+    buttonArray.push(acknowledgeButton.id);
+    acknowledgeButton.type = "button";
+    acknowledgeButton.className = "btn btn-danger";
+    acknowledgeButton.disabled = true;
+    acknowledgeButton.textContent = "Acknowledge";
+
+    // Add an onclick event to the button using a closure
+    acknowledgeButton.onclick = (function (buttonId, alarmData) {
+        return function () {
+            if (confirm("Are you sure you want to acknowledge the alarm?")) {
+                acknowledgeAlarm(buttonId, alarmData);
+            }
+        };
+    })(acknowledgeButton.id, entry);
+
+    // Append the button to the cell
+    buttonCell.appendChild(acknowledgeButton);
+}
+
+function createWarningAlarmRow(tableBody, entry) {
+    // Create a unique row ID by concatenating "train" and "alarm code" and datetime
+    var rowId = "row" + entry.Train + entry.Code + entry.Desc + entry.DateTime.trim();
+    // If the row doesn't exist, create a new one
+    var row = tableBody.insertRow();
+    // Add this CSS style to ensure consistent cell padding
+    row.style.padding = "0";
+    row.id = rowId;
+    // Create individual cell elements
+    var dateCell = row.insertCell();
+    var trainCell = row.insertCell();
+    var codeCell = row.insertCell();
+    var msgDataCell = row.insertCell();
+    var alarmTypeCell = row.insertCell();
+    var activeCell = row.insertCell();
+
+    // Set text content for each cell
+    trainCell.textContent = entry.Train;
+    const date = new Date(entry.DateTime);
+    dateCell.textContent = formatDate(date);
+    codeCell.textContent = entry.Code;
+    msgDataCell.textContent = entry.Message;
+    alarmTypeCell.textContent = "Warning";
+    activeCell.textContent = "Active";
+    row.classList.add('table-warning');
+    var buttonCell = row.insertCell();
+    var acknowledgeButton = document.createElement("button");
+    // Use a unique ID for each button based on k
+    acknowledgeButton.id = "button" + rowId;
+    buttonArray.push(acknowledgeButton.id);
+    acknowledgeButton.type = "button";
+    acknowledgeButton.className = "btn btn-warning";
+    acknowledgeButton.textContent = "Acknowledge";
+    acknowledgeButton.onclick = (function (buttonId, alarmData) {
+        return function () {
+            acknowledgeAlarm(buttonId, alarmData);
+        };
+    })(acknowledgeButton.id, entry);
+    // Append the button to the cell
+    buttonCell.appendChild(acknowledgeButton);
 }
