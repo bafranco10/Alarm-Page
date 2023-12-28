@@ -9,6 +9,9 @@ var buttonArray = []; //stores button ids
 const activeAlarms = new Set();
 const existingAlarms = new Set();
 var stopAlarmCount = 0;
+var filterCritical = false;
+var filterWarning = false; 
+
 // formats date for my custom alarm
 // takes in a standard javascript date and returns a date formatted to match the other ones
 function formatDateToCustomString(date) {
