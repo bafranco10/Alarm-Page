@@ -131,8 +131,12 @@ function inactiveAlarmHandling(existingAlarms, keysToRemove, matchingAlarm) {
             removed = moveAlarmToHistory(indexToRemove);
             if (removed) {
                 existingAlarms.delete(alarmKey);
+                --stopAlarmCount;
+                if (stopAlarmCount === 0) {
+                    console.log("Acknowedged on PLC");
+                    acknowledgePLC(1);
+                }
             }
-
         });
     }
 }
@@ -167,6 +171,7 @@ function updateDisplay() {
         if (!existingRow) {
             if (entry.stopAlarm) {
                 createCriticalAlarmRow(tableBody, entry);
+                ++stopAlarmCount;
             } else {
                 createWarningAlarmRow(tableBody, entry);
             }
@@ -175,7 +180,6 @@ function updateDisplay() {
         }
     });
 }
-
 
 function createCriticalAlarmRow(tableBody, entry) {
     // Create a unique row ID by concatenating "train" and "alarm code" and datetime
@@ -210,7 +214,15 @@ function createCriticalAlarmRow(tableBody, entry) {
     buttonArray.push(acknowledgeButton.id);
     acknowledgeButton.type = "button";
     acknowledgeButton.className = "btn btn-danger";
+
+    // Check if the alarm code is 66 and enable the button accordingly
+    if (entry.Code === 14 || entry.Code === 66) {
+        acknowledgeButton.disabled = false;
+    }
+    else {
     acknowledgeButton.disabled = true;
+    }
+
     acknowledgeButton.textContent = "Acknowledge";
 
     // Add an onclick event to the button using a closure

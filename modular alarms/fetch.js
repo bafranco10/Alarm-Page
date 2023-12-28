@@ -174,7 +174,7 @@ function addTrainDownAlarm(ipAddress) {
             "Desc": "New Alarm Description",
             "Dev_Num": "",
             "Acknowledged": false,
-            "stopAlarm": false,
+            "stopAlarm": true,
             "Message": "Train Communication Lost",
             "ip": ipAddress,
             "active": true

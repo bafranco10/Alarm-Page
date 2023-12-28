@@ -4,11 +4,11 @@ var xmlFileUrl = 'alarms.xml';
 var alarmActive = false;
 var isAcknowledged = false;
 var rowIdToData = {};
-var stopAlarmCodes = [19,1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 18, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 68, 69];
+var stopAlarmCodes = [78,19, 1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 18, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 66, 68, 69];
 var buttonArray = []; //stores button ids
 const activeAlarms = new Set();
 const existingAlarms = new Set();
-
+var stopAlarmCount = 0;
 // formats date for my custom alarm
 // takes in a standard javascript date and returns a date formatted to match the other ones
 function formatDateToCustomString(date) {
@@ -34,8 +34,10 @@ function checkIfTrainAlarmNeedsToBeRemoved(ipAddress) {
 
     // Check if there's a missing alarm with the specified train and alarm code
     const missingAlarm = dataArray.find(entry => entry.Train === trainToRemove && entry.Code === alarmCodeToRemove);
-
     if (missingAlarm) {
+        updateActiveCellText(missingAlarm.Code, missingAlarm.Train, "Inactive", missingAlarm.Desc, missingAlarm.DateTime);
+    }
+    if (missingAlarm && missingAlarm.Acknowledged) {
         moveCommunicationAlarmToHistory(trainToRemove, alarmCodeToRemove);
     }
 }
@@ -81,7 +83,7 @@ function getIpAddress(trainData) {
     else if (trainData === 6) {
         ip = ipAddressByEndpoint[fetchEndpoints[5]];
     }
-    return ip; 
+    return ip;
 }
 
 /* may be needed again later for error checking when a train goes down 
@@ -163,10 +165,18 @@ function acknowledgeAlarm(buttonId, alarmData) {
             // Update theacknowledged status for the corresponding alarm in dataArray
             matchingAlarm.Acknowledged = true;
             //QUICK FIX THAT WILL NEED TO CHANGE
+            console.log(stopAlarmCount);
+        }
+
+        if (matchingAlarm.Code === 14 || matchingAlarm.Code === 66) {
+            matchingAlarm.Acknowledged = true;
             fetchData(1);
-            
         }
     }
+}
+
+function acknowledgePLC(index) {
+    fetchData(index);
 }
 
 // this function opens up page depending on which tab is clicked
@@ -200,8 +210,12 @@ function openPage(evt, AlarmPageName) {
 function acknowledgeAllAlarms() {
     buttonArray.forEach(buttonId => {
         const alarmData = rowIdToData[buttonId.replace("button", "")];
-        if (alarmData && !alarmData.Acknowledged) {
+        const buttonElement = document.getElementById(buttonId);
+
+        // Check if the button is not disabled and the alarmData is present and not acknowledged
+        if (buttonElement && !buttonElement.disabled && alarmData && !alarmData.Acknowledged) {
             acknowledgeAlarm(buttonId, alarmData);
+            fetchData(1);
         }
     });
 }
