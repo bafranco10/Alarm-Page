@@ -1,7 +1,7 @@
 
 const fetchEndpoints = [
-    "http://172.16.1.102/Get_Alarms.cgi?Acknowledge=0",
-    "http://172.16.1.102/Get_Alarms.cgi?Acknowledge=1",
+    "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=0",
+    "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=1",
     //"http://172.16.1.102/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.103/Get_Alarms.cgi?Acknowledge=0"
     //"http://172.16.1.104/Get_Alarms.cgi?Acknowledge=0",
