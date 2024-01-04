@@ -1,7 +1,7 @@
 
 const fetchEndpoints = [
-    "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=0",
-    "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=1",
+    "http://172.16.1.102/Get_Alarms.cgi?Acknowledge=0",
+    "http://172.16.1.102/Get_Alarms.cgi?Acknowledge=1",
     //"http://172.16.1.102/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.103/Get_Alarms.cgi?Acknowledge=0"
     //"http://172.16.1.104/Get_Alarms.cgi?Acknowledge=0",
@@ -75,17 +75,6 @@ function fetchData(index) {
             clearTimeout(timeoutId); // Clear the timeout
             isFetching[index] = false;
             addTrainDownAlarm(ipAddress);
-
-            if (retryCount < 3) {
-                // Retry fetching from the same source immediately
-                fetchData(index)
-                    .then(() => resolve()) // Resolve the promise on success
-                    .catch(() => reject()); // Reject the promise on error
-                retryCount++;
-            } else {
-                retryCount = 0; // Reset the retry count if needed
-                reject(new Error('Max retry count reached. No more retries.'));
-            }
         };
 
         scriptElement.onload = function () {
@@ -97,6 +86,46 @@ function fetchData(index) {
             //QUICK FIX THAT ENSURES ONLY UNACKNOWLEDGED INDEX IS FETCHED
             // WILL NEED TO CHANGE IN THE FUTURE
             if (index === 0) {
+                setTimeout(() => {
+                    fetchData(index)
+                        .then(() => resolve())  // Resolve the promise on success
+                        .catch(() => reject()); // Reject the promise on error
+                }, 3000); // 3-second delay
+            }
+/*
+            if (index === 1) {
+                setTimeout(() => {
+                    fetchData(index)
+                        .then(() => resolve())  // Resolve the promise on success
+                        .catch(() => reject()); // Reject the promise on error
+                }, 3000); // 3-second delay
+            }
+*/
+            if (index === 2) {
+                setTimeout(() => {
+                    fetchData(index)
+                        .then(() => resolve())  // Resolve the promise on success
+                        .catch(() => reject()); // Reject the promise on error
+                }, 3000); // 3-second delay
+            }
+
+            if (index === 3) {
+                setTimeout(() => {
+                    fetchData(index)
+                        .then(() => resolve())  // Resolve the promise on success
+                        .catch(() => reject()); // Reject the promise on error
+                }, 3000); // 3-second delay
+            }
+
+            if (index === 4) {
+                setTimeout(() => {
+                    fetchData(index)
+                        .then(() => resolve())  // Resolve the promise on success
+                        .catch(() => reject()); // Reject the promise on error
+                }, 3000); // 3-second delay
+            }
+
+            if (index === 5) {
                 setTimeout(() => {
                     fetchData(index)
                         .then(() => resolve())  // Resolve the promise on success
@@ -118,7 +147,6 @@ function parseResponse(jsonData) {
     try {
         updateGraphic(jsonData);
         checkStopAlarm();
-        checkInactiveAlarms();
     } catch (error) {
         console.error("Error while updating graphic:", error);
     }

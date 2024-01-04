@@ -4,11 +4,14 @@ var xmlFileUrl = 'alarms.xml';
 var alarmActive = false;
 var isAcknowledged = false;
 var rowIdToData = {};
-var stopAlarmCodes = [78,19, 1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 18, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 66, 68, 69];
+var stopAlarmCodes = [78, 19, 1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 18, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 66, 68, 69];
 var buttonArray = []; //stores button ids
 const activeAlarms = new Set();
 const existingAlarms = new Set();
-var stopAlarmCount = 0;
+const stopAlarmCounts = [0, 0, 0, 0, 0, 0];
+var filterCritical = false;
+var filterWarning = false;
+var confirmation = false;
 // formats date for my custom alarm
 // takes in a standard javascript date and returns a date formatted to match the other ones
 function formatDateToCustomString(date) {
@@ -39,6 +42,7 @@ function checkIfTrainAlarmNeedsToBeRemoved(ipAddress) {
     }
     if (missingAlarm && missingAlarm.Acknowledged) {
         moveCommunicationAlarmToHistory(trainToRemove, alarmCodeToRemove);
+        decreaseCriticalAlarmCount(trainToRemove);
     }
 }
 
@@ -164,19 +168,39 @@ function acknowledgeAlarm(buttonId, alarmData) {
         if (matchingAlarm) {
             // Update theacknowledged status for the corresponding alarm in dataArray
             matchingAlarm.Acknowledged = true;
-            //QUICK FIX THAT WILL NEED TO CHANGE
-            console.log(stopAlarmCount);
-        }
-
-        if (matchingAlarm.Code === 14 || matchingAlarm.Code === 66) {
-            matchingAlarm.Acknowledged = true;
-            fetchData(1);
+            console.log(stopAlarmCounts);
         }
     }
 }
 
-function acknowledgePLC(index) {
-    fetchData(index);
+function acknowledgePLC(train) {
+    //this index will need to change to 6 this is just for testing
+    if (train === 1 && stopAlarmCounts[0] === 0) {
+        fetchData(1);
+        console.log("acknowledged train 1");
+    }
+    // this index will need to change to 7 it is just this for testing
+    else if (train === 2 && stopAlarmCounts[1] === 0) {
+        fetchData(1);
+    }
+    else if (train === 3 && stopAlarmCounts[2] === 0) {
+        fetchData(8);
+    }
+
+    else if (train === 4 && stopAlarmCounts[3] === 0) {
+        fetchData(9);
+    }
+
+    else if (train === 5 && stopAlarmCounts[4] === 0) {
+        fetchData(10);
+    }
+
+    else if (train === 6 && stopAlarmCounts[5] === 0) {
+        fetchData(11);
+    }
+    else {
+        return
+    }
 }
 
 // this function opens up page depending on which tab is clicked
@@ -215,9 +239,9 @@ function acknowledgeAllAlarms() {
         // Check if the button is not disabled and the alarmData is present and not acknowledged
         if (buttonElement && !buttonElement.disabled && alarmData && !alarmData.Acknowledged) {
             acknowledgeAlarm(buttonId, alarmData);
-            fetchData(1);
         }
     });
+    fetchData(1);
 }
 
 // Function to format a Date object as "MM/DD/YYYY HH:MM:SS" (e.g., "09/11/2023 08:25:22")
@@ -232,6 +256,24 @@ function formatDate(date) {
         second: '2-digit'
     };
     return date.toLocaleString(undefined, options);
+}
+
+function showConfirmation() {
+    document.getElementById('confirm').style.display = 'block';
+}
+
+function confirmYes() {
+    confirmation = true;
+    hideConfirmation();
+}
+
+function confirmNo() {
+    // Handle 'No' button click
+    hideConfirmation();
+}
+
+function hideConfirmation() {
+    document.getElementById('confirm').style.display = 'none';
 }
 
 function confirmAcknowledgeAll() {
