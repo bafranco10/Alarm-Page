@@ -10,7 +10,7 @@ async function fetchAndProcessAlarm(trainData, alarm, alarmKey) {
             "DateTime": alarm.DateTime,
             "Code": alarm.Code,
             "Msg_Data": alarm.Msg_Data,
-            "Desc":alarm.Desc,
+            "Desc": alarm.Desc,
             "Dev_Num": alarm.Dev_Num,
             "Acknowledged": false,
             "stopAlarm": false,
@@ -19,9 +19,11 @@ async function fetchAndProcessAlarm(trainData, alarm, alarmKey) {
             "active": true
         };
         // Pass alarmData to checkStopAlarm function
-        checkStopAlarm(alarmData);
-        dataArray.push(alarmData);
-        existingAlarms.add(alarmKey);
+        if (alarm.Active === 1) {
+            checkStopAlarm(alarmData);
+            dataArray.push(alarmData);
+            existingAlarms.add(alarmKey);
+        }
     });
 
     updateDisplay();
@@ -68,14 +70,12 @@ function checkInactiveAlarms(trainData, alarms) {
         const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('_');
         const alarmCode = parseInt(code);
         const alarmTrain = parseInt(train);
-        console.log("description before entering loop", Desc);
         // Check if the alarm's train data matches the provided trainData
         if (alarmTrain === trainData) {
             let found = false;
             // Iterate through alarms from the current data
             for (const alarm of alarms) {
                 if (alarm.DateTime === DateTime && alarm.Code === alarmCode && alarm.Desc === Desc && alarm.Msg_Data == Msg_Data && alarm.Active === 0) {
-                    console.log("alarm is inactive we will remove");
                     break;
                 }
                 else if (alarm.Code === alarmCode && alarmCode === 63) {
@@ -90,7 +90,6 @@ function checkInactiveAlarms(trainData, alarms) {
             }
             // If the alarm is not found in the current data, mark it for removal and call the handler function
             if (!found) {
-                console.log("added this alarm to removal ones ", alarmKey);
                 keysToRemove.push(alarmKey);
                 const matchingAlarm = dataArray.find(data => {
                     const condition1 = data.Code === alarmCode;
@@ -99,32 +98,9 @@ function checkInactiveAlarms(trainData, alarms) {
                     const condition4 = data.Desc === Desc;
                     const condition5 = data.Msg_Data == Msg_Data;
                     const condition6 = data.Dev_Num == Dev_Num;
-                  
-                    if (!condition1) {
-                      console.log('Condition 1 failed:', data.Code, alarmCode);
-                    }
-                    if (!condition2) {
-                      console.log('Condition 2 failed:', data.Train, alarmTrain);
-                    }
-                    if (!condition3) {
-                      console.log('Condition 3 failed:', data.DateTime, DateTime);
-                    }
-                    if (!condition4) {
-                      console.log('Condition 4 failed:', data.Desc, Desc);
-                    }
-                    if (!condition5) {
-                      console.log('Condition 5 failed:', data.Msg_Data, Msg_Data);
-                    }
-                    if (!condition6) {
-                      console.log('Condition 6 failed:', data.Dev_Num, Dev_Num);
-                    }
-                  
                     return condition1 && condition2 && condition3 && condition4 && condition5 && condition6;
-                  });
-                  
-                  console.log('Matching Alarm:', matchingAlarm);
-                  
-                console.log(dataArray);
+                });
+
                 inactiveAlarmHandling(existingAlarms, keysToRemove, matchingAlarm);
             }
         }
@@ -138,7 +114,6 @@ function checkInactiveAlarms(trainData, alarms) {
 function inactiveAlarmHandling(existingAlarms, keysToRemove, matchingAlarm) {
     //warnings can be removed without acknowledgement so remove it
     if (matchingAlarm && !matchingAlarm.stopAlarm) {
-        console.log('checking for removal');
         matchingAlarm.active = false;
         matchingAlarm.Acknowledged = true;
         keysToRemove.forEach(alarmKey => {
@@ -147,10 +122,8 @@ function inactiveAlarmHandling(existingAlarms, keysToRemove, matchingAlarm) {
             const alarmTrain = parseInt(train);
             const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === alarmTrain && data.ip === alarmIp && String(data.DateTime) === String(DateTime)
                 && data.Desc === Desc && data.Msg_Data == Msg_Data && data.Dev_Num == Dev_Num);
-            console.log('index to remove', indexToRemove);
             removed = moveAlarmToHistory(indexToRemove);
-            if (removed) {
-                console.log('deleted the warning', removed);
+            if (removed && matchingAlarm.Code !== 63) {
                 existingAlarms.delete(alarmKey);
             }
         });
@@ -288,43 +261,45 @@ function createCriticalAlarmRow(tableBody, entry) {
 }
 
 function createWarningAlarmRow(tableBody, entry) {
-    // Create a unique row ID by concatenating "train" and "alarm code" and datetime
-    var rowId = "row" + entry.Train + entry.Code + entry.Desc + entry.DateTime.trim();
-    // If the row doesn't exist, create a new one
-    var row = tableBody.insertRow();
-    // Add this CSS style to ensure consistent cell padding
-    row.style.padding = "0";
-    row.id = rowId;
-    // Create individual cell elements
-    var dateCell = row.insertCell();
-    var trainCell = row.insertCell();
-    var codeCell = row.insertCell();
-    var msgDataCell = row.insertCell();
-    var alarmTypeCell = row.insertCell();
-    var activeCell = row.insertCell();
+    if (entry.Code != 63) {
+        // Create a unique row ID by concatenating "train" and "alarm code" and datetime
+        var rowId = "row" + entry.Train + entry.Code + entry.Desc + entry.DateTime.trim();
+        // If the row doesn't exist, create a new one
+        var row = tableBody.insertRow();
+        // Add this CSS style to ensure consistent cell padding
+        row.style.padding = "0";
+        row.id = rowId;
+        // Create individual cell elements
+        var dateCell = row.insertCell();
+        var trainCell = row.insertCell();
+        var codeCell = row.insertCell();
+        var msgDataCell = row.insertCell();
+        var alarmTypeCell = row.insertCell();
+        var activeCell = row.insertCell();
 
-    // Set text content for each cell
-    trainCell.textContent = entry.Train;
-    const date = new Date(entry.DateTime);
-    dateCell.textContent = formatDate(date);
-    codeCell.textContent = entry.Code;
-    msgDataCell.textContent = entry.Message;
-    alarmTypeCell.textContent = "Warning";
-    activeCell.textContent = "Active";
-    row.classList.add('table-warning');
-    var buttonCell = row.insertCell();
-    var acknowledgeButton = document.createElement("button");
-    // Use a unique ID for each button based on k
-    acknowledgeButton.id = "button" + rowId;
-    buttonArray.push(acknowledgeButton.id);
-    acknowledgeButton.type = "button";
-    acknowledgeButton.className = "btn btn-warning";
-    acknowledgeButton.textContent = "Acknowledge";
-    acknowledgeButton.onclick = (function (buttonId, alarmData) {
-        return function () {
-            acknowledgeAlarm(buttonId, alarmData);
-        };
-    })(acknowledgeButton.id, entry);
-    // Append the button to the cell
-    buttonCell.appendChild(acknowledgeButton);
+        // Set text content for each cell
+        trainCell.textContent = entry.Train;
+        const date = new Date(entry.DateTime);
+        dateCell.textContent = formatDate(date);
+        codeCell.textContent = entry.Code;
+        msgDataCell.textContent = entry.Message;
+        alarmTypeCell.textContent = "Warning";
+        activeCell.textContent = "Active";
+        row.classList.add('table-warning');
+        var buttonCell = row.insertCell();
+        var acknowledgeButton = document.createElement("button");
+        // Use a unique ID for each button based on k
+        acknowledgeButton.id = "button" + rowId;
+        buttonArray.push(acknowledgeButton.id);
+        acknowledgeButton.type = "button";
+        acknowledgeButton.className = "btn btn-warning";
+        acknowledgeButton.textContent = "Acknowledge";
+        acknowledgeButton.onclick = (function (buttonId, alarmData) {
+            return function () {
+                acknowledgeAlarm(buttonId, alarmData);
+            };
+        })(acknowledgeButton.id, entry);
+        // Append the button to the cell
+        buttonCell.appendChild(acknowledgeButton);
+    }
 }
