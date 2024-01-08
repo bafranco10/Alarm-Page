@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        h1 {
+            transform: translate(50px, -12px);
+            visibility: hidden;
+        }
+
+        /* Add some basic styles for the tabs */
+        .tab {
+            display: none;
+        }
+
+        .tabButton {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: .5vw 1vw;
+            font-size: .8vw;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: .3vw;
+            margin-right: .1vw;
+        }
+
+        /* Add custom styles for the tables */
+        table {
+            width: 100%;
+            /* Set the table width to 100% */
+            table-layout: fixed;
+            /* Fixed table layout */
+            font-size: 1.8vmin;
+        }
+
+        th,
+
+        td {
+            word-wrap: break-word;
+            /* Allow long content to wrap within cells */
+            max-width: 100px;
+            /* Set a maximum width for cells */
+            padding: 5px;
+            /* Add some padding to cells */
+            border: 1px solid #ccc;
+            /* Add borders to cells */
+        }
+
+        thead tr {
+            background-color: #3498db;
+            color: white;
+        }
+
+        tbody tr {
+            background-color: white;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        /* Customize the scrollbar */
+        body::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        body::-webkit-scrollbar-thumb {
+            display: none;
+        }
+
+        body::-webkit-scrollbar-track {
+            display: none;
+        }
+
+        .activeTabButton {
+            background-color: #7bb2ec;
+            color: white;
+        }
+
+        .dropdown {
+            position: absolute;
+            display: inline-block;
+            margin-right: auto;
+            right: 10px;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 13vmin;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            cursor: pointer;
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+    </style>
+</head>
+
+<body onload="openTab(0)">
+    <h1>"</h1>
+
+    <!-- Create tab buttons -->
+    <button class="tabButton" onclick="openTab(0)">Tanks</button>
+    <button class="tabButton" onclick="openTab(1)">Pumps</button>
+    <button class="tabButton" onclick="openTab(2)">Valves</button>
+    <button class="tabButton" onclick="openTab(3)">Cartridges</button>
+    <button class="tabButton" onclick="openTab(4)">Pressure</button>
+    <button class="tabButton" onclick="openTab(5)">Flow</button>
+
+    <div class="dropdown">
+        <button class="tabButton" id="training">All Trains</button>
+        <div class="dropdown-content" id="trainDropdown">
+            <a onclick="training.innerHTML='All Trains'">All Trains</a>
+        </div>
+    </div>
+    <!-- Create tab content containers -->
+    <div class="tab" id="tab0"></div>
+    <div class="tab" id="tab1"></div>
+    <div class="tab" id="tab2"></div>
+    <div class="tab" id="tab3"></div>
+    <div class="tab" id="tab4"></div>
+    <div class="tab" id="tab5"></div>
+
+    <script>
+        var storedValue;
+        var receivedData = [];
+        var dataToDisplay = [];
+        var data;
+
+        window.addEventListener("message", function (event) {
+            data = event.data;
+            table(data);
+        });
+
+        window.addEventListener("unitsChanged", unitChanger);
+        unitChanger();
+
+        function unitChanger() {
+            storedValue = localStorage.getItem("storedValue");
+        }
+
+        function table(data) {
+            if (training.innerHTML == "All Trains") {
+                dataToDisplay[0] = "<table><thead><tr><th>Label</th><th>Value</th></tr></thead><tbody>";
+                dataToDisplay[1] = "<table><thead><tr><th style='width: 50px;'>Train</th><th style='width: 50px;'>ID</th><th>Label</th><th>State</th></tr></thead><tbody>";
+                dataToDisplay[2] = "<table><thead><tr><th style='width: 50px;'>Train</th><th style='width: 50px;'>ID</th><th>Label</th><th>State</th></tr></thead><tbody>";
+                dataToDisplay[3] = "<table><thead><tr><th style='width: 50px;'>Train</th><th style='width: 50px;'>ID</th><th>Label</th><th>Value</th></tr></thead><tbody>";
+                dataToDisplay[4] = "<table><thead><tr><th style='width: 50px;'>Train</th><th style='width: 50px;'>ID</th><th>Label</th><th>Value</th></tr></thead><tbody>";
+                dataToDisplay[5] = "<table><thead><tr><th style='width: 50px;'>Train</th><th style='width: 50px;'>ID</th><th>Label</th><th>Value</th></tr></thead><tbody>";
+            }
+            else {
+                dataToDisplay[0] = "<table><thead><tr><th>Label</th><th>Value</th></tr></thead><tbody>";
+                dataToDisplay[1] = "<table><thead><tr><th style='width: 50px;'>ID</th><th>Label</th><th>State</th></tr></thead><tbody>";
+                dataToDisplay[2] = "<table><thead><tr><th style='width: 50px;'>ID</th><th>Label</th><th>State</th></tr></thead><tbody>";
+                dataToDisplay[3] = "<table><thead><tr><th style='width: 50px;'>ID</th><th>Label</th><th>Value</th></tr></thead><tbody>";
+                dataToDisplay[4] = "<table><thead><tr><th style='width: 50px;'>ID</th><th>Label</th><th>Value</th></tr></thead><tbody>";
+                dataToDisplay[5] = "<table><thead><tr><th style='width: 50px;'>ID</th><th>Label</th><th>Value</th></tr></thead><tbody>";
+            }
+
+            if (data && Array.isArray(data)) {
+                for (var i = 0; i < data.length; i++) {
+                    try {
+                        train = i + 1;
+                        if (train > 6) {
+                            var numb = train - 6;
+                            train = "R-" + numb;
+                        } else {
+                            train = "M-" + train;
+                        }
+                        receivedData = data[i].nodeDataArray;
+                        updateTable(train); // Update the table content
+
+                        // Add train values dynamically
+                        var trainOptionText = "Train " + train;
+
+                        // Check if an element with the same text content already exists
+                        var existingElement = Array.from(dropdown.children).find(function (child) {
+                            return child.textContent === trainOptionText;
+                        });
+
+                        if (!existingElement) {
+                            // Create and append the new element
+                            var trainOption = document.createElement("a");
+                            trainOption.textContent = trainOptionText;
+                            trainOption.setAttribute("onclick", "training.innerHTML='Train ' + '" + train + "'");
+                            dropdown.appendChild(trainOption);
+                        }
+                    } catch (error) {
+                        train = i + 1;
+                        if (train > 6) {
+                            var numb = train - 6;
+                            train = "R-" + numb;
+                        } else {
+                            train = "M-" + train;
+                        }
+
+                        // Remove the child from the dropdown if an error occurs
+                        var childToRemove = Array.from(dropdown.children).find(function (child) {
+                            return child.textContent === "Train " + train;
+                        });
+
+                        if (childToRemove) {
+                            dropdown.removeChild(childToRemove);
+                        }
+                    }
+                }
+            }
+            for (var i = 0; i < 5; i++) {
+                dataToDisplay[i] += "</tbody></table>";
+            }
+        }
+
+
+        var dropdown = document.getElementById("trainDropdown");
+        var training = document.getElementById("training");
+
+        training.addEventListener("DOMSubtreeModified", function () {
+            table(data);
+        });
+
+        function updateTable(train) {
+
+            var activeTabIndex = getActiveTabIndex();
+            var tabs = document.getElementsByClassName("tab");
+            var tabButtons = document.getElementsByClassName("tabButton");
+
+            for (var i in receivedData) {
+                if (receivedData[i].Label && typeof receivedData[i].Label === 'string') {
+                    if (receivedData[i].Label.includes("90")) {
+                        receivedData[i].Label = receivedData[i].Label.replace("90", "");
+                    }
+                    if (receivedData[i].Label.includes("180")) {
+                        receivedData[i].Label = receivedData[i].Label.replace("180", "");
+                    }
+                    if (receivedData[i].Label.includes("270")) {
+                        receivedData[i].Label = receivedData[i].Label.replace("270", "");
+                    }
+
+                    if (receivedData[i].Label.endsWith("L")) {
+                        receivedData[i].alignment = 'L';
+                        receivedData[i].Label = receivedData[i].Label.slice(0, -1); // Remove the last character
+                    }
+                    else if (receivedData[i].Label.endsWith("R")) {
+                        receivedData[i].alignment = 'R';
+                        receivedData[i].Label = receivedData[i].Label.slice(0, -1);
+                    }
+                }
+
+                // Assuming dataToDisplay is an array to store the rows
+                if ((receivedData[i].Type === 8000 || receivedData[i].Type === 8100) && receivedData[i].Label !== ',' && receivedData[i].Label !== '') {
+                    // Check if the label already exists in the table
+                    var labelExists = dataToDisplay.some(function (row) {
+                        return row.includes("<td>" + receivedData[i].Label + "</td>");
+                    });
+
+                    // If the label doesn't exist, add a new row
+                    if (!labelExists) {
+                        dataToDisplay[0] += "<tr><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].Value + "</td></tr>";
+                    }
+                }
+                else if (receivedData[i].Type === 9000 && receivedData[i].Label != ',' && receivedData[i].Label != '' && ("Train " + train == training.innerHTML)) {
+                    dataToDisplay[1] += "<tr><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].Value + "</td></tr>";
+                } else if (receivedData[i].Type === 9000 && receivedData[i].Label != ',' && receivedData[i].Label != '' && (training.innerHTML == "All Trains")) {
+                    dataToDisplay[1] += "<tr><td>" + train + "</td><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].Value + "</td></tr>";
+                } else if (receivedData[i].Type === 7000 && receivedData[i].Label != ',' && receivedData[i].Label != '' && ("Train " + train == training.innerHTML)) {
+                    dataToDisplay[2] += "<tr><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].State + "</td></tr>";
+                } else if (receivedData[i].Type === 7000 && receivedData[i].Label != ',' && receivedData[i].Label != '' && (training.innerHTML == "All Trains")) {
+                    dataToDisplay[2] += "<tr><td>" + train + "</td><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].State + "</td></tr>";
+                } else if ((receivedData[i].Type === 5000 || receivedData[i].Type === 6000) && receivedData[i].Label != ',' && receivedData[i].Label != '' && ("Train " + train == training.innerHTML)) {
+                    dataToDisplay[3] += "<tr><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].Value + "</td></tr>";
+                } else if ((receivedData[i].Type === 5000 || receivedData[i].Type === 6000) && receivedData[i].Label != ',' && receivedData[i].Label != '' && (training.innerHTML == "All Trains")) {
+                    dataToDisplay[3] += "<tr><td>" + train + "</td><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].Value + "</td></tr>";
+                } else if (receivedData[i].Type === 3900 && receivedData[i].Label != ',' && receivedData[i].Label != '' && ("Train " + train == training.innerHTML)) {
+                    dataToDisplay[4] += "<tr><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].Value + "</td></tr>";
+                } else if (receivedData[i].Type === 3900 && receivedData[i].Label != ',' && receivedData[i].Label != '' && (training.innerHTML == "All Trains")) {
+                    dataToDisplay[4] += "<tr><td>" + train + "</td><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].Value + "</td></tr>";
+                } else if (receivedData[i].Type === 3600 && receivedData[i].Label != ',' && receivedData[i].Label != '' && ("Train " + train == training.innerHTML)) {
+                    dataToDisplay[5] += "<tr><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].Value + "</td></tr>";
+                } else if (receivedData[i].Type === 3600 && receivedData[i].Label != ',' && receivedData[i].Label != '' && (training.innerHTML == "All Trains")) {
+                    dataToDisplay[5] += "<tr><td>" + train + "</td><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].Value + "</td></tr>";
+                }
+            }
+
+            tabs[activeTabIndex].innerHTML = dataToDisplay[activeTabIndex];
+            tabs[activeTabIndex].style.display = "block";
+            tabButtons[activeTabIndex].classList.add("active");
+            tabButtons[activeTabIndex].classList.add("activeTabButton");
+        }
+
+        function getActiveTabIndex() {
+            var tabButtons = document.getElementsByClassName("tabButton");
+            for (var i = 0; i < tabButtons.length; i++) {
+                if (tabButtons[i].classList.contains("active")) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        function openTab(tabIndex) {
+            var tabs = document.getElementsByClassName("tab");
+            var tabButtons = document.getElementsByClassName("tabButton");
+
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].style.display = "none";
+                tabButtons[i].classList.remove("active");
+                tabButtons[i].classList.remove("activeTabButton");
+            }
+
+            tabButtons[tabIndex].classList.add("active");
+            tabButtons[tabIndex].classList.add("activeTabButton");
+
+            table(data);
+        }
+
+    </script>
+</body>
+
+</html>

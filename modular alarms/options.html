@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <style>
+        h1 {
+            transform: translate(50px, -12px);
+            visibility: hidden;
+        }
+
+        /* Add some basic styles for the tabs */
+        .tab {
+            display: none;
+        }
+
+        /* Add custom styles for the tables */
+        table {
+            width: 100%;
+            /* Set the table width to 100% */
+            table-layout: fixed;
+            /* Fixed table layout */
+        }
+
+        th,
+        td {
+            word-wrap: break-word;
+            /* Allow long content to wrap within cells */
+            max-width: 100px;
+            /* Set a maximum width for cells */
+            padding: 5px;
+            /* Add some padding to cells */
+            border: 1px solid #ccc;
+            /* Add borders to cells */
+        }
+
+        thead tr {
+            background-color: #3498db;
+            color: white;
+        }
+
+        tbody tr {
+            background-color: white;
+        }
+
+        body {
+            overflow-x: hidden;
+            /* Prevent horizontal scrolling */
+        }
+
+        .tabButton {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: .5vw 1vw;
+            font-size: .8vw;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-right: .1vw;
+        }
+
+        .answer-btn {
+            background-color: #3d4e5a;
+            color: white;
+            border: none;
+            padding: .5vw 1vw;
+            font-size: 1.2vw;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-right: .1vw;
+        }
+
+        .UnitButton {
+            position: relative;
+            color: black;
+            border: 1px solid #ccc;
+            height: 2vw;
+            width: 4.2vw;
+            top: .3vw;
+            left: .5vw;
+            font-size: .8vw;
+            cursor: pointer;
+        }
+
+        .UnitButton.active {
+            background-color: #7bb2ec;
+            color: white;
+        }
+
+        .tabButton.active {
+            background-color: #7bb2ec;
+        }
+
+        .button-container {
+            margin-top: 0px;
+        }
+
+        /* Add styling for the Units text */
+        .units-text {
+            position: relative;
+            font-weight: bold;
+            margin-top: 1vw;
+            font-size: 1vw;
+        }
+
+        .refresh-button {
+            position: relative;
+            height: 2vw;
+            width: 7vw;
+            top: .3vw;
+            left: .5vw;
+            color: black;
+            border: 1px solid #ccc;
+            font-size: .8vw;
+            cursor: pointer;
+        }
+
+        .custom-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #f2f2f2;
+            padding: 2vw;
+            border: 5px solid black;
+            font-size: 2vw;
+            z-index: 1000;
+            /* Set a higher z-index value */
+        }
+
+        .popup-content {
+            text-align: center;
+            font-size: x-large;
+        }
+    </style>
+</head>
+
+<div id="customPopup3" class="custom-popup">
+    <div class="popup-content">
+        <p style= "font-size: 1.5vw;">Are you sure you want to reset all alarms?</p>
+        <button id="confirmYes2" class="answer-btn">Yes</button>
+        <button id="confirmNo2" class="answer-btn">No</button>
+    </div>
+</div>
+
+<body onload="openTab(0)">
+    <h1>"</h1>
+    <!-- Create tab buttons -->
+    <button class="tabButton" onclick="openTab(0)">General</button>
+
+    <!-- Create tab content containers -->
+    <div class="tab" id="tab0"></div>
+
+    <script>
+        var receivedData = []; // Initialize receivedData as an empty array
+
+        window.addEventListener("message", function (event) {
+            if (event.data && Array.isArray(event.data)) {
+                receivedData = event.data;
+
+                // Loop through each item in receivedData
+                for (let item of receivedData) {
+                    if (item.Label && typeof item.Label === 'string') {
+                        // Check if the Label contains 90, 180, or 270
+                        if (item.Label.includes("90")) {
+                            item.Label = item.Label.replace("90", "");
+                        }
+                        if (item.Label.includes("180")) {
+                            item.Label = item.Label.replace("180", "");
+                        }
+                        if (item.Label.includes("270")) {
+                            item.Label = item.Label.replace("270", "");
+                        }
+                    }
+                }
+
+                //updateTabContent(); // Call the function to update tab content
+            }
+        });
+
+        function updateTabContent() {
+            var activeTabIndex = getActiveTabIndex(); // Get the index of the active tab
+            if (activeTabIndex !== -1) {
+                openTab(activeTabIndex); // Update the content of the active tab
+            }
+        }
+
+        function getActiveTabIndex() {
+            var tabButtons = document.getElementsByClassName("tabButton");
+            for (var i = 0; i < tabButtons.length; i++) {
+                if (tabButtons[i].classList.contains("active")) {
+                    return i; // Return the index of the active tab
+                }
+            }
+            return -1; // No active tab found
+        }
+
+        function Unit(input) {
+            // Get all UnitButtons
+            var unitButtons = document.querySelectorAll(".UnitButton");
+
+            // Remove 'active' class from all UnitButtons
+            unitButtons.forEach(function (button) {
+                button.classList.remove("active");
+            });
+
+            // Add 'active' class to the clicked button
+            if (input === 1) {
+                document.querySelector(".UnitButton:nth-child(1)").classList.add("active");
+            } else if (input === 2) {
+                document.querySelector(".UnitButton:nth-child(2)").classList.add("active");
+            }
+
+            localStorage.setItem("storedValue", input);
+            var event = new Event("unitsChanged");
+
+            var iframeIds = ["settings.html", "electralink.html", "cartridges.html", "data.html", "demo.html"];
+
+            for (var i = 0; i < iframeIds.length; i++) {
+                try {
+                    parent.document.getElementById(iframeIds[i]).contentWindow.dispatchEvent(event);
+                } catch { }
+            }
+        }
+
+        function VFD(input) {
+            console.log(input);
+        }
+
+        function openTab(tabIndex) {
+            var tabs = document.getElementsByClassName("tab");
+            var tabButtons = document.getElementsByClassName("tabButton");
+
+
+            // Hide all tabs and deactivate all buttons
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].style.display = "none";
+                tabButtons[i].classList.remove("active");
+            }
+
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].style.display = "none";
+                tabButtons[i].classList.remove("activeTabButton"); // Remove the active class from all buttons
+            }
+
+            // Filter and display the selected data on the corresponding tab
+            var dataToDisplay = "";
+            if (tabIndex === 0) {
+                // Display two buttons in tab0
+                dataToDisplay = '<div class="units-text">Units: </div><div class="button-container">'
+                dataToDisplay += '<button class="UnitButton ' + (localStorage.getItem("storedValue") === "1" ? "active" : "") + '" onclick="Unit(1)">Metric</button>';
+                dataToDisplay += '<button class="UnitButton ' + (localStorage.getItem("storedValue") === "2" ? "active" : "") + '" onclick="Unit(2)">Imperial</button></div>';
+                dataToDisplay += '<div class="units-text">Refresh:</div>'
+                dataToDisplay += '<button class="refresh-button" onclick="refreshHomePage()">Refresh Page</button>'
+                //dataToDisplay += '<div class="units-text">Reset VFD: </div><div class="button-container">'
+                //dataToDisplay += '<button class="UnitButton " onclick="VFD(1)">Train 1</button>';
+                //dataToDisplay += '<button class="UnitButton " onclick="VFD(2)">Train 2</button>';
+                //dataToDisplay += '<button class="UnitButton " onclick="VFD(3)">Train 3</button>';
+                //dataToDisplay += '<button class="UnitButton " onclick="VFD(4)">Train 4</button>';
+                //dataToDisplay += '<button class="UnitButton " onclick="VFD(5)">Train 5</button>';
+                //dataToDisplay += '<button class="UnitButton " onclick="VFD(6)">Train 6</button>';
+                //dataToDisplay += '<button class="UnitButton " onclick="VFD(7)">Train 7</button></div>';
+                dataToDisplay += '<div class="units-text">Alarms Reset:</div>'
+                dataToDisplay += '<button type="button" class="UnitButton" id="clearAllButton"onclick="sendToAlarm();">Reset</button>'
+            }
+
+            tabs[tabIndex].innerHTML = dataToDisplay;
+            tabs[tabIndex].style.display = "block";
+            tabButtons[tabIndex].classList.add("active");
+            tabButtons[tabIndex].classList.add("activeTabButton");
+        }
+
+        function sendToAlarm() {
+            console.log("hrnnn");
+            // Show the custom popup
+            document.getElementById("customPopup3").style.display = "block";
+            // Set up event listeners for the Yes and No buttons
+            document.getElementById("confirmYes2").onclick = function () {
+                // Acknowledge the alarm if the user clicks "Yes"
+                parent.document.getElementById("alarms.html").contentWindow.postMessage("clear", "*");
+                // Hide the custom popup
+                document.getElementById("customPopup3").style.display = "none";
+            };
+            document.getElementById("confirmNo2").onclick = function () {
+                // Hide the custom popup if the user clicks "No"
+                document.getElementById("customPopup3").style.display = "none";
+            };
+        };
+
+        function refreshHomePage() {
+            parent.location.href = 'home.html'; // Replace 'home.html' with the actual URL of your home page
+        }
+    </script>
+</body>
+
+</html>

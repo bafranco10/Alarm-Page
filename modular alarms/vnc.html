@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>VNC Buttons</title>
+    <style>
+
+        .btn {
+            position: relative;
+            top: 2.5vw;
+            left: 22vw;
+            padding: 1.5vw;
+            font-size: 1vw;
+        }
+
+        .btn.active {
+            background-color: #7bb2ec;
+            color: white;
+        }
+
+        h1 {
+            transform: translate(50px, -12px);
+            visibility: hidden;
+        }
+
+        .iframe-container {
+            position: relative;
+            display: block;
+            border: .05vw solid #000000;
+            background-color: black;
+            top: 3vw;
+            left: 7vw;
+            width:70.3vw;
+            height:80.5vh;
+        }
+    </style>
+</head>
+<body>
+
+<h1></h1>
+<button type="button" class="btn" id="trainButton1">Train 1</button>
+<button type="button" class="btn" id="trainButton2">Train 2</button>
+<button type="button" class="btn" id="trainButton3">Train 3</button>
+<button type="button" class="btn" id="trainButton4">Train 4</button>
+<button type="button" class="btn" id="trainButton5">Train 5</button>
+<button type="button" class="btn" id="trainButton6">Train 6</button>
+
+<div class="iframe-container" id="iframeContainer"></div>
+
+<script>
+    function openVNCInIframe(url, buttonId) {
+        var iframeContainer = document.getElementById('iframeContainer');
+        iframeContainer.innerHTML = '<iframe src="' + url + '" style="width:70vw; height:80vh;"></iframe>';
+
+        // Remove the 'active' class from all buttons
+        document.querySelectorAll('.btn').forEach(function(button) {
+            button.classList.remove('active');
+        });
+
+        // Add the 'active' class to the clicked button
+        document.getElementById(buttonId).classList.add('active');
+    }
+
+    document.getElementById('trainButton1').addEventListener('click', function() {
+        openVNCInIframe('http://localhost:6800/vnc.html', 'trainButton1');
+    });
+
+    document.getElementById('trainButton2').addEventListener('click', function() {
+        openVNCInIframe('http://localhost:6801/vnc.html', 'trainButton2');
+    });
+
+    document.getElementById('trainButton3').addEventListener('click', function() {
+        openVNCInIframe('http://localhost:6802/vnc.html', 'trainButton3');
+    });
+
+    document.getElementById('trainButton4').addEventListener('click', function() {
+        openVNCInIframe('http://localhost:6803/vnc.html', 'trainButton4');
+    });
+
+    document.getElementById('trainButton5').addEventListener('click', function() {
+        openVNCInIframe('http://localhost:6804/vnc.html', 'trainButton5');
+    });
+
+    document.getElementById('trainButton6').addEventListener('click', function() {
+        openVNCInIframe('http://localhost:6805/vnc.html', 'trainButton6');
+    });
+</script>
+</body>
+</html>

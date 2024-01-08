@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        h1 {
+            transform: translate(50px, -12px);
+            visibility: none;
+        }
+
+        .tab {
+            display: none;
+        }
+
+        table {
+            width: 100%;
+            table-layout: fixed;
+            font-size: 1.8vmin;
+        }
+
+        th:first-child {
+            width: 50px; /* Set the width to your desired value */
+        }
+        
+        th,
+        td {
+            word-wrap: break-word;
+            max-width: 100px;
+            padding: 5px;
+            border: 1px solid #ccc;
+        }
+
+
+        thead tr {
+            background-color: #3498db;
+            color: white;
+        }
+
+        tbody tr {
+            background-color: white;
+        }
+
+        body {
+            overflow-x: hidden;
+            /* Prevent horizontal scrolling */
+        }
+
+        #tableContainer {
+            margin-top: 58px;
+            /* Add 50 pixels margin to the top */
+        }
+    </style>
+</head>
+
+<body>
+    <div id="tableContainer"></div>
+    <h1></h1>
+    <script>
+        var receivedData = []; // Initialize receivedData as an empty array
+        var tableContainer = document.getElementById("tableContainer");
+        var dataToDisplay = [];
+
+
+        window.addEventListener("message", function (event) {
+            data = event.data;
+            table(data)
+
+        });
+
+        function table(data) {
+            
+            dataToDisplay = "<table><thead><tr><th>Train</th><th>Label</th><th>State</th><th>Valve</th><th>Current</th><th>Temp.</th><th>Additional Info</th></tr></thead><tbody>";
+
+            if (data && Array.isArray(data)) {
+                for (var i = 0; i < data.length; i++) {
+                    if(data[i] != undefined) {
+                        receivedData = data[i].nodeDataArray;
+                        updateTable(i + 1); // Update the table content
+                    }
+                }
+            }
+
+            dataToDisplay += "</tbody></table>";
+            tableContainer.innerHTML = dataToDisplay;
+        }
+
+        function updateTable(train) {
+            if (train > 6) {
+                var numb = train - 6;
+                train = "R-" + numb;
+            } else {
+                train = "M-" + train;
+            }
+            
+            for (var i in receivedData) {
+                if (receivedData[i].Label && typeof receivedData[i].Label === 'string') {
+                    if (receivedData[i].Label.includes("90")) {
+                        receivedData[i].Label = receivedData[i].Label.replace("90", "");
+                    }
+                    if (receivedData[i].Label.includes("180")) {
+                        receivedData[i].Label = receivedData[i].Label.replace("180", "");
+                    }
+                    if (receivedData[i].Label.includes("270")) {
+                        receivedData[i].Label = receivedData[i].Label.replace("270", "");
+                    }
+
+                    if (receivedData[i].Label.endsWith("L")) {
+                        receivedData[i].alignment = 'L';
+                        receivedData[i].Label = receivedData[i].Label.slice(0, -1); // Remove the last character
+                    }
+                    else if (receivedData[i].Label.endsWith("R")) {
+                        receivedData[i].alignment = 'R';
+                        receivedData[i].Label = receivedData[i].Label.slice(0, -1);
+                    }
+                }
+
+                if ((receivedData[i].Type === 5000 || receivedData[i].Type === 6000) && receivedData[i].Label != ',' && receivedData[i].Label != '') {
+                    dataToDisplay += "<tr><td>" + train + "</td><td>"+ receivedData[i].Label + "</td>"  + "<td></td>"+ "<td></td>"+ "</td><td style='text-align: left;'>" + receivedData[i].Value + "</span></td>" + "<td></td>" + "<td></td>" + "</tr>";
+                }
+            }
+            
+        }
+    </script>
+</body>
+
+</html>
+

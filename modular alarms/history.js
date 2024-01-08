@@ -9,7 +9,6 @@ function moveCommunicationAlarmToHistory(trainData, alarmCode) {
         updateDisplay();
         // Remove the corresponding row from the table 
         deleteRow("row" + removedAlarm.Train + removedAlarm.Code + removedAlarm.Desc + removedAlarm.DateTime);
-        console.log(stopAlarmCounts);
     }
 }
 
@@ -22,6 +21,11 @@ function moveAlarmToHistory(indexToRemove) {
         const alarmToRemove = dataArray[indexToRemove];
         // Check if the alarm is acknowledged before removing it
         if (alarmToRemove && alarmToRemove.Acknowledged) {
+            /*if (alarmToRemove.Code === 63) {
+                checkForDuplicateConfigWarnings(alarmToRemove, indexToRemove);
+            } */
+
+            // else {
             const removedAlarm = dataArray.splice(indexToRemove, 1)[0];
             historyArray.push(removedAlarm);
             updateHistoryInLocalStorage(historyArray);
@@ -32,9 +36,37 @@ function moveAlarmToHistory(indexToRemove) {
                 updateHistory();
             }
             return true;
-        } else {
+            //}
+        }
+
+        else {
             return false;
         }
+    }
+}
+
+function checkForDuplicateConfigWarnings(alarmToRemove, indexToRemove) {
+    // Check if there is not another alarm with the same datetime in historyArray
+    const hasDuplicateDatetime = historyArray.some(alarm => alarm.DateTime.trim() === alarmToRemove.DateTime.trim());
+    if (!hasDuplicateDatetime) {
+        console.log('hi');
+        const removedAlarm = dataArray.splice(indexToRemove, 1)[0];
+        historyArray.push(removedAlarm);
+        console.log(historyArray);
+        updateHistoryInLocalStorage(historyArray);
+        deleteRow("row" + removedAlarm.Train + removedAlarm.Code + removedAlarm.Desc + removedAlarm.DateTime.trim());
+        updateDisplay();
+
+        var currentTab = document.querySelector(".tablinks.active").textContent.trim();
+        if (currentTab === "Alarm History") {
+            updateHistory();
+        }
+
+        return true;
+    }
+
+    else {
+        return false;
     }
 }
 
@@ -102,7 +134,6 @@ function displayAlarmHistory() {
             });
         }
         historyRow.classList.add('table-success');
-        console.log(historyArray);
     });
 }
 
@@ -140,7 +171,6 @@ function displayStopAlarmHistory(filterCritical) {
                 });
             }
             historyRow.classList.add('table-success');
-            console.log(filteredHistoryArray);
         });
     }
 
@@ -183,7 +213,6 @@ function displayWarningHistory() {
                 });
             }
             historyRow.classList.add('table-success');
-            console.log(filteredHistoryArray);
         });
     }
     else {

@@ -4,7 +4,7 @@ var xmlFileUrl = 'alarms.xml';
 var alarmActive = false;
 var isAcknowledged = false;
 var rowIdToData = {};
-var stopAlarmCodes = [78, 19, 1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 18, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 66, 68, 69];
+var stopAlarmCodes = [19,78, 1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 18, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 66, 68, 69];
 var buttonArray = []; //stores button ids
 const activeAlarms = new Set();
 const existingAlarms = new Set();
@@ -12,6 +12,8 @@ const stopAlarmCounts = [0, 0, 0, 0, 0, 0];
 var filterCritical = false;
 var filterWarning = false;
 var confirmation = false;
+var run = true; 
+
 // formats date for my custom alarm
 // takes in a standard javascript date and returns a date formatted to match the other ones
 function formatDateToCustomString(date) {
@@ -24,7 +26,6 @@ function formatDateToCustomString(date) {
         second: '2-digit',
         hour12: true,
     };
-
     return date.toLocaleString('en-US', options);
 }
 
@@ -58,9 +59,9 @@ function updateGraphic(data) {
         alarms.forEach(alarm => {
             var ip = '';
             ip = getIpAddress(trainData);
-            var alarmKey = trainData + "-" + alarm.DateTime.trim() + "-" + alarm.Code
-                + "-" + alarm.Msg_Data + "-" + alarm.Desc + "-" + alarm.Dev_Num +
-                "-" + ip;
+            var alarmKey = trainData + "_" + alarm.DateTime.trim() + "_" + alarm.Code
+                + "_" + alarm.Msg_Data + "_" + alarm.Desc.trim() + "_" + alarm.Dev_Num +
+                "_" + ip;
             if (!existingAlarms.has(alarmKey)) {
                 fetchAndProcessAlarm(trainData, alarm, alarmKey);
             }
@@ -90,39 +91,6 @@ function getIpAddress(trainData) {
     return ip;
 }
 
-/* may be needed again later for error checking when a train goes down 
-// iterates through the endpoints given in the script. After iteration it replaces the script to either have 
-function checkServerAvailability() {
-    const serverUrl = fetchEndpoints[currentServerIndex];
-    const scriptElement = document.createElement("script");
-    const ipAddress = getIpAddressFromEndpoint(serverUrl);
-
-    isFetching[currentServerIndex] = true;
-
-    scriptElement.src = `${serverUrl}&IPAddress=${ipAddress}`;
-    scriptElement.onerror = function () {
-        isFetching[currentServerIndex] = false;
-        addTrainDownAlarm(ipAddress);
-        currentServerIndex = (currentServerIndex + 1) % fetchEndpoints.length;
-        fetchData(currentServerIndex);
-    };
-    scriptElement.onload = function () {
-        checkIfTrainAlarmNeedsToBeRemoved(ipAddress);
-        fetchData(currentServerIndex); // Fetch data from the available server
-        currentServerIndex = (currentServerIndex + 1) % fetchEndpoints.length;
-    };
-
-    // Replace existing script only if it doesn't exist
-    const existingScript = document.getElementById("serverCheckScript");
-    if (!existingScript) {
-        scriptElement.id = "serverCheckScript";
-        document.body.appendChild(scriptElement);
-    }
-}
-
-const serverCheckInterval = setInterval(checkServerAvailability, 5000); 
-*/
-
 // function to change text in active column to inactive if a stop alarm is inactive but needs to be acknowledged
 function updateActiveCellText(alarmCode, trainData, newText, Desc, DateTime) {
     var rowId = "row" + trainData + alarmCode + Desc + DateTime.trim();
@@ -147,7 +115,8 @@ function deleteRow(rowId) {
             // Remove the event listener
             acknowledgeButton.removeEventListener('click', acknowledgeAlarm);
         }
-
+        // Remove the bottom border style
+        row.style.border = '0';
         // Remove the row from the DOM
         row.remove();
     }
@@ -168,7 +137,7 @@ function acknowledgeAlarm(buttonId, alarmData) {
         if (matchingAlarm) {
             // Update theacknowledged status for the corresponding alarm in dataArray
             matchingAlarm.Acknowledged = true;
-            console.log(stopAlarmCounts);
+            //console.log(stopAlarmCounts);
         }
     }
 }
@@ -181,7 +150,7 @@ function acknowledgePLC(train) {
     }
     // this index will need to change to 7 it is just this for testing
     else if (train === 2 && stopAlarmCounts[1] === 0) {
-        fetchData(1);
+        fetchData(7);
     }
     else if (train === 3 && stopAlarmCounts[2] === 0) {
         fetchData(8);
@@ -235,13 +204,86 @@ function acknowledgeAllAlarms() {
     buttonArray.forEach(buttonId => {
         const alarmData = rowIdToData[buttonId.replace("button", "")];
         const buttonElement = document.getElementById(buttonId);
-
         // Check if the button is not disabled and the alarmData is present and not acknowledged
         if (buttonElement && !buttonElement.disabled && alarmData && !alarmData.Acknowledged) {
             acknowledgeAlarm(buttonId, alarmData);
         }
     });
-    fetchData(1);
+    acknowledgePLC(1);
+    /*
+    for (let i = 0; i < 6; i++) {
+        acknowledgePLC(i + 1);
+    }
+    */
+}
+
+function confirmAcknowledgeAll() {
+    // Show the custom popup
+    document.getElementById("customPopup2").style.display = "block";
+    // Set up event listeners for the Yes and No buttons
+    document.getElementById("confirmYes1").onclick = function () {
+        // Acknowledge the alarm if the user clicks "Yes"
+        acknowledgeAllAlarms();
+        // Hide the custom popup
+        document.getElementById("customPopup2").style.display = "none";
+    };
+    document.getElementById("confirmNo1").onclick = function () {
+        // Hide the custom popup if the user clicks "No"
+        document.getElementById("customPopup2").style.display = "none";
+    };
+};
+
+function confirmClearAll() {
+    // Show the custom popup
+    document.getElementById("customPopup3").style.display = "block";
+    // Set up event listeners for the Yes and No buttons
+    document.getElementById("confirmYes2").onclick = function () {
+        // Acknowledge the alarm if the user clicks "Yes"
+        clearAllAlarms();
+        // Hide the custom popup
+        document.getElementById("customPopup3").style.display = "none";
+    };
+    document.getElementById("confirmNo2").onclick = function () {
+        // Hide the custom popup if the user clicks "No"
+        document.getElementById("customPopup3").style.display = "none";
+    };
+};
+
+function acknowledgeAllTrains() {
+    fetchData(1); // remove this eventually 
+    /*
+     fetchData(6);
+     fetchData(7);
+     fetchData(8);
+     fetchData(9);
+     fetchData(10);
+     fetchData(11);
+     */
+}
+
+function clearAllAlarms() {
+    dataArray.forEach(alarm => {
+        alarm.Active = false;
+    });
+    for (let i = 0; i < stopAlarmCounts.length; i++) {
+        stopAlarmCounts[i] = 0;
+    }
+    run = true;
+    acknowledgeAllAlarms();
+    acknowledgeAllTrains();
+    fetchData(0);
+    var tableBody = document.querySelector("#alarmTable tbody");
+    tableBody.innerHTML = '';
+    // After removing elements, you might want to update the display or perform any other necessary actions
+    updateDisplay();
+    console.log("we got here");
+    /*
+    fetch(1);
+    fetch(2);
+    fetch(3);
+    fetch(4);
+    fetch(5);
+*/
 }
 
 // Function to format a Date object as "MM/DD/YYYY HH:MM:SS" (e.g., "09/11/2023 08:25:22")
@@ -256,28 +298,4 @@ function formatDate(date) {
         second: '2-digit'
     };
     return date.toLocaleString(undefined, options);
-}
-
-function showConfirmation() {
-    document.getElementById('confirm').style.display = 'block';
-}
-
-function confirmYes() {
-    confirmation = true;
-    hideConfirmation();
-}
-
-function confirmNo() {
-    // Handle 'No' button click
-    hideConfirmation();
-}
-
-function hideConfirmation() {
-    document.getElementById('confirm').style.display = 'none';
-}
-
-function confirmAcknowledgeAll() {
-    if (confirm("Are you sure you want to acknowledge all alarms?")) {
-        acknowledgeAllAlarms();
-    }
 }

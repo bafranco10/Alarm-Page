@@ -1,7 +1,6 @@
-
 const fetchEndpoints = [
-    "http://172.16.1.102/Get_Alarms.cgi?Acknowledge=0",
-    "http://172.16.1.102/Get_Alarms.cgi?Acknowledge=1",
+    "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=0",
+    "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=1",
     //"http://172.16.1.102/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.103/Get_Alarms.cgi?Acknowledge=0"
     //"http://172.16.1.104/Get_Alarms.cgi?Acknowledge=0",
@@ -75,6 +74,9 @@ function fetchData(index) {
             clearTimeout(timeoutId); // Clear the timeout
             isFetching[index] = false;
             addTrainDownAlarm(ipAddress);
+            if (index != 6 || index != 7 || index != 8 || index != 9 || index != 10 || index != 1) {
+                fetchAgain(index, resolve, reject);
+            }
         };
 
         scriptElement.onload = function () {
@@ -82,55 +84,8 @@ function fetchData(index) {
             requestCompleted = true;
             isFetching[index] = false;
             checkIfTrainAlarmNeedsToBeRemoved(ipAddress);
-            // Add a 3-second delay before retrying
-            //QUICK FIX THAT ENSURES ONLY UNACKNOWLEDGED INDEX IS FETCHED
-            // WILL NEED TO CHANGE IN THE FUTURE
-            if (index === 0) {
-                setTimeout(() => {
-                    fetchData(index)
-                        .then(() => resolve())  // Resolve the promise on success
-                        .catch(() => reject()); // Reject the promise on error
-                }, 3000); // 3-second delay
-            }
-/*
-            if (index === 1) {
-                setTimeout(() => {
-                    fetchData(index)
-                        .then(() => resolve())  // Resolve the promise on success
-                        .catch(() => reject()); // Reject the promise on error
-                }, 3000); // 3-second delay
-            }
-*/
-            if (index === 2) {
-                setTimeout(() => {
-                    fetchData(index)
-                        .then(() => resolve())  // Resolve the promise on success
-                        .catch(() => reject()); // Reject the promise on error
-                }, 3000); // 3-second delay
-            }
-
-            if (index === 3) {
-                setTimeout(() => {
-                    fetchData(index)
-                        .then(() => resolve())  // Resolve the promise on success
-                        .catch(() => reject()); // Reject the promise on error
-                }, 3000); // 3-second delay
-            }
-
-            if (index === 4) {
-                setTimeout(() => {
-                    fetchData(index)
-                        .then(() => resolve())  // Resolve the promise on success
-                        .catch(() => reject()); // Reject the promise on error
-                }, 3000); // 3-second delay
-            }
-
-            if (index === 5) {
-                setTimeout(() => {
-                    fetchData(index)
-                        .then(() => resolve())  // Resolve the promise on success
-                        .catch(() => reject()); // Reject the promise on error
-                }, 3000); // 3-second delay
+            if (index != 6 || index != 7 || index != 8 || index != 9 || index != 10 || index != 1) {
+                fetchAgain(index, resolve, reject);
             }
         };
 
@@ -141,6 +96,56 @@ function fetchData(index) {
         scriptElement.id = "dataScript";
         document.body.appendChild(scriptElement);
     });
+}
+
+function fetchAgain(index, resolve, reject) {
+    if (index === 0) {
+        setTimeout(() => {
+            fetchData(index)
+                .then(() => resolve())  // Resolve the promise on success
+                .catch(() => reject()); // Reject the promise on error
+        }, 3000); // 3-second delay
+    }
+    /*
+        if (index === 1) {
+            setTimeout(() => {
+                fetchData(index)
+                    .then(() => resolve())  // Resolve the promise on success
+                    .catch(() => reject()); // Reject the promise on error
+            }, 3000); // 3-second delay
+        }
+    */
+    if (index === 2) {
+        setTimeout(() => {
+            fetchData(index)
+                .then(() => resolve())  // Resolve the promise on success
+                .catch(() => reject()); // Reject the promise on error
+        }, 3000); // 3-second delay
+    }
+
+    if (index === 3) {
+        setTimeout(() => {
+            fetchData(index)
+                .then(() => resolve())  // Resolve the promise on success
+                .catch(() => reject()); // Reject the promise on error
+        }, 3000); // 3-second delay
+    }
+
+    if (index === 4) {
+        setTimeout(() => {
+            fetchData(index)
+                .then(() => resolve())  // Resolve the promise on success
+                .catch(() => reject()); // Reject the promise on error
+        }, 3000); // 3-second delay
+    }
+
+    if (index === 5) {
+        setTimeout(() => {
+            fetchData(index)
+                .then(() => resolve())  // Resolve the promise on success
+                .catch(() => reject()); // Reject the promise on error
+        }, 3000); // 3-second delay
+    }
 }
 
 function parseResponse(jsonData) {

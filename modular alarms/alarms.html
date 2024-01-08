@@ -22,9 +22,6 @@
     <script src="processing.js" type="text/javascript"></script>
     <script src="utilities.js" type="text/javascript"></script>
 
-    <!-- linking the stylesheet(CSS) -->
-
-
 </head>
 
 <body>
@@ -43,16 +40,27 @@
     <div id="Current Alarms" class="tabcontent border-bottom-0">
         <h1>Current Alarms</h1>
 
-        <button type="button" class="btn btn-primary" id="acknowledgeAllButton" onclick="confirmAcknowledgeAll();">Acknowledge
+        <button type="button" class="btn btn-primary btn-acknowledge" id="acknowledgeAllButton"
+            onclick="confirmAcknowledgeAll();">Acknowledge
             All</button>
-        <div id="confirm" style="display: none;">
-            <h3>Confirmation</h3>
-            <p>Are you sure you want to Acknowledge the alarm?</p>
-            <button class="warning" onclick="confirmYes()">Yes</button>
-            <button onclick="confirmNo()">No</button>
+
+        <div id="customPopup" class="custom-popup">
+            <div class="popup-content">
+                <p>Are you sure you want to acknowledge this alarm?</p>
+                <button id="confirmYes" class="btn btn-secondary btn-lg">Yes</button>
+                <button id="confirmNo" class="btn btn-secondary btn-lg ">No</button>
+            </div>
         </div>
 
-        <table id="alarmTable" class="table border-0">
+        <div id="customPopup2" class="custom-popup">
+            <div class="popup-content">
+                <p>Are you sure you want to acknowledge all alarms?</p>
+                <button id="confirmYes1" class="btn btn-secondary btn-lg" style="background-color: #3d4e5a">Yes</button>
+                <button id="confirmNo1" class="btn btn-secondary btn-lg" style="background-color: #3d4e5a">No</button>
+            </div>
+        </div>
+
+        <table id="alarmTable" class="table table-borderless">
             <thead>
                 <tr>
                     <th>Date/Time</th>
@@ -65,6 +73,7 @@
                 </tr>
             </thead>
             <tbody>
+
                 <!-- Data will be displayed here -->
                 <tr class="table-no-border-bottom">
                     <!-- Your table data goes here -->
@@ -75,8 +84,20 @@
 
     <div id="Alarm History" class="tabcontent border-bottom-0">
         <h1>Alarm History</h1>
-        <button type="button" onclick="displayStopAlarmHistory();"> Critical Alarms </button>
-        <button type="button" onclick="displayWarningHistory();"> Warnings </button>
+
+        <span id="criticalLabel">View Critical Alarms</span>
+        <label class="switch" id="toggleCritical" style = "margin-right: 40px;">
+            <input type="checkbox" id="criticalCheckBox">
+            <span class="slider round"></span>
+        </label>
+
+        <span id="warningLabel">View Warnings</span>
+        <label class="switch" id="toggleWarning">
+            <input type="checkbox" id="warningCheckBox">
+            <span class="slider round"></span>
+        </label>
+      
+
         <!-- Calendar that filters alarm data-->
         <form id="dateRangeForm">
             <div class="datepicker-container form-group">
@@ -106,6 +127,8 @@
                     uiLibrary: 'bootstrap5',
                 });
             });
+
+            window.addEventListener("message", clearAllAlarms);
         </script>
 
         <table id="historyTable" class="table">
@@ -163,4 +186,29 @@
             initializeHistoryFromLocalStorage();
         };
 
+        var switchLabel = document.getElementById("toggleCritical");
+        var myCheckbox = document.getElementById("criticalCheckBox");
+
+        switchLabel.onclick = function () {
+            // Toggle the functionality based on the checkbox state
+            if (myCheckbox.checked) {
+                displayStopAlarmHistory();
+            } else {
+                displayAlarmHistory()
+            }
+        };
+
+        var switchLabel2 = document.getElementById("toggleWarning");
+        var myCheckbox2 = document.getElementById("warningCheckBox");
+
+        switchLabel2.onclick = function () {
+            // Toggle the functionality based on the checkbox state
+            if (myCheckbox2.checked) {
+                displayWarningHistory();
+            } else {
+                displayAlarmHistory()
+            }
+        };
     </script>
+
+</body>

@@ -1,0 +1,1842 @@
+﻿<html lang="en">
+
+<body>
+  <script src="/go.js"></script>
+  <div id="artistList">
+  </div>
+  <script id="code">
+
+    var myDiagram;
+    var storedValue;
+    var model = [];
+    var model2 = [];
+    var id = -1;
+    var holding;
+    var ID = -1;
+    var dataLoad = [];
+    var isFetching = false;
+
+    model[-1] = {
+      "nodeDataArray": [
+        { "key": "8000_1_0", "category": "8000", "X": "0", "Y": "-100", "Label": "Feed Tank", "State": "On", "Out": [{ "Points": "-49 -100 -49 0 200 0 200 -362 420 -362", "froms": "8000_1_0", "tos": "BTN6" }, { "Points": "-49 -100 -49 0 200 0 200 -262 420 -262", "froms": "8000_1_0", "tos": "BTN5" }, { "Points": "-49 -100 -49 0 200 0 200 -162 420 -162", "froms": "8000_1_0", "tos": "BTN4" }, { "Points": "-49 -100 -49 0 200 0 200 -62 420 -62", "froms": "8000_1_0", "tos": "BTN3" }, { "Points": "-49 -100 -49 0 200 0 200 38 420 38", "froms": "8000_1_0", "tos": "BTN2" }, { "Points": "-49 -100 -49 0 200 0 200 138 420 138", "froms": "8000_1_0", "tos": "BTN1" }] },
+
+        { "key": "BTN6", "category": "Button", "X": "400", "Y": "-400", "text": "M-Series Train 6 (14-Cartridges)", "which": "5", "Label": "Button", "State": "Off", "Out": [{ "Points": "420 -390 0 -390 0 -335", "froms": "BTN6", "tos": "8000_1_0" }, { "Points": "550 -362 1150 -362 1150 -305", "froms": "BTN6", "tos": "8000_3_0" }, { "Points": "550 -390 700 -390 700 -90 900 -90 900 -3", "froms": "BTN6", "tos": "8000_2_0" }] },
+        { "key": "BTN5", "category": "Button", "X": "400", "Y": "-300", "text": "M-Series Train 5 (14-Cartridges)", "which": "4", "Label": "Button", "State": "Off", "Out": [{ "Points": "420 -290 300 -290 300 -390 0 -390 0 -335", "froms": "BTN5", "tos": "8000_1_0" }, { "Points": "550 -262 600 -262 600 -362 1150 -362 1150 -305", "froms": "BTN5", "tos": "8000_3_0" }, { "Points": "550 -290 700 -290 700 -90 900 -90 900 -3", "froms": "BTN5", "tos": "8000_2_0" }] },
+        { "key": "BTN4", "category": "Button", "X": "400", "Y": "-200", "text": "M-Series Train 4 (14-Cartridges)", "which": "3", "Label": "Button", "State": "Off", "Out": [{ "Points": "420 -190 300 -190 300 -390 0 -390 0 -335", "froms": "BTN4", "tos": "8000_1_0" }, { "Points": "550 -162 600 -162 600 -362 1150 -362 1150 -305", "froms": "BTN4", "tos": "8000_3_0" }, { "Points": "550 -190 700 -190 700 -90 900 -90 900 -3", "froms": "BTN4", "tos": "8000_2_0" }] },
+        { "key": "BTN3", "category": "Button", "X": "400", "Y": "-100", "text": "M-Series Train 3 (14-Cartridges)", "which": "2", "Label": "Button", "State": "Off", "Out": [{ "Points": "420 -90 300 -90 300 -390 0 -390 0 -335", "froms": "BTN3", "tos": "8000_1_0" }, { "Points": "550 -62 600 -62 600 -362 1150 -362 1150 -305", "froms": "BTN3", "tos": "8000_3_0" }, { "Points": "550 -90 900 -90 900 -90 900 -90 900 -3", "froms": "BTN3", "tos": "8000_2_0" }] },
+        { "key": "BTN2", "category": "Button", "X": "400", "Y": "0", "text": "M-Series Train 2 (14-Cartridges)", "which": "1", "Label": "Button", "State": "Off", "Out": [{ "Points": "420 10 300 10 300 -390 0 -390 0 -335", "froms": "BTN2", "tos": "8000_1_0" }, { "Points": "550 38 600 38 600 -362 1150 -362 1150 -305", "froms": "BTN2", "tos": "8000_3_0" }, { "Points": "550 10 700 10 700 -90 900 -90 900 -3", "froms": "BTN2", "tos": "8000_2_0" }] },
+        { "key": "BTN1", "category": "Button", "X": "400", "Y": "100", "text": "M-Series Train 1 (14-Cartridges)", "which": "0", "Label": "Button", "State": "Off", "Out": [{ "Points": "420 110 300 110 300 -390 0 -390 0 -335", "froms": "BTN1", "tos": "8000_1_0" }, { "Points": "550 138 600 138 600 -362 1150 -362 1150 -305", "froms": "BTN1", "tos": "8000_3_0" }, { "Points": "550 110 700 110 700 -90 900 -90 900 -3", "froms": "BTN1", "tos": "8000_2_0" }] },
+
+        { "key": "8000_2_0", "category": "8100", "X": "900", "Y": "180", "Label": "Regen Tote", "datas": "-1", "State": "On", "Out": [{ "Points": "840 150 840 190 800 190 800 -310 475 -310 475 -335", "froms": "8000_2_0", "tos": "BTN6" }, { "Points": "840 150 840 190 800 190 800 -210 475 -210 475 -235", "froms": "8000_2_0", "tos": "BTN5" }, { "Points": "840 150 840 190 800 190 800 -110 475 -110 475 -135", "froms": "8000_2_0", "tos": "BTN4" }, { "Points": "840 150 840 190 800 190 800 -10 475 -10 475 -35", "froms": "8000_2_0", "tos": "BTN3" }, { "Points": "840 150 840 190 800 190 800 90 475 90 475 65", "froms": "8000_2_0", "tos": "BTN2" }, { "Points": "840 150 840 190 800 190 800 190 475 190 475 165", "froms": "8000_2_0", "tos": "BTN1" }, { "Points": "1200 190 1230 190 1230 50 1030 50 1030 -60 900 -60 900 -3", "froms": "8000_2_0", "tos": "BTN7" }] },
+
+        { "key": "BTN7", "category": "Button", "X": "1050", "Y": "150", "text": "R-Series (8-Cartridges)", "which": "6", "Label": "Button", "State": "Off", "Out": [{ "Points": "960 150 960 190 1060 190", "froms": "BTN7", "tos": "8000_2_0" }] },
+
+        { "key": "8000_3_0", "category": "8000", "X": "1150", "Y": "-70", "Label": "Effluent Tank", "State": "On", "Out": [] }
+      ]
+    }
+
+
+    // Show loading indicator
+    var loadingIndicator = document.createElement("div");
+    loadingIndicator.textContent = "Loading...";
+    loadingIndicator.style.position = "absolute";
+    loadingIndicator.style.top = "50%";
+    loadingIndicator.style.left = "50%";
+    loadingIndicator.style.transform = "translate(-50%, -50%)";
+    loadingIndicator.style.fontSize = "18px";
+    loadingIndicator.style.fontWeight = "bold";
+    document.body.appendChild(loadingIndicator);
+
+    function init() {
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for more concise visual tree definitions
+
+      go.Diagram.licenseKey = "288647e1b2634dc702d90776423d68f919a52a63cb841ca30c0713f7e808381d2a9cef7006d38bc6d3f81dfb1f6fd0df88956c29951f506bb232d3dc17ea81fce73e27b7410f468ea3042fc1cda929a7f52f77f1c3b271aa882a8cf6bef8c2985ce9f6d0499e5de87e7c0133536cbf4ce2abdf7bab52cd5d7b6e99a4f8f6a656fa69";
+
+      myDiagram = $(go.Diagram, "myDiagramDiv", {
+        "grid.visible": false,
+        "allowZoom": true,
+        "hasHorizontalScrollbar": false,
+        "hasVerticalScrollbar": false,
+        "allowSelect": false,
+        "contentAlignment": go.Spot.Center,
+        "scale": 100,
+        "minScale": 0.2,
+        "maxScale": 2.0,
+        "initialAutoScale": go.Diagram.Uniform,
+        "autoScale": go.Diagram.Uniform,
+      });
+
+      //Feed Tank
+      myDiagram.nodeTemplateMap.add("8000",
+        $(go.Node, "Vertical",
+          {
+            locationSpot: new go.Spot(0.5, 1, 0, 0),
+            locationObjectName: "SHAPE",
+            selectionObjectName: "SHAPE",
+            rotatable: false,
+            zOrder: 4
+          },
+          new go.Binding("angle").makeTwoWay(),
+          new go.Binding("location", "", function (data) {
+            return go.Point.parse(String(data.X) + " " + String(data.Y));
+          }).makeTwoWay(go.Point.stringify),
+          $(go.Panel, "Auto",
+            {
+              margin: new go.Margin(0, 100, 5, 0) // Adjust the margins as needed (top, right, bottom, left)
+            },// This panel will automatically size around the TextBlock
+            $(go.Shape, "Rectangle", // This shape will serve as the outline
+              {
+                stroke: "black", // Set the outline color to black
+                strokeWidth: 5 // Adjust the value to control the thickness of the outline
+              },
+            ),
+            $(go.TextBlock,
+              {
+                alignment: go.Spot.Center,
+                textAlign: "right",
+                isMultiline: true,
+                background: "gray",
+                font: '14pt sans-serif',
+                stroke: "white",
+                height: 20,
+                width: 80,
+              },
+              new go.Binding("text", "Value"),
+              new go.Binding("background", "color"),
+
+              // keep the text upright, even when the whole node has been rotated upside down
+              new go.Binding("angle", "angle", (a) => a === 90 ? 270 : a === 180 ? 180 : a === 270 ? 90 : 0).ofObject()
+            ),
+            new go.Binding("margin", "boxMargin", go.Margin.parse).makeTwoWay(go.Margin.stringify),
+          ),
+          $(go.Shape,
+            {
+              name: "SHAPE",
+              geometryString: "F1 M 0 0 L 0 -30 L 15 -38 L 15 -43 L 30 -43 L 30 -38 L 45 -30 L 45 0 L 0 0",
+              desiredSize: new go.Size(160, 240),
+              strokeWidth: 2,
+              fill: "white",
+              portId: "",
+              fromSpot: new go.Spot(.2, 1),
+              toSpot: new go.Spot(.5, 0, 0, 7)
+            },
+            new go.Binding("toSpot", "toSpot", convertToSpot),
+            new go.Binding("fromSpot", "fromSpot", convertToSpot),
+            new go.Binding("fill", "Value", function (value) {
+              var numericValue = parseFloat(value.replace("%", ""));
+              var percentage = numericValue / 100;
+              var inversePercentage = 1 - percentage + 0.00001;
+              return $(go.Brush, "Linear", {
+                0: "white",
+                [inversePercentage - 0.00001]: "white",
+                [inversePercentage]: "#7bb2ec",
+                1: "#7bb2ec"
+              });
+            })
+          ),
+          $(go.TextBlock,
+            {
+              alignment: go.Spot.Center, textAlign: "center", isMultiline: true, margin: go.Margin.parse("5 -25 0 0"), background: "white", font: '14pt sans-serif', height: 40, width: 95
+            },
+            new go.Binding("text", "Label").makeTwoWay(),
+            new go.Binding("margin", "textMargin", go.Margin.parse).makeTwoWay(go.Margin.stringify),
+            // keep the text upright, even when the whole node has been rotated upside down
+            new go.Binding("angle", "angle", (a) => a === 90 ? 270 : a === 180 ? 180 : a === 270 ? 90 : 0).ofObject()),
+        ));
+
+      //Regen Tote
+      myDiagram.nodeTemplateMap.add("8100",
+        $(go.Node, "Vertical",
+          {
+            rotatable: false,
+            zOrder: 4
+          },
+          new go.Binding("locationSpot", "datas", function (value) {
+            if (value != "-1") {
+              return new go.Spot(0.5, 1.3, 0, -20);
+            }
+            else {
+              return new go.Spot(0.5, 1, 0, -20);
+            }
+          }).makeTwoWay(go.Spot.stringify),
+
+          new go.Binding("angle").makeTwoWay(),
+          new go.Binding("location", "", function (data) {
+            return go.Point.parse(String(data.X) + " " + String(data.Y));
+          }).makeTwoWay(go.Point.stringify),
+          $(go.Panel, "Auto", // This panel will automatically size around the TextBlock
+            {
+              margin: new go.Margin(0, 0, 5, 100) // Adjust the margins as needed (top, right, bottom, left)
+            },
+            $(go.Shape, "Rectangle", // This shape will serve as the outline
+              {
+                stroke: "black", // Set the outline color to black
+                strokeWidth: 5 // Adjust the value to control the thickness of the outline
+              },
+            ),
+            $(go.TextBlock,
+              {
+                alignment: go.Spot.Center,
+                textAlign: "right",
+                isMultiline: true,
+                background: "gray",
+                font: '14pt sans-serif',
+                stroke: "white", // Text color
+                height: 20,
+                width: 80,
+              },
+              new go.Binding("text", "Value"),
+              new go.Binding("background", "color"),
+
+              // keep the text upright, even when the whole node has been rotated upside down
+              new go.Binding("angle", "angle", (a) => a === 90 ? 270 : a === 180 ? 180 : a === 270 ? 90 : 0).ofObject()
+            ),
+            new go.Binding("margin", "boxMargin", go.Margin.parse).makeTwoWay(go.Margin.stringify),
+          ),
+
+          $(go.Shape,
+            {
+              geometryString: "F1 M 0 -50 L 0 0 L 50 0 L 50 -50 L 50 0 L 0 0 Z M 53 -47 L 53 -53 L -3 -53 L -3 -47 L 0 -47 L 0 0 L 50 0 L 50 -47 Z",
+              desiredSize: new go.Size(160, 160),
+              strokeWidth: 2,
+              fill: "white",
+              portId: "",
+              fromSpot: new go.Spot(1, .877, -10),
+              toSpot: new go.Spot(.5, 0, 0, 8)
+            },
+            new go.Binding("toSpot", "toSpot", convertToSpot),
+            new go.Binding("fromSpot", "fromSpot", convertToSpot),
+            new go.Binding("fill", "Value", function (value) {
+              var numericValue = parseFloat(value.replace("%", ""));
+              var percentage = numericValue / 100;
+              var inversePercentage = 1 - percentage + 0.00001;
+              return $(go.Brush, "Linear", {
+                0: "white",
+                [inversePercentage - 0.00001]: "white",
+                [inversePercentage]: "#7bb2ec",
+                1: "#7bb2ec"
+              });
+            })
+          ),
+          $(go.TextBlock,
+            {
+              alignment: go.Spot.Center, textAlign: "center", isMultiline: true, margin: 5, background: "white", font: '14pt sans-serif', height: 40, width: 55,
+            },
+            new go.Binding("text", "Label").makeTwoWay(),
+            // keep the text upright, even when the whole node has been rotated upside down
+            new go.Binding("angle", "angle", (a) => a === 90 ? 270 : a === 180 ? 180 : a === 270 ? 90 : 0).ofObject(),
+
+            new go.Binding("margin", "datas", function (value) {
+              if (value != "-1") {
+                return go.Margin.parse("-105 240 0 0");
+              }
+              else {
+              }
+            }).makeTwoWay(go.Margin.stringify),
+          ),
+
+        ));
+
+      //Valve
+      myDiagram.nodeTemplateMap.add("7000",
+        $(go.Node, "Vertical",
+          {
+            locationSpot: new go.Spot(0.5, 1, 0, 2.25),
+            locationObjectName: "SHAPE",
+            selectionObjectName: "SHAPE",
+            rotatable: false,
+            zOrder: 4
+          },
+          new go.Binding("angle").makeTwoWay(),
+          new go.Binding("location", "", function (data) {
+            return go.Point.parse(String(data.X) + " " + String(data.Y));
+          }).makeTwoWay(go.Point.stringify),
+          $(go.Panel, "Auto", // This panel will automatically size around the TextBlock
+            $(go.Shape, "Rectangle", // This shape will serve as the outline
+              {
+                stroke: "black", // Set the outline color to black
+              },
+            ),
+            $(go.TextBlock,
+              {
+                alignment: go.Spot.Center, textAlign: "center", isMultiline: true, margin: 2, background: "gray", font: '14pt sans-serif', stroke: "white", height: 20, width: 40
+              },
+              new go.Binding("text", "Value"),
+              new go.Binding("background", "color"),
+              new go.Binding("stroke"),
+              new go.Binding("margin", "boxMargin", go.Margin.parse).makeTwoWay(go.Margin.stringify),
+              // keep the text upright, even when the whole node has been rotated upside down
+              new go.Binding("angle", "angle", (a) => a === 90 ? 270 : a === 180 ? 180 : a === 270 ? 90 : 0).ofObject()),
+            new go.Binding("margin", "boxMargin", go.Margin.parse).makeTwoWay(go.Margin.stringify),
+          ),
+          $(go.Shape,
+            {
+              name: "SHAPE",
+              geometryString: "F1 M0 0 L40 20 40 0 0 20z M20 10 L20 30 M12 30 L28 30",
+              strokeWidth: 2,
+              fill: "white",
+              portId: "",
+              desiredSize: new go.Size(45, 40),
+              fromSpot: new go.Spot(1, 0.352),
+              toSpot: new go.Spot(0, 0.352, 7.4)
+            },
+            new go.Binding("toSpot", "toSpot", convertToSpot),
+            new go.Binding("fromSpot", "fromSpot", convertToSpot)
+          ),
+          $(go.TextBlock,
+            {
+              alignment: go.Spot.Center,
+              textAlign: "center",
+              margin: 5,
+              background: "white",
+              font: '14pt sans-serif',
+              width: NaN,  // Set the initial width to auto
+              height: NaN,
+              wrap: go.TextBlock.WrapDesiredSize,  // Enable text wrapping
+              maxSize: new go.Size(95, 95),  // Set the maximum width
+              overflow: go.TextBlock.OverflowEllipsis  // Add ellipsis for overflowed text
+            },
+            new go.Binding("text", "Label").makeTwoWay(),
+            new go.Binding("margin", "textMargin", go.Margin.parse).makeTwoWay(go.Margin.stringify),
+            new go.Binding("angle", "angle", (a) => a === 90 ? 270 : a === 180 ? 180 : a === 270 ? 90 : 0).ofObject(),
+            //new go.Binding("textAlign", "angle", (a) => a === 90 ? "right" : a === 270 ? "left" : "center").ofObject()
+          )
+
+        ));
+
+      //Filter
+      myDiagram.nodeTemplateMap.add("1100",
+        $(go.Node, "Vertical",
+          {
+            height: 140,
+            width: 180,
+            locationSpot: new go.Spot(0.5, 1, 0, -63.3),
+            rotatable: false,
+            zOrder: 4
+          },
+          new go.Binding("angle").makeTwoWay(),
+          new go.Binding("location", "", function (data) {
+            return go.Point.parse(String(data.X) + " " + String(data.Y));
+          }).makeTwoWay(go.Point.stringify),
+          $(go.Shape,
+            {
+              geometryString: "F1 M 0 0 L 0 -22 L 11 -22 L 11 0 L 0 0 L 0 -22 M 0 0 L 1 -2 M 2 -4 L 3 -6 M 4 -8 L 5 -10 M 6 -12 L 7 -14 M 8 -16 L 9 -18 M 10 -20 L 11 -22",
+              strokeWidth: 2,
+              desiredSize: new go.Size(45, 90),
+              fill: "white",
+              portId: "",
+              fromSpot: new go.Spot(1, .5125, 0),
+              toSpot: new go.Spot(0, .5125, 7)
+            },
+            new go.Binding("toSpot", "toSpot", convertToSpot),
+            new go.Binding("fromSpot", "fromSpot", convertToSpot)
+          ),
+          $(go.Panel, "Auto",
+            $(go.TextBlock,
+              {
+                textAlign: "center", isMultiline: true, font: '14pt sans-serif', width: 42
+              },
+              new go.Binding("text", "Label").makeTwoWay(),
+              new go.Binding("margin", "textMargin", go.Margin.parse).makeTwoWay(go.Margin.stringify),
+              new go.Binding("angle", "angle", (a) => a === 90 ? 270 : a === 180 ? 180 : a === 270 ? 90 : 0).ofObject()),
+            new go.Binding("alignment", "alignment", function (label) {
+              if (label.endsWith("L")) {
+                return new go.Spot(0, 0, 10, -55);
+              } else if (label.endsWith("R")) {
+                return new go.Spot(0, 0, 120, -55);
+              } else {
+                return new go.Spot(0.5, 0.5);
+              }
+            })
+          )
+
+        ));
+
+
+      //Vacuum
+      myDiagram.nodeTemplateMap.add("Vacuum",
+        $(go.Node, "Vertical",
+          {
+            locationSpot: new go.Spot(0.5, 1, 0, -24.3),
+            rotatable: false,
+            zOrder: 4
+          },
+          new go.Binding("angle").makeTwoWay(),
+          new go.Binding("location", "", function (data) {
+            return go.Point.parse(String(data.X) + " " + String(data.Y));
+          }).makeTwoWay(go.Point.stringify),
+          $(go.Shape,
+            {
+              geometryString: "F1 M 0 -5 L 0 35 A 1 1 0 0 0 0 42 H 0 A 1 1 0 0 0 0 35 M 0 -17 L 15 -5 L -15 -5 Z M 7 0 Q 0 14 7 30 M -7 30 Q 0 14 -7 0",
+              strokeWidth: 2,
+              fill: "white",
+              stroke: "black",
+              desiredSize: new go.Size(45, 90),
+              portId: "",
+              fromSpot: new go.Spot(0, .925, 26),
+              toSpot: new go.Spot(1, .925, -24.7, .5)
+            },
+            new go.Binding("toSpot", "toSpot", convertToSpot),
+            new go.Binding("fromSpot", "fromSpot", convertToSpot)
+          ),
+          $(go.TextBlock,
+            {
+              alignment: go.Spot.Center, textAlign: "center", isMultiline: true, margin: 5, background: "white", font: '18pt sans-serif'
+            },
+            new go.Binding("text", "Label").makeTwoWay(),
+            new go.Binding("margin", "margin", go.Margin.parse).makeTwoWay(go.Margin.stringify),
+            // keep the text upright, even when the whole node has been rotated upside down
+            new go.Binding("angle", "angle", (a) => a === 90 ? 270 : a === 180 ? 180 : a === 270 ? 90 : 0).ofObject()),
+        ));
+
+
+      //Module
+      myDiagram.nodeTemplateMap.add("5000",
+        $(go.Node, "Auto",
+          {
+            locationSpot: new go.Spot(0.14, 1, 0, 0),
+            rotatable: false,
+            zOrder: 4,
+            width: 200
+          },
+
+          new go.Binding("angle").makeTwoWay(),
+          new go.Binding("location", "", function (data) {
+            return go.Point.parse(String(data.X) + " " + String(data.Y));
+          }).makeTwoWay(go.Point.stringify),
+          $(go.Panel, "Horizontal",
+            $(go.Shape,
+              {
+                geometryString: "F1 M -11 0 A 1 1 0 0 0 5 0 L 5 -15 A 1 1 0 0 0 -11 -15 L -11 0",
+                strokeWidth: 2,
+                fill: "white",
+                stroke: "black",
+                desiredSize: new go.Size(55, 100),
+                portId: "",
+                fromSpot: new go.Spot(0.5, 1, 0, -7.2),
+                toSpot: new go.Spot(0.5, 0, 0, 7.2)
+              }
+            ),
+          ),
+          $(go.Panel, "Auto",
+            {
+              margin: new go.Margin(0, 0, 0, 60) // Adjust the margins as needed (top, right, bottom, left)
+            },// This panel will automatically size around the TextBlock
+            $(go.Shape, "Rectangle", // This shape will serve as the outline
+              {
+                stroke: "white", // Set the outline color to black
+              },
+            ),
+            $(go.TextBlock,
+              {
+                alignment: go.Spot.Center, textAlign: "right", isMultiline: true, background: "white", text: "ElectraMet \nCartridges", font: '14pt sans-serif', stroke: "black",
+              },
+            ),
+          ),
+        ),
+      );
+
+      //Blank Module
+      myDiagram.nodeTemplateMap.add("5001",
+        $(go.Node, "Vertical",
+          {
+            locationSpot: new go.Spot(0.5, 1, 0, 0),
+            rotatable: false,
+            zOrder: 4
+          },
+          new go.Binding("angle").makeTwoWay(),
+          new go.Binding("location", "", function (data) {
+            return go.Point.parse(String(data.X) + " " + String(data.Y));
+          }).makeTwoWay(go.Point.stringify),
+          $(go.Shape,
+            {
+              geometryString: "F1 M -11 0 A 1 1 0 0 0 5 0 L 5 -15 A 1 1 0 0 0 -11 -15 L -11 0 M -11 0 L 5 -15",
+              strokeWidth: 2,
+              fill: "white",
+              stroke: "black",
+              desiredSize: new go.Size(55, 100),
+              portId: "",
+              toSpot: new go.Spot(0.5, 1, 0, -7.2),
+              fromSpot: new go.Spot(0.5, 0, 0, .2)
+            },
+            new go.Binding("toSpot", "toSpot", convertToSpot),
+            new go.Binding("fromSpot", "fromSpot", convertToSpot)
+          ),
+        ));
+
+      //Port
+      myDiagram.nodeTemplateMap.add("Port",
+        $(go.Node, "Vertical",
+          {
+            locationSpot: new go.Spot(0.5, 1, 0, -72),
+            rotatable: false,
+            zOrder: 4
+          },
+          new go.Binding("angle").makeTwoWay(),
+          new go.Binding("location", "", function (data) {
+            return go.Point.parse(String(data.X) + " " + String(data.Y));
+          }).makeTwoWay(go.Point.stringify),
+          $(go.Shape,
+            {
+              geometryString: "F1 M 0 2 A 1 1 0 0 0 0 -8 A 1 1 0 0 0 0 2 M 0 -3 L -7 8 L 7 8 L 0 -3 L 7 -14 L -7 -14 L 0 -3",
+              strokeWidth: 2,
+              fill: "white",
+              stroke: "black",
+              desiredSize: new go.Size(24, 40),
+              portId: "",
+              toSpot: new go.Spot(.5, 0, 0, 7),
+              fromSpot: new go.Spot(.5, 1, 0, 0)
+            },
+            new go.Binding("toSpot", "toSpot", convertToSpot),
+            new go.Binding("fromSpot", "fromSpot", convertToSpot)
+          ),
+          $(go.TextBlock,
+            {
+              alignment: go.Spot.Center, textAlign: "center", isMultiline: true, margin: 5, background: "white", font: '18pt sans-serif'
+            },
+            new go.Binding("text", "Label").makeTwoWay(),
+            new go.Binding("margin", "margin", go.Margin.parse).makeTwoWay(go.Margin.stringify),
+            // keep the text upright, even when the whole node has been rotated upside down
+            new go.Binding("angle", "angle", (a) => a === 90 ? 270 : a === 180 ? 180 : a === 270 ? 90 : 0).ofObject())
+        ));
+
+
+      //Pump
+      myDiagram.nodeTemplateMap.add("9000",
+        $(go.Node, "Vertical",
+          {
+            locationSpot: new go.Spot(0.5, 1, 0, -44),
+            rotatable: false,
+            zOrder: 1
+          },
+          new go.Binding("angle").makeTwoWay(),
+          new go.Binding("location", "", function (data) {
+            return go.Point.parse(String(data.X) + " " + String(data.Y));
+          }).makeTwoWay(go.Point.stringify),
+          $(go.Panel, "Auto", // This panel will automatically size around the TextBlock
+            $(go.Shape, "Rectangle", // This shape will serve as the outline
+              {
+                stroke: "black", // Set the outline color to black
+              }
+            ),
+            $(go.TextBlock,
+              {
+                alignment: go.Spot.Center, textAlign: "center", isMultiline: true, margin: 2, background: "gray", font: '14pt sans-serif', stroke: "white", height: 20, width: 40
+              },
+              new go.Binding("text", "Value"),
+              new go.Binding("background", "color"),
+              new go.Binding("stroke"),
+              new go.Binding("margin", "boxMargin", go.Margin.parse).makeTwoWay(go.Margin.stringify),
+              // keep the text upright, even when the whole node has been rotated upside down
+              new go.Binding("angle", "angle", (a) => a === 90 ? 270 : a === 180 ? 180 : a === 270 ? 90 : 0).ofObject()),
+          ),
+          $(go.Shape,
+            {
+              geometryString: "F1 M 0 0 A 1 1 0 0 0 0 -10 A 1 1 0 0 0 0 0 Q 1.739 -0.001 3 -1 L 5 1 H -5 L -3 -1 L -1.998 -0.389 L -0.888 -0.082",
+              strokeWidth: 2,
+              stroke: "black",
+              fill: "white",
+              desiredSize: new go.Size(45, 50),
+              portId: "",
+              fromSpot: new go.Spot(1, 0.11, -24, -2),
+              toSpot: new go.Spot(0, 0.46, 30)
+            },
+            new go.Binding("toSpot", "toSpot", convertToSpot),
+            new go.Binding("fromSpot", "fromSpot", convertToSpot)
+          ),
+          $(go.TextBlock,
+            {
+              alignment: go.Spot.Center, textAlign: "center", isMultiline: true, margin: 5, background: "white", font: '14pt sans-serif', height: 40, width: 95,
+            },
+            new go.Binding("text", "Label").makeTwoWay(),
+            // keep the text upright, even when the whole node has been rotated upside down
+            new go.Binding("angle", "angle", (a) => a === 90 ? 270 : a === 180 ? 180 : a === 270 ? 90 : 0).ofObject()),
+        ));
+
+      //Flow
+      myDiagram.nodeTemplateMap.add("3600",
+        $(go.Node, "Vertical",
+          {
+            locationSpot: new go.Spot(0.5, 1, 0, -24),
+            rotatable: false,
+            zOrder: 4
+          },
+          new go.Binding("angle").makeTwoWay(),
+          new go.Binding("location", "", function (data) {
+            return go.Point.parse(String(data.X) + " " + String(data.Y));
+          }).makeTwoWay(go.Point.stringify),
+          $(go.Panel, "Auto", // This panel will automatically size around the TextBlock
+            $(go.Shape, "Rectangle", // This shape will serve as the outline
+              {
+                stroke: "black", // Set the outline color to black
+              },
+            ),
+            $(go.TextBlock,
+              {
+                alignment: go.Spot.Center, textAlign: "center", isMultiline: true, margin: 2, background: "gray", font: '14pt sans-serif', stroke: "white"
+              },
+              new go.Binding("text", "Value"),
+              new go.Binding("background", "color"),
+              new go.Binding("stroke"),
+              new go.Binding("margin", "boxMargin", go.Margin.parse).makeTwoWay(go.Margin.stringify),
+              // keep the text upright, even when the whole node has been rotated upside down
+              new go.Binding("angle", "angle", (a) => a === 90 ? 270 : a === 180 ? 180 : a === 270 ? 90 : 0).ofObject()),
+            new go.Binding("margin", "Idx", function (value) {
+              if (value == 2) {
+                return go.Margin.parse("0 100 0 0");
+              }
+            }).makeTwoWay(go.Margin.stringify),
+          ),
+          $(go.Shape,
+            {
+              geometryString: "F1 M 0 0 A 1 1 0 0 0 0 -10 A 1 1 0 0 0 0 0 L 1.025 -0.088 L 2.009 -0.399 L 3 -1 L 4 -2 Q 0 -5 -4 -2 L -3 -1 L -2.057 -0.45 L -0.969 -0.088 L 0 0 L 1.025 -0.088 L 2.009 -0.399 L 3 -1 L 3.978 -1.927 L 4.573 -2.988 L 4.91 -3.998 L 5.013 -5.008 L 4.936 -5.993 L 4.573 -7.08 L 3.926 -8.09 L 3 -9 L 2.035 -9.567 L 1.025 -9.877 L -0.011 -10.007 L -0.943 -9.929 L -2.005 -9.592 L -3 -9 L -4 -8 Q 0 -5 4 -8",
+              strokeWidth: 2,
+              fill: "white",
+              stroke: "black",
+              desiredSize: new go.Size(45, 45),
+              portId: "",
+              fromSpot: new go.Spot(1, 0.5, -.5),
+              toSpot: new go.Spot(0, 0.5, 7.65)
+            },
+            new go.Binding("toSpot", "toSpot", convertToSpot),
+            new go.Binding("fromSpot", "fromSpot", convertToSpot)
+          ),
+          $(go.TextBlock,
+            {
+              alignment: go.Spot.Center, textAlign: "center", isMultiline: true, margin: 5, background: "white", font: '14pt sans-serif', height: 20, width: 95
+            },
+            new go.Binding("text", "Label").makeTwoWay(),
+            // keep the text upright, even when the whole node has been rotated upside down
+            new go.Binding("angle", "angle", (a) => a === 90 ? 270 : a === 180 ? 180 : a === 270 ? 90 : 0).ofObject()),
+        ));
+
+      //Pressure
+      myDiagram.nodeTemplateMap.add("3900",
+        $(go.Node, "Vertical",
+          {
+            width: 260,  // Adjust the width as needed
+            height: 162,
+            locationSpot: new go.Spot(0.5, 1, 0, -27.1),
+            rotatable: false,
+            zOrder: 4
+          },
+          new go.Binding("locationSpot", "alignment", function (label) {
+            if (label.endsWith("L") || label.endsWith("R")) {
+              return new go.Spot(0.5, 1, 0, -56.5);
+            }
+            else {
+              return new go.Spot(0.5, 1, 0, -27.1);
+            }
+          }),
+          new go.Binding("angle").makeTwoWay(),
+          new go.Binding("location", "", function (data) {
+            return go.Point.parse(String(data.X) + " " + String(data.Y));
+          }).makeTwoWay(go.Point.stringify),
+          $(go.Panel, "Auto",
+            $(go.Shape,
+              {
+                stroke: "black",
+              },
+            ),
+            $(go.TextBlock,
+              {
+                alignment: go.Spot.Center, textAlign: "center", isMultiline: true, margin: 2, background: "gray", font: '14pt sans-serif', stroke: "white"
+              },
+              new go.Binding("text", "Value"),
+              new go.Binding("background", "color"),
+              new go.Binding("stroke"),
+              new go.Binding("margin", "boxMargin", go.Margin.parse).makeTwoWay(go.Margin.stringify),
+              new go.Binding("angle", "angle", (a) => a === 90 ? 270 : a === 180 ? 180 : a === 270 ? 90 : 0).ofObject()),
+            new go.Binding("margin", "boxMargin", go.Margin.parse).makeTwoWay(go.Margin.stringify),
+          ),
+          $(go.Shape,
+            {
+              geometryString: "F1 M 0 -15 A 15 15 0 1 1 0 15 L 0 35 A 1 1 0 0 0 0 42 H 0 A 1 1 0 0 0 0 35 L 0 15 A 15 15 0 1 1 0 -15 M -10.5 -10.5 L 10.5 10.5 M -10.5 10.5 L 10.5 -10.5",
+              strokeWidth: 2,
+              fill: "white",
+              stroke: "black",
+              desiredSize: new go.Size(45, 85),
+              portId: "",
+              fromSpot: new go.Spot(1, .925, -18),
+              toSpot: new go.Spot(0, .925, 25),
+            },
+            new go.Binding("toSpot", "toSpot", convertToSpot),
+            new go.Binding("fromSpot", "fromSpot", convertToSpot)
+          ),
+          $(go.Panel, "Auto",
+            {},
+            $(go.TextBlock,
+              {
+                textAlign: "center", isMultiline: true, background: "white", font: '14pt sans-serif', width: 75
+              },
+              new go.Binding("text", "Label").makeTwoWay(),
+              new go.Binding("margin", "textMargin", go.Margin.parse).makeTwoWay(go.Margin.stringify),
+              new go.Binding("angle", "angle", (a) => a === 90 ? 270 : a === 180 ? 180 : a === 270 ? 90 : 0).ofObject()),
+            new go.Binding("alignment", "alignment", function (label) {
+              if (label.endsWith("L")) {
+                return new go.Spot(0, 0, 0, -65);
+              } else if (label.endsWith("R")) {
+                return new go.Spot(0, 0, 160, -65);
+              } else {
+                return new go.Spot(0.5, 0.5);
+              }
+            })
+          )
+        )
+      );
+
+      //Pressure Diff
+      myDiagram.nodeTemplateMap.add("10000",
+        $(go.Node, "Vertical",
+          {
+            locationSpot: new go.Spot(.5, 1, 0, -27.5),
+            rotatable: false,
+            zOrder: 4
+          },
+          new go.Binding("angle").makeTwoWay(),
+          new go.Binding("location", "", function (data) {
+            return go.Point.parse(String(data.X) + " " + String(data.Y));
+          }).makeTwoWay(go.Point.stringify),
+          $(go.Panel, "Auto", // This panel will automatically size around the TextBlock
+            $(go.Shape, "Rectangle", // This shape will serve as the outline
+              {
+                stroke: "black", // Set the outline color to black
+              },
+            ),
+            $(go.TextBlock,
+              {
+                alignment: go.Spot.Center, textAlign: "right", isMultiline: true, margin: 2, background: "gray", font: '14pt sans-serif', stroke: "white"
+              },
+              new go.Binding("text", "Value"),
+              new go.Binding("background", "color"),
+              new go.Binding("stroke"),
+              new go.Binding("margin", "boxMargin", go.Margin.parse).makeTwoWay(go.Margin.stringify),
+              // keep the text upright, even when the whole node has been rotated upside down
+              new go.Binding("angle", "angle", (a) => a === 90 ? 270 : a === 180 ? 180 : a === 270 ? 90 : 0).ofObject()),
+            new go.Binding("margin", "boxMargin", go.Margin.parse).makeTwoWay(go.Margin.stringify),
+          ),
+          $(go.Shape,
+            {
+              geometryString: "F1 M 0 0 A 10 10 0 0 0 140 0 A 10 10 0 0 0 0 0 M 100 30 L 43 -27 Z M 48 -22 L 50 -20 L 59 -20 L 35 -35 L 50 -11 L 50 -20",
+              strokeWidth: 2,
+              fill: "white",
+              stroke: "black",
+              desiredSize: new go.Size(45, 45),
+              portId: "",
+              fromSpot: new go.Spot(1, .925, -19),
+              toSpot: new go.Spot(0, .925, 26)
+            },
+            new go.Binding("toSpot", "toSpot", convertToSpot),
+            new go.Binding("fromSpot", "fromSpot", convertToSpot)
+          ),
+        ));
+
+      //Text Box
+      myDiagram.nodeTemplateMap.add("3400",
+        $(go.Node, "Vertical",
+          {
+            locationSpot: new go.Spot(.5, 1, 0, 0),
+            rotatable: false,
+            zOrder: 4
+          },
+          new go.Binding("angle").makeTwoWay(),
+          new go.Binding("location", "", function (data) {
+            return go.Point.parse(String(data.X) + " " + String(data.Y));
+          }).makeTwoWay(go.Point.stringify),
+          // Textbox for "Temperature" in bold
+          $(go.Panel, "Auto",
+            $(go.Shape,
+              {
+                stroke: "black",
+              },
+            ),
+
+            // Textbox for displaying the data
+            $(go.TextBlock,
+              {
+                textAlign: "center", isMultiline: true, margin: 0, background: 'white', font: '14pt sans-serif', stroke: "black", height: 40, width: 120
+              },
+              new go.Binding("text", "Value", function (label) {
+                return "Temperature\n" + label;
+              }
+              ),
+              new go.Binding("stroke")),
+          )
+        ));
+
+
+      function convertToSpot(spotData) {
+        // Split the spot data string into its components
+        const parts = spotData.split(" ");
+        // Extract the spot coordinates
+        const w = parseFloat(parts[0]);
+        const x = parseFloat(parts[1]);
+        const y = parseFloat(parts[2]);
+        const z = parseFloat(parts[3]);
+        // Create and return a go.Spot object
+        return new go.Spot(w, x, y, z);
+      }
+
+      myDiagram.nodeTemplateMap.add("Button",
+        $(go.Node, "Spot",
+          { width: 151, height: 76, layerName: "Foreground" },
+          new go.Binding("width"),
+          new go.Binding("height"),
+          new go.Binding("location", "", function (data) {
+            return go.Point.parse(String(data.X) + " " + String(data.Y));
+          }).makeTwoWay(go.Point.stringify),
+          $(go.Shape, "Rectangle",
+            { width: 150, height: 75 },
+            new go.Binding("width"),
+            new go.Binding("height"),
+            new go.Binding("fill", "State", function (State) {
+              return State === "On" ? "green" : "grey";
+            }),
+            {
+              click: function (e, obj) {
+                var nodeData = obj.part.data;
+                var which = nodeData.which;
+                if (nodeData.State === "On") {
+                  load(which); // Swap to file 2 on button click if State is "On"
+                }
+              }
+            }
+          ),
+          $(go.TextBlock,
+            {
+              font: "bold 15px sans-serif", stroke: "black", textAlign: "center",
+              click: function (e, obj) {
+                var nodeData = obj.part.data;
+                var which = nodeData.which;
+                if (nodeData.State === "On") {
+                  load(which); // Swap to file 2 on button click if State is "On"
+                }
+              }
+            },
+            new go.Binding("font"),
+            new go.Binding("text"),
+          )
+        )
+      );
+
+      myDiagram.linkTemplate = $(go.Link,
+        { routing: go.Link.Orthogonal, corner: 0, reshapable: false, resegmentable: false, toShortLength: 7, toEndSegmentLength: 7, fromEndSegmentLength: 20 },
+        new go.Binding("fromEndSegmentLength", "fromLength", function (length) {
+          return length - 0;
+        }),
+        new go.Binding("toEndSegmentLength", "toLength", function (length) {
+          return length - 0;
+        }),
+        new go.Binding("points", "points").makeTwoWay(),
+        new go.Binding("toEndSegmentLength", "toLength"),
+        $(go.Shape, { isPanelMain: true, stroke: "gray", strokeWidth: 5 },
+          new go.Binding("stroke", "state", function (state) {
+            if (state == "on") {
+              return "#7bb2ec";
+            }
+          })
+        ),
+        $(go.Shape, { isPanelMain: true, stroke: "gray", strokeWidth: 3, name: "PIPE", strokeDashArray: [10, 10] },
+          new go.Binding("stroke", "state", function (state) {
+            if (state == "on") {
+              return "white";
+            }
+            else if (state == "mid") {
+              return "orange";
+            }
+          })),
+        new go.Binding("zOrder", "state", function (state) {
+          if (state == "on" || state == "mid") {
+            return 3;
+          }
+          else {
+            return 2;
+          }
+        }),
+      );
+      load(-1);
+    }
+
+    var updated = 0;
+    var started;
+
+    function updateAnimation() {
+
+      if (myDiagram.autoScale != go.Diagram.None && myDiagram.scale != 100) {
+        myDiagram.autoScale = go.Diagram.None;
+        holds = undefined;
+      }
+
+      if (started != 1) {
+        loop();
+      }
+
+      function loop() {
+
+        started = 1;
+        var diagram = myDiagram;
+        setTimeout(() => {
+          var oldskips = diagram.skipsUndoManager;
+          diagram.skipsUndoManager = true;
+          diagram.links.each(link => {
+            var state = link.data.state; // Assuming the state is stored in the link data
+            var shape = link.findObject("PIPE");
+            var off = shape.strokeDashOffset - 2;
+            // animate (move) the stroke dash
+            shape.strokeDashOffset = (off <= 0) ? 20 : off;
+            // animate (strobe) the opacity:
+          });
+          diagram.skipsUndoManager = oldskips;
+          loop();
+        }, 50);
+      }
+
+    }
+
+    var i;
+    function setKeys(input) {
+      var originalData = [...input.nodeDataArray];
+      var originalLink = [...input.linkDataArray];
+
+      var orig = [];
+
+      for (i in originalData) {
+        if (((originalData[i].Status >> 7) & 1) == "0") {
+          orig.push(originalData[i]); // Copy the data to the new array
+        }
+      }
+
+      var data = [];
+      var Out = "";
+
+      for (i in orig) {
+        data.push(orig[i]); // Copy the data to the new array
+      }
+
+      if (ID != -1) {
+        for (i = 0; i < data.length; i++) {
+          // Update the "category" property
+          if (data[i].Label.includes("Regen Tote")) {
+            data[i].Type = 8100;
+            data[i].datas = ID;
+          }
+
+          if (data[i].Label.includes("180")) {
+            data[i].angle = 180;
+            data[i].Label = data[i].Label.replace("180", "");
+          }
+          else if (data[i].Label.includes("90")) {
+            data[i].angle = 90;
+          }
+          else if (data[i].Label.includes("270") || data[i].Label.includes("REGEN INLET") || data[i].Label.includes("RECIRC OUTLET") || data[i].Label.includes("AIR INLET")) {
+            data[i].angle = 270;
+            data[i].Label = data[i].Label.replace("270", "");
+          }
+
+          if (data[i].Label.endsWith("L")) {
+            data[i].alignment = 'L';
+            data[i].Label = data[i].Label.slice(0, -1); // Remove the last character
+          }
+          else if (data[i].Label.endsWith("R")) {
+            data[i].alignment = 'R';
+            data[i].Label = data[i].Label.slice(0, -1);
+          }
+
+          data[i].category = String(data[i].Type);
+          myDiagram.model.setDataProperty(data[i], "key", data[i].Type + '_' + data[i].Idx + '_' + data[i].SubIdx);
+        }
+      }
+
+      return data;
+    }
+
+    var modelHolder;
+    var linkHolder;
+
+    function importLinks() {
+      var originalData = [...myDiagram.model.nodeDataArray];
+      var data = [];
+      var link = [];
+      var i;
+      var j;
+      for (i in originalData) {
+        if (originalData[i].hasOwnProperty('Out')) {
+          for (j in originalData[i].Out) {
+            if (ID != -1) {
+              originalData[i].Out[j].froms = originalData[i].Type + '_' + originalData[i].Idx + '_' + originalData[i].SubIdx;
+              originalData[i].Out[j].tos = originalData[i].Out[j].Type + '_' + originalData[i].Out[j].Idx + '_' + originalData[i].Out[j].SubIdx;
+            }
+            link.push(originalData[i].Out[j]);
+          }
+        }
+        data.push(originalData[i]); // Copy the data to the new array
+      }
+
+      for (i = 0; i < link.length; i++) {
+
+        if (link[i].Points != "") {
+          var coordinateArray = link[i].Points.split(" ").map(Number);
+
+          var points = [];
+          for (var k = 0; k < coordinateArray.length; k += 2) {
+            var x = coordinateArray[k];
+            var y = coordinateArray[k + 1];
+            points.push(new go.Point(x, y));
+          }
+          link[i].points = points;
+        }
+      }
+
+      stateMap(model[ID].nodeDataArray, ID);
+
+      function areStatesEqual(arr1, arr2) {
+        if (arr1.length !== arr2.length) {
+          return false;
+        }
+
+        for (let i = 0; i < arr1.length; i++) {
+          if (arr1[i].state !== arr2[i].state) {
+            return false;
+          }
+        }
+
+        return true;
+      }
+
+      try {
+        var linkModel;
+        for (var i = -1; i < model.length; i++) {
+          linkModel += JSON.stringify(model[i].linkDataArray);
+        }
+      }
+      catch { }
+      if ((linkModel !== modelHolder) || (!areStatesEqual(model[ID].linkDataArray, linkHolder))) {
+        console.log("updated");
+        myDiagram.model.linkDataArray = [...model[ID].linkDataArray];
+        modelHolder = linkModel;
+        linkHolder = [...model[ID].linkDataArray];
+      }
+
+    }
+
+    function updateLinks() {
+      try {
+        var originalData = model[holding].nodeDataArray;
+      }
+      catch {
+        var originalData = model[-1].nodeDataArray;
+      }
+      var data = [];
+      var link = [];
+      var i;
+      var j;
+      for (i in originalData) {
+        if (originalData[i].hasOwnProperty('Out')) {
+          for (j in originalData[i].Out) {
+            if (originalData[i].Out[j].Type != 0) {
+              originalData[i].Out[j].froms = originalData[i].Type + '_' + originalData[i].Idx + '_' + originalData[i].SubIdx;
+              originalData[i].Out[j].tos = originalData[i].Out[j].Type + '_' + originalData[i].Out[j].Idx + '_' + originalData[i].Out[j].SubIdx;
+
+              link.push(originalData[i].Out[j]);
+            }
+          }
+        }
+        data.push(originalData[i]);
+      }
+
+      for (i = 0; i < link.length; i++) {
+
+        if (link[i].Points != "") {
+          var coordinateArray = link[i].Points.split(" ").map(Number);
+
+          var points = [];
+          for (var k = 0; k < coordinateArray.length; k += 2) {
+            var x = coordinateArray[k];
+            var y = coordinateArray[k + 1];
+            points.push(new go.Point(x, y));
+          }
+          link[i].points = points;
+        }
+      }
+
+      stateMap(data, holding);
+
+      //console.log(holding);
+    }
+
+    function load(which) {
+      fakeScaling = 1.0;
+      holds = undefined;
+      id = which;
+      ID = id;
+
+      myDiagram.model.nodeDataArray = [...model[which].nodeDataArray];
+
+      updated = 0;
+
+      updateGraphic(model[which].nodeDataArray, which, id);
+
+      updateData(model[which].nodeDataArray, which);
+      //console.log(which);
+
+      myDiagram.autoScale = go.Diagram.Uniform;
+      updateZoomPercentageLabel();
+      myDiagram.autoScale = go.Diagram.None;
+    }
+
+    function updateGraphic(data, holding, ids) {
+
+      loadingIndicator.style.display = "none";
+      if (!model[holding]) {
+        model[holding] = {}; // Create an empty object if it doesn't exist
+      }
+      if (data.Devices !== undefined) {
+        model[holding].nodeDataArray = data.Devices;
+      } else {
+        model[holding].nodeDataArray = data;
+      }
+
+      var lastData = [];
+
+      try {
+      }
+      catch { }
+
+      // Loop through the artists, and add them as list items
+      if (data.Devices != undefined) {
+        for (var i in data.Devices) {
+          if (data.Devices[i].State == "OPEN" || data.Devices[i].State == "On") {
+            data.Devices[i].Value = "ON";
+            data.Devices[i].color = "green";
+            data.Devices[i].stroke = "black";
+          } else if (data.Devices[i].State == "CLOSED" || data.Devices[i].State == "Off") {
+            data.Devices[i].Value = "OFF";
+            data.Devices[i].color = "red";
+            data.Devices[i].stroke = "black";
+          } else if (data.Devices[i].Units == "%") {
+            data.Devices[i].Value = String(parseFloat(data.Devices[i].Value).toFixed(2)) + data.Devices[i].Units;
+          }
+          if (data.Devices[i].Units != undefined) {
+            if (data.Devices[i].Units.includes("deg")) {
+              data.Devices[i].Units = data.Devices[i].Units.replace("deg", "°")
+            }
+          }
+          if (data.Devices[i].Type == 6000) {
+            data.Devices[i].Type = 5000;
+          }
+          if (data.Devices[i].Type == 3600) {
+            data.Devices[i].Metric = (parseFloat(data.Devices[i].Value) / 3.785);
+            data.Devices[i].MetricUnits = "LPM";
+            data.Devices[i].Units = "GPM";
+          } else if ((data.Devices[i].Type == 3900 || data.Devices[i].Type == 10000)) {
+            data.Devices[i].Metric = (parseFloat(data.Devices[i].Value));
+            data.Devices[i].MetricUnits = "PSI";
+            data.Devices[i].Units = "PSI";
+          } else if (data.Devices[i].Type == 3400) {
+            data.Devices[i].Metric = ((parseFloat(data.Devices[i].Value) - 32) * 5 / 9);
+            data.Devices[i].MetricUnits = "°C";
+          } else {
+            data.Devices[i].Metric = data.Devices[i].Value;
+            data.Devices[i].MetricUnits = data.Devices[i].Units;
+          }
+
+          if (storedValue == 2) {
+            if (data.Devices[i].Value == "ON" || data.Devices[i].Value == "OFF") {
+              data.Devices[i].Imperial = data.Devices[i].Value;
+            } else {
+              data.Devices[i].Imperial = String(parseFloat(data.Devices[i].Value).toFixed(2));
+              data.Devices[i].Value = String(parseFloat(data.Devices[i].Value).toFixed(2)) + " " + data.Devices[i].Units;
+            }
+          }
+          else {
+            if (data.Devices[i].Value == "ON" || data.Devices[i].Value == "OFF") {
+              data.Devices[i].Imperial = data.Devices[i].Value;
+              data.Devices[i].Metric = data.Devices[i].Metric;
+            } else {
+              data.Devices[i].Imperial = String(parseFloat(data.Devices[i].Value).toFixed(2));
+              data.Devices[i].Metric = String(parseFloat(data.Devices[i].Metric).toFixed(2));
+              data.Devices[i].Value = String(parseFloat(data.Devices[i].Metric).toFixed(2)) + " " + data.Devices[i].MetricUnits;
+            }
+          }
+        }
+
+        var nodeLabelsToUpdate = ["Regen Tote", "Feed Tank", "Effluent Tank"];
+        for (const label of nodeLabelsToUpdate) {
+          // Find the index of the node with the current label in myDiagram.model.nodeDataArray
+          const myDiagramNodeIndex = model[-1].nodeDataArray.findIndex(node => node.Label === label);
+
+          // Find the node with the current label in the model object
+          const modelNode = data.Devices.find(node => node.Label === label);
+
+          // Check if the node was found in both objects
+          if (myDiagramNodeIndex !== -1 && modelNode) {
+            // Update the node in myDiagram.model.nodeDataArray with the data from modelNode
+            model[-1].nodeDataArray[myDiagramNodeIndex].Value = modelNode.Value;
+          }
+        }
+      }
+
+      try {
+        myDiagram.model.Sys_State = dataLoad[holding].Sys_State;
+        myDiagram.model.Sys_Timer = dataLoad[holding].Sys_Timer;
+      }
+      catch { }
+
+
+      if (ID != -1) {
+        // Check if a button node already exists in the nodeDataArray
+
+        datas = setKeys(model[ids]);
+      }
+
+      else {
+        datas = setKeys(myDiagram.model);
+      }
+
+      myDiagram.model.nodeDataArray = [...datas];
+
+      if (datas != lastData) {
+        updated = 0;
+      }
+
+      if (ID == -1) {
+        parent.document.getElementById("timer-value").textContent = "";
+
+        // Remove any <br> elements that might exist after timer-value and state-value
+        const timerBr = parent.document.querySelector("#timer-value + br");
+        const stateBr = parent.document.querySelector("#state-value + br");
+
+        if (timerBr) {
+          timerBr.remove();
+        }
+
+        if (stateBr) {
+          stateBr.remove();
+        }
+      }
+
+      lastData = datas;
+    }
+
+    function updateData(data, holding) {
+
+      model2[holding] = [myDiagram.model.Sys_State, myDiagram.model.Sys_Timer];
+      var iframeIds = ["cartridges.html", "data.html"];
+      var dataToSend = {
+        model2: model2, // Replace model2 with the actual value you want to send
+        ID: id // Replace ID with the actual value you want to send
+      };
+      try {
+        parent.postMessage(dataToSend, "*");
+      } catch { }
+
+      for (var i = 0; i < iframeIds.length; i++) {
+        try {
+          parent.document.getElementById(iframeIds[i]).contentWindow.postMessage(model, "*");
+        } catch { }
+      }
+
+      importLinks();
+
+      updateAnimation();
+      // Output the data to the "artistList" element
+      document.getElementById("artistList").innerHTML = "";
+
+      isFetching = false;
+
+    }
+
+    function stateMap(data, location) {
+      dataNode = JSON.parse(JSON.stringify(data));
+      var location2 = parseInt(location);
+      var link = [];
+      if (location2 != -1) {
+        for (var i in dataNode) {
+          for (var k in dataNode[i].Out) {
+            if ((dataNode[i].Type === 8000 || dataNode[i].Type === 8100)) {
+              dataNode[i].State = "On";
+            }
+            if ((dataNode[i].State == "OPEN" || dataNode[i].State == "On") && dataNode[i].State != "Off") {
+              dataNode[i].Out[k].state = "on";
+              // Only add to 'link' if Type is not 0
+              if (dataNode[i].Out[k].Type != 0) {
+                link.push(dataNode[i].Out[k]);
+              }
+            } else if (dataNode[i].Out[k].Type != 0) {
+              dataNode[i].Out[k].state = "off";
+              // Only add to 'link' if Type is not 0
+              link.push(dataNode[i].Out[k]);
+            }
+          }
+        }
+
+        for (var i = 0; i < dataNode.length; i++) {
+          for (var j = 0; j < dataNode[i].Out.length; j++) {
+            if (dataNode[i].Out[j].Type !== 0) {
+              var fromValue = dataNode[i].Out[j].froms;
+              var toValue = dataNode[i].Out[j].tos;
+
+              // Find the index of the link 'toValue' connects to
+              var toLinkIndex = dataNode.findIndex((node) =>
+                node.Out.some((link) => link.froms === toValue)
+              );
+
+              if (toLinkIndex != -1) {
+                // Check if both the previous and next links are 'on'
+                var prevLinkState =
+                  dataNode[i].Out[j].state === "on";
+
+                var nextLinkState = dataNode[toLinkIndex].Out.some((link) =>
+                  link.froms === toValue ? link.state === "on" : false
+                );
+
+                // Set the state of the current link accordingly
+                dataNode[i].Out[j].state = prevLinkState && nextLinkState ? "on" : "off";
+              }
+              else {
+              }
+            }
+          }
+        }
+
+        // Turns off the random Recirc left on valve animation to show no water flowing
+        dataNode.forEach((node) => {
+          node.Out.forEach((connection) => {
+            if (connection.tos != undefined) {
+              // Check condition for 'tos' value
+              const tosCondition =
+                (connection.tos.startsWith("7000_") &&
+                  (connection.tos.endsWith("_2") || connection.tos.endsWith("_7")) &&
+                  (
+                    (
+                      parseInt(connection.tos.substring(5, 7)) === 25 ||
+                      parseInt(connection.tos.substring(5, 7)) === 26 ||
+                      parseInt(connection.tos.substring(5, 7)) === 27 ||
+                      parseInt(connection.tos.substring(5, 7)) === 28
+                    )
+                  )) || connection.tos == "7000_7_2";
+
+              if (tosCondition && connection.state === "off") {
+                // Array of 'froms' values to match
+                const fromsValuesToMatch = ["7000_25_7", "7000_26_7", "7000_27_7", "7000_28_7", "7000_7_2"];
+
+                // Find matching 'froms' value and set its state to 'off'
+                dataNode.forEach((otherNode) => {
+                  otherNode.Out.forEach((otherConnection) => {
+                    if (otherConnection.Type !== 0) {
+                      // Check condition for 'froms' value
+                      const fromsCondition = fromsValuesToMatch.includes(otherConnection.froms);
+
+                      if (fromsCondition) {
+                        otherConnection.state = "off";
+                      }
+                    }
+                  });
+                });
+              } else if (tosCondition) {
+
+                var holdID = connection.Type + "_" + connection.Idx + "_" + connection.SubIdx;
+
+                const fromsValuesToMatch = ["7000_25_7", "7000_26_7", "7000_27_7", "7000_28_7", "7000_7_2"];
+
+                // Find matching 'froms' value and set its state to 'off'
+                dataNode.forEach((otherNode) => {
+                  otherNode.Out.forEach((otherConnection) => {
+                    if (otherConnection.Type !== 0) {
+                      // Check condition for 'froms' value
+                      const fromsCondition = fromsValuesToMatch.includes(otherConnection.froms);
+
+                      if (fromsCondition) {
+                        if (otherConnection.froms == holdID) {
+                          otherConnection.state = "on";
+                        }
+                      }
+                    }
+                  });
+                });
+
+              }
+            }
+          });
+        });
+        model[location2].linkDataArray = [...link];
+      }
+      else {
+
+        for (var i in dataNode) {
+          for (var k in dataNode[i].Out) {
+            link.push(dataNode[i].Out[k]);
+          }
+        }
+
+
+        for (var i = 0; i < dataNode.length; i++) {
+          for (var j = 0; j < dataNode[i].Out.length; j++) {
+            if (dataNode[i].Out[j].Type !== 0) {
+              var fromValue = dataNode[i].Out[j].froms;
+              var toValue = dataNode[i].Out[j].tos;
+
+              // Find the index of the link 'toValue' connects to
+              var toLinkIndex = dataNode.findIndex((node) =>
+                node.Out.some((link) => link.froms === toValue)
+              );
+
+              if (toLinkIndex != -1) {
+                // Check if both the previous and next links are 'on'
+                var prevLinkState =
+                  dataNode[i].Out[j].state === "on";
+
+                var nextLinkState = dataNode[toLinkIndex].Out.some((link) =>
+                  link.froms === toValue ? link.state === "on" : false
+                );
+
+                // Set the state of the current link accordingly
+                dataNode[i].Out[j].state = prevLinkState && nextLinkState ? "on" : "off";
+              }
+              else {
+              }
+            }
+          }
+        }
+        model[-1].linkDataArray = [...link];
+        
+        var nodeLabelsToUpdate = ["8000_1_0", "8000_2_0", "8000_3_0"];
+
+        for (var label of nodeLabelsToUpdate) {
+          var myDiagramNodeIndicesto = [];
+          var myDiagramNodeIndicesfrom = [];
+
+          // Find all indices of nodes with the current label in myDiagram.model.linkDataArray
+          for (var i = 0; i < model[-1].linkDataArray.length; i++) {
+            if (model[-1].linkDataArray[i].tos === label) {
+              myDiagramNodeIndicesto.push(i);
+            }
+            if (model[-1].linkDataArray[i].froms === label) {
+              myDiagramNodeIndicesfrom.push(i);
+            }
+          }
+
+          // Find all nodes with the current label in the model object
+
+          for (var j = 0; j < 7; j++) {
+            try {
+              var anyStateOnto = {};
+              var anyStateOnfrom = {};
+              var modelNodesto = model[j].linkDataArray.filter(node => node.tos === label);
+              var modelNodesfrom = model[j].linkDataArray.filter(node => node.froms === label);
+
+              for (var i = 0; i < modelNodesto.length; i++) {
+                if (modelNodesto[i].state === "on") {
+                  anyStateOnto[label] = true;
+                  break;
+                }
+              }
+
+              for (var i = 0; i < modelNodesfrom.length; i++) {
+                if (modelNodesfrom[i].state === "on") {
+                  anyStateOnfrom[label] = true;
+                  break;
+                }
+              }
+
+              for (var i = 0; i < myDiagramNodeIndicesto.length; i++) {
+                if (link[myDiagramNodeIndicesto[i]].froms == "BTN" + (j + 1)) {
+                  link[myDiagramNodeIndicesto[i]].state = anyStateOnto[label] ? "on" : "off";
+
+                }
+              }
+
+              for (var i = 0; i < myDiagramNodeIndicesfrom.length; i++) {
+                if (link[myDiagramNodeIndicesfrom[i]].tos == "BTN" + (j + 1)) {
+                  link[myDiagramNodeIndicesfrom[i]].state = anyStateOnfrom[label] ? "on" : "off";
+                }
+              }
+            }
+            catch { }
+          }
+        }
+      }
+      ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    }
+
+    function parseResponse(jsonData) {
+      try {
+        holding = parseInt(document.getElementById("dataScript").dataset.sourceIndex);
+        dataLoad[holding] = jsonData;
+        //console.log("Received JSON data from source index:", holding.toString());
+        if (ID == -1) {
+          const Index = model[ID].nodeDataArray.findIndex(node => node.which === holding.toString());
+          model[ID].nodeDataArray[Index].State = "On";
+        }
+
+      } catch {
+        console.log("okey");
+      }
+      updated = 0;
+
+      updateGraphic(dataLoad[holding], holding, id);
+
+      updateLinks();
+
+      updateData(model[holding].nodeDataArray, holding);
+
+    }
+
+    function fetchData(url, ipAddress, sourceIndex) {
+      return new Promise((resolve, reject) => {
+        // Create a new script element
+        const scriptElement = document.createElement("script");
+        scriptElement.src = url;
+
+        // Set the onload and onerror events
+        scriptElement.onload = function () {
+          clearTimeout(timeout); // Clear the timeout since the request succeeded
+          // Remove the script element if it exists
+          if (document.body.contains(scriptElement)) {
+            scriptElement.parentNode.removeChild(scriptElement);
+          }
+
+          // Resolve the promise to indicate success
+          resolve();
+        };
+
+        scriptElement.onerror = function () {
+          // Remove the script element if it exists
+          if (document.body.contains(scriptElement)) {
+            scriptElement.parentNode.removeChild(scriptElement);
+          }
+
+          // Reject the promise to indicate an error
+          reject(new Error(`Request to ${url} failed`));
+
+          // Add a delay of 10 seconds before moving on to the next source
+          setTimeout(() => {
+            resolve(); // Resolve the promise to continue with the next source
+          }, 10000);
+        };
+
+        // Set a timeout for the script to prevent it from running indefinitely
+        const timeout = setTimeout(() => {
+          // Remove the script element if it exists
+          if (document.body.contains(scriptElement)) {
+            scriptElement.parentNode.removeChild(scriptElement);
+          }
+
+          // Reject the promise if the script takes too long to load
+          reject(new Error("Timeout")); // Use "Timeout" as the error message
+        }, 10000); // Adjust the timeout as needed (10 seconds in this example).
+
+        scriptElement.id = "dataScript";
+        scriptElement.dataset.sourceIndex = sourceIndex;
+
+        // Append the script element to the document body
+
+        document.body.appendChild(scriptElement);
+      });
+    }
+
+
+    function unitChanger() {
+      storedValue = localStorage.getItem("storedValue");
+    }
+
+    // Define an array of source URLs
+    var sourceUrls = [
+      "http://172.16.1.101/Tags_To_JSON.cgi?Type=0&Idx=0&SubIdx=0",
+      //"http://172.16.1.102/Tags_To_JSON.cgi?Type=0&Idx=0&SubIdx=0",
+      //"http://172.16.1.103/Tags_To_JSON.cgi?Type=0&Idx=0&SubIdx=0",
+      //"http://172.16.1.160/Tags_To_JSON.cgi?Type=0&Idx=0&SubIdx=0",
+      //"http://172.16.2.101/Tags_To_JSON.cgi?Type=0&Idx=0&SubIdx=0",
+      // Add more source URLs here
+    ];
+
+    // Define an object to map IP addresses to source indexes
+    const ipToSourceIndex = {
+      "172.16.1.160": 5,
+      "172.16.1.101": 0,
+      "172.16.1.102": 1,
+      "172.16.1.103": 6,
+      "172.16.2.101": 2,
+      //"172.16.1.104": 3,
+      //"172.16.1.105": 4,
+      //"172.16.1.106": 5,
+      //"172.16.1.107": 2,
+    };
+
+    // Function to fetch data from all sources concurrently and continuously
+    async function fetchAllSources() {
+      await new Promise((resolve) => {
+        // Wait for the page to load before starting data fetching
+        window.addEventListener("load", resolve);
+      });
+
+      while (true) {
+        for (const url of sourceUrls) {
+          const ipAddress = url.split("/")[2];
+          const sourceIndex = ipToSourceIndex[ipAddress];
+          try {
+            await fetchData(url, ipAddress, sourceIndex);
+          } catch (error) {
+            //console.error("Error fetching data:", error);
+
+            //console.log(error);
+
+            // Handle the "Timeout" error by updating the State
+            if (error.message === "Timeout" && sourceIndex != undefined) {
+              console.log("Off");
+              const Index = model[-1].nodeDataArray.findIndex(node => node.which === sourceIndex.toString());
+              model[-1].nodeDataArray[Index].State = "Off";
+
+              var nodeLabelsToUpdate = ["8000_1_0", "8000_2_0", "8000_3_0"];
+
+              for (var label of nodeLabelsToUpdate) {
+                var myDiagramNodeIndicesto = [];
+                var myDiagramNodeIndicesfrom = [];
+
+                // Find all indices of nodes with the current label in myDiagram.model.linkDataArray
+                for (var i = 0; i < model[-1].linkDataArray.length; i++) {
+                  if (model[-1].linkDataArray[i].tos === label) {
+                    myDiagramNodeIndicesto.push(i);
+                  }
+                  if (model[-1].linkDataArray[i].froms === label) {
+                    myDiagramNodeIndicesfrom.push(i);
+                  }
+                }
+                // Find all nodes with the current label in the model object
+
+              }
+
+              if (sourceIndex == ID) {
+                myDiagram.model.linkDataArray = [...model[-1].linkDataArray];
+                myDiagram.model.nodeDataArray = [...model[-1].nodeDataArray];
+                myDiagram.alignDocument(go.Spot.Center, go.Spot.Center)
+                myDiagram.autoScale = go.Diagram.Uniform;
+                id = -1;
+                ID = id;
+
+
+                updated = 0;
+
+                updateGraphic(model[-1].nodeDataArray, -1, -1);
+
+              }
+              myDiagram.model.Sys_State = undefined;
+              model2[holding] = [myDiagram.model.Sys_State, myDiagram.model.Sys_Timer];
+              var iframeIds = ["cartridges.html", "data.html"];
+              var dataToSend = {
+                model2: model2, // Replace model2 with the actual value you want to send
+                ID: id // Replace ID with the actual value you want to send
+              };
+              try {
+                window.parent.postMessage(dataToSend, "*");
+              } catch { }
+
+              // Output the data to the "artistList" element
+              document.getElementById("artistList").innerHTML = "";
+
+              isFetching = false;
+              var online = false;
+              var nodeLabelsToUpdate = ["Regen Tote", "Feed Tank", "Effluent Tank"];
+              var btnLabelsToCheck = ["BTN1", "BTN2", "BTN3", "BTN4", "BTN5", "BTN6", "BTN7"];
+
+              for (const key of btnLabelsToCheck) {
+                const myButtonNodeIndex = model[-1].nodeDataArray.findIndex(node => node.key === key);
+                if (myDiagram.model.nodeDataArray[myButtonNodeIndex].State == "On") {
+                  online = true;
+                }
+              }
+
+              for (const label of nodeLabelsToUpdate) {
+                // Find the index of the node with the current label in myDiagram.model.nodeDataArray
+                const myDiagramNodeIndex = model[-1].nodeDataArray.findIndex(node => node.Label === label);
+
+                // Check if the node was found in both objects
+                if (!online) {
+                  myDiagram.model.nodeDataArray[myDiagramNodeIndex].Value = "";
+                }
+              }
+              /////////////////////////////////////////////////////////////////////////////////////////////888888888888888888888888888888888888888
+              dataNode = model[-1].nodeDataArray;
+              link = [];
+
+              for (var i in dataNode) {
+                for (var k in dataNode[i].Out) {
+                  link.push(dataNode[i].Out[k]);
+                }
+              }
+
+              try {
+
+                for (var i = 0; i < link.length; i++) {
+                  if (link[i].froms == "BTN" + (sourceIndex + 1)) {
+                    link[i].state = "off";
+                  }
+                  if (link[i].tos == "BTN" + (sourceIndex + 1)) {
+                    link[i].state = "off";
+                  }
+                }
+              }
+              catch { }
+              ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+              model[-1].linkDataArray = [...link];
+              try {
+              model[sourceIndex].nodeDataArray = [];
+              }
+              catch {}
+              if (ID == -1) {
+                myDiagram.model.linkDataArray = [...link];
+                myDiagram.model.nodeDataArray = model[-1].nodeDataArray;
+              }
+
+              ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+              /////////////////////////////////////////////////////////////////////////////////////////////888888888888888888888888888888888888888
+              updateAnimation();
+              for (var i = 0; i < iframeIds.length; i++) {
+                
+                try {
+                  parent.document.getElementById(iframeIds[i]).contentWindow.postMessage(model, "*");
+                } catch { }
+              }
+
+            } else {
+              await new Promise((resolve) => setTimeout(resolve, 3000));
+            }
+          }
+        }
+      }
+    }
+
+    // Start fetching data from all sources after the page has loaded
+    fetchAllSources();
+
+    var holds;
+    var fakeScaling;
+
+    function updateZoomPercentageLabel() {
+      zoomage = (fakeScaling * 100).toFixed(0) + "%";
+      parent.postMessage(zoomage);
+    }
+
+    function updateFakeScaling() {
+      fakeScaling = roundToNearest(Number(myDiagram.scale) + Number(holds), 0.05).toFixed(2);
+      zoomage = (fakeScaling * 100).toFixed(0) + "%";
+      parent.postMessage(zoomage);
+    }
+
+    function roundToNearest(value, increment) {
+      return Math.round(value / increment) * increment;
+    }
+
+    setInterval(function () {
+      if (holds == undefined) {
+        holds = 1 - myDiagram.scale;
+      }
+      updateFakeScaling();
+    }, 100);
+
+    function multiplyFixedPoint(value, factor) {
+      return Math.round(value * factor);
+    }
+
+    function divideFixedPoint(value, factor) {
+      return value / factor;
+    }
+
+    function zoomIn() {
+      holds = roundToNearest(Number(fakeScaling) - Number(myDiagram.scale), 0.05).toFixed(2);
+      fakeScaling = parseFloat(fakeScaling);
+
+      if (roundToNearest(Number(fakeScaling) - holds + 0.05, 0.05) < myDiagram.maxScale) {
+        fakeScaling = roundToNearest(fakeScaling + 0.05, 0.05);
+        const scaleFixed = multiplyFixedPoint(myDiagram.scale, 100);
+        const maxScaleFixed = multiplyFixedPoint(myDiagram.maxScale, 100);
+
+        // Increment by 5 and ensure it's within bounds
+        const newScaleFixed = Math.min(scaleFixed + 5, maxScaleFixed);
+
+        // Convert back to floating-point scale
+        myDiagram.scale = divideFixedPoint(newScaleFixed, 100);
+      }
+
+      updateZoomPercentageLabel();
+    }
+
+    function zoomOut() {
+      holds = roundToNearest(Number(fakeScaling) - Number(myDiagram.scale), 0.05).toFixed(2);
+      fakeScaling = parseFloat(fakeScaling);
+
+      if (roundToNearest(Number(fakeScaling) - holds - 0.05, 0.05) > myDiagram.minScale) {
+        fakeScaling = roundToNearest(fakeScaling - 0.05, 0.05);
+        const scaleFixed = multiplyFixedPoint(myDiagram.scale, 100);
+        const minScaleFixed = multiplyFixedPoint(myDiagram.minScale, 100);
+
+        // Decrement by 5 and ensure it's within bounds
+        const newScaleFixed = Math.max(scaleFixed - 5, minScaleFixed);
+
+        // Convert back to floating-point scale
+        myDiagram.scale = divideFixedPoint(newScaleFixed, 100);
+      }
+
+      updateZoomPercentageLabel();
+    }
+
+
+    window.addEventListener("unitsChanged", unitChanger);
+    unitChanger();
+    window.addEventListener('DOMContentLoaded', init);
+
+    window.addEventListener("message", loading);
+
+    window.addEventListener("resize", function () {
+      myDiagram.autoScale = go.Diagram.Uniform;
+      fakeScaling = 1;
+      holds = undefined;
+      updateZoomPercentageLabel();
+    });
+
+    function loading(event) {
+      if (event.data == "frog") {
+        //Back Button
+        load(-1);
+      }
+      else if (event.data == "In") {
+        //Zoom In
+        zoomIn();
+      }
+      else if (event.data == "Out") {
+        //Zoom Out
+        zoomOut();
+      }
+      else if (event.data == "Reset") {
+        //Reset Zoom
+        myDiagram.autoScale = go.Diagram.Uniform;
+        fakeScaling = 1;
+        holds = undefined;
+        updateZoomPercentageLabel();
+        myDiagram.autoScale = go.Diagram.None;
+      }
+      else {
+        console.log(event.data);
+      }
+    }
+
+
+
+  </script>
+
+  <div id="sample">
+    <div id="myDiagramDiv" style="width: 100%; height: 100%; overflow: hidden; h1 {
+      transform: translate(50px, -12px);
+      visibility: hidden;
+  }">
+    </div>
+
+  </div>
+  </div>
+</body>
+
+</html>

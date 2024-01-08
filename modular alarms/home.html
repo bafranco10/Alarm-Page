@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html>
+<h1 class="h1" id="h1" style="z-index: 10000000;"></h1>
+
+<head>
+    <style>
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            /* Disable scrolling */
+            position: relative;
+        }
+
+        h1 {
+            position: absolute;
+            z-index: 1;
+            font-size: 3vmin;
+            top: -.5vh;
+            left: 5vmin;
+        }
+
+        .image-container {
+            position: absolute;
+            height: 5.5vmin;
+            width: 5.5vmin;
+            top: 0;
+            left: 0;
+            z-index: 5;
+        }
+
+        .image {
+            height: 100%;
+            /* Set the height as a percentage */
+            opacity: .8;
+            position: relative;
+            z-index: 5;
+        }
+
+        .tabs {
+            position: absolute;
+            bottom: 0%;
+            left: 18vw;
+            width: 60vw;
+            height: 6vw;
+            display: flex;
+            /* Set display to flex */
+            flex-direction: row;
+            /* Stack tabs horizontally */
+            justify-content: center;
+            background-color: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 5;
+        }
+
+        .tab-button {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            cursor: pointer;
+            margin: 0;
+            font-weight: bold;
+            font-size: 1.1vw;
+            background-color: "#efefef";
+            color: black;
+            border: 1px solid black;
+        }
+
+        .active-tab-button {
+            background-color: #7bb2ec !important;
+        }
+
+        .tab-content {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .hidden-iframe {
+            display: none;
+        }
+
+        .visible-iframe {
+            display: block;
+            position: absolute;
+            overflow: hidden;
+            width: 90vw;
+            height: 88vh;
+            border: none;
+            z-index: 0;
+            right: 0vw;
+            top: 0vh;
+        }
+
+        .black-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            display: none;
+            z-index: 9999999;
+        }
+
+        .black-screen img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .timer-state-box {
+            position: relative;
+            top: 18vh;
+            left: 0;
+            /* Changed to relative so child elements are positioned relative to this */
+            width: 9.2vw;
+            background-color: #f0f0f0;
+            z-index: 5;
+            font-weight: bold;
+            font-size: 2vmin;
+        }
+
+        .text-line {
+            width: 100%;
+            /* Full width of the container */
+            font-weight: bold;
+            font-size: 1.1vw;
+            background-color: rgb(157, 157, 157);
+            z-index: 10;
+            position: relative;
+            /* Position relative to the .timer-state-box */
+        }
+
+        .variable-line {
+            width: 100%;
+            /* Full width of the container */
+            min-height: 1.2vw;
+            max-width: 8.37vw;
+            font-weight: bold;
+            font-size: 1vw;
+            position: relative;
+            /* Position relative to the .timer-state-box */
+        }
+
+
+        .with-line-break {
+            display: block;
+        }
+
+        .back-button-container {
+            display: none;
+            right: 0;
+            bottom: 0;
+            width: 10vw;
+            /* Set the width as a percentage */
+            height: 6vw;
+            position: absolute;
+            flex-wrap: wrap;
+            justify-content: center;
+            background-color: white;
+            /*box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);*/
+            z-index: 5;
+            gap: 1%;
+        }
+
+        .back-button {
+            padding: 2%;
+            /* Set the padding as a percentage */
+            width: 100%;
+            /* Set the width as a percentage */
+            height: 100%;
+            text-align: center;
+            cursor: pointer;
+            margin: 0;
+            font-weight: bold;
+            font-size: 1.1vw;
+        }
+
+        .button-container {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+        }
+
+        .start-button-container,
+        .stop-button-container {
+            height: 9vw;
+            width: 9vw;
+            flex-wrap: wrap;
+            justify-content: center;
+            background-color: #ccc;
+            z-index: 1;
+            border: .2vmin solid black;
+        }
+
+        .start-button,
+        .stop-button {
+            height: 9vw;
+            width: 9vw;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2vw;
+            border-radius: 50%;
+            border: .5vmin solid black;
+        }
+
+        .stop-button:active {
+            background-color: rgb(189, 51, 51);
+        }
+
+        .stop-button {
+            background-color: red;
+        }
+
+        .start-button {
+            background-color: green;
+        }
+
+        .start-button:active {
+            background-color: rgb(12, 91, 12);
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            width: 10vw;
+            height: 8vh;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #ffffff;
+            border: .4vmin solid #000000;
+            text-align: center;
+            font-size: 1.7vmin;
+            z-index: 7;
+            align-items: center;
+            justify-content: center;
+            white-space: pre-wrap;
+        }
+    </style>
+
+    <div id="zoom-buttons"
+        style="display: flex; position: absolute; height: 5vh; width: 8.7vw; top: 1.5vmin; right: .8vmin; border: .2vw solid #000000; border-radius: .5vmin; z-index: 120; background-color: white;">
+
+        <button id="zoomInButton"
+            style="margin: auto; text-align: center; height: 100%; width: 25%; flex: 1; font-size: 1.5vw; box-sizing: border-box; border: none;">+
+        </button>
+
+        <div id="zoomPercentageLabel"
+            style="margin: auto; display: flex; align-items: center; justify-content: center; height: 95%; width: 50%; font-size: 1.4vw; box-sizing: border-box; border-left: 1px solid black; border-right: 1px solid black;">
+            100%
+        </div>
+
+        <button id="zoomOutButton"
+            style="margin: auto; text-align: center; height: 100%; width: 25%; flex: 1; font-size: 1.5vw; box-sizing: border-box; border: none;">-</button>
+    </div>
+
+    <button id="resetButton"
+        style="position: absolute; height: 4vh; width: 4.1vw; top: 8.5vmin; right: 2.75vw; border-style: solid; border-radius: .5vmin; font-size: .75vw; font-weight: bold; display: none; z-index: 120;">Reset
+        Zoom</button>
+    <script>
+
+        var backing = 0;
+        var loadedTabs = {};
+        var inactivityTimeout;
+        var timer = "";
+        var state = "";
+        var url;
+        var tabUrls = ['cartridges.html', 'demo.html', 'alarms.html', 'vnc.html', 'data.html', 'options.html'];
+        var allStatus = [];
+        var receivedData = [];
+        var nl = 0;
+        var idle = 2;
+
+        // Define a debounce function
+        function debounce(func, delay) {
+            let timer;
+            return function () {
+                clearTimeout(timer);
+                timer = setTimeout(() => func.apply(this, arguments), delay);
+            };
+        }
+
+        const zoomReset = document.getElementById("resetButton");
+
+        var isColor1 = true;
+
+        function flashColor() {
+            if (isIntervalRunning) {
+                if (isColor1) {
+                    document.getElementById("alarms-button").style.backgroundColor = "#bf4747";
+                } else {
+                    document.getElementById("alarms-button").style.backgroundColor = "#efefef";
+                }
+
+                isColor1 = !isColor1;
+                document.querySelector(".black-screen").style.display = "none";
+                resetInactivityTimeout();
+            }
+        }
+
+        // Create a debounced version of your event handler
+        var flashingInterval;
+        var isIntervalRunning = false;
+
+        function eventful(event) {
+            if (event.data.ID == undefined) {
+                if (event.data == "100%") {
+                    zoomReset.style.display = "none";
+                } else {
+                    zoomReset.style.display = "block";
+                }
+                updateZoomPercentageLabel(event.data);
+            } else if (event.data.ID == "processing") {
+                if (event.data.alarm.some(value => value !== 0) && !isIntervalRunning) {
+                    console.log("going" + event.data.alarm);
+                    flashingInterval = setInterval(flashColor, 500);
+                    isIntervalRunning = true; // Set the flag to indicate the interval is running
+                    var button = document.getElementById("auto-start-button");
+                    button.disabled = true;
+                    button.style.pointerEvents = "none";
+                    button.style.backgroundColor = "rgb(12, 91, 12)";
+
+                } else if (event.data.alarm.every(value => value === 0) && isIntervalRunning) {
+                    console.log("ended" + event.data.alarm);
+                    isIntervalRunning = false; // Reset the flag when clearing the interval
+                    clearInterval(flashingInterval);
+                    var button = document.getElementById("auto-start-button");
+                    button.disabled = false;
+                    button.style.pointerEvents = "auto";
+                    button.style.backgroundColor = "green";
+                    
+                    document.getElementById("alarms-button").style.backgroundColor = "#efefef";
+                } else {
+                    console.log(event.data.alarm);
+                }
+            }
+            else if (event.data.ID != -1) {
+                var state = event.data.model2[event.data.ID][0];
+                var timer = event.data.model2[event.data.ID][1];
+
+                // Update timer and state values
+                document.getElementById("timer-value").textContent = timer + "s";
+                document.getElementById("state-value").textContent = state;
+
+                // Apply a CSS class to control line breaks
+                document.getElementById("timer-value").classList.add("with-line-break");
+                document.getElementById("state-value").classList.add("with-line-break");
+                document.getElementById("timer-label").style.display = "Block";
+                document.getElementById("timer-value").style.display = "Block";
+
+                addBackButton();
+                backing = 1;
+
+            } else if (event.data.ID == -1) {
+                // Remove the CSS class to prevent line breaks
+                document.getElementById("timer-value").classList.remove("with-line-break");
+                document.getElementById("state-value").classList.remove("with-line-break");
+                document.getElementById("timer-label").style.display = "None";
+                document.getElementById("timer-value").style.display = "None";
+
+                for (var i = 0; i < 7; i++) {
+                    try {
+                        if ((event.data.model2[i][0].includes("Ready") || event.data.model2[i][0].includes("Init") || event.data.model2[i][0].includes("init")) && idle != 0) {
+                            idle = 1;
+                        } else {
+                            idle = 0;
+                        }
+                    } catch { }
+                }
+
+                if (idle == 1) {
+                    document.getElementById("state-value").textContent = "Idle";
+                } else if (idle == 0) {
+                    document.getElementById("state-value").textContent = "Running";
+                } else if (idle == 2) {
+                    document.getElementById("state-value").textContent = "";
+                }
+
+                idle = 2;
+
+                removeBackButton();
+                backing = 0;
+            }
+
+        } // Adjust the delay as needed
+
+        function addBackButton() {
+            if (url == "demo.html") {
+                const backButtonContainer = document.querySelector(".back-button-container");
+                if (backButtonContainer) {
+                    if (!document.getElementById("backButton")) {
+                        const backButton = document.createElement("button");
+                        document.querySelector(".back-button-container").style.display = "block";
+                        backButton.textContent = "BACK";
+                        backButton.id = "backButton";
+                        backButton.className = "back-button";
+                        backButton.onclick = function () {
+                            const demoIframe = document.getElementById("demo.html");
+                            if (demoIframe && demoIframe.contentWindow) {
+                                demoIframe.contentWindow.postMessage("frog", "*");
+                                removeBackButton();
+                            }
+                        };
+
+                        backButtonContainer.appendChild(backButton);
+                    }
+                }
+
+            }
+            else {
+                removeBackButton();
+            }
+        }
+
+        const zoomButton = document.getElementById("zoom-buttons");
+        function removeZoomButtons() {
+
+            if (zoomButton) {
+                zoomButton.style.display = "none";
+            }
+        }
+
+        function addZoomButtons() {
+            if (zoomButton) {
+                zoomButton.style.display = "flex";
+            }
+        }
+
+        const resetButton = document.getElementById("resetButton");
+        function removeResetButton() {
+
+            if (resetButton) {
+                resetButton.style.display = "none";
+            }
+        }
+
+        var zoomTimer;
+        var scaling;
+
+        function updateZoomPercentageLabel(label) {
+            zoomPercentageLabel.textContent = label;
+        }
+
+        document.getElementById("resetButton").addEventListener("click", function () {
+            var demoIframe = document.getElementById("demo.html");
+            demoIframe.contentWindow.postMessage("Reset", "*");
+        });
+
+        // Add event listeners for the zoom buttons
+        document.getElementById("zoomInButton").addEventListener("click", function () {
+            var demoIframe = document.getElementById("demo.html");
+            demoIframe.contentWindow.postMessage("In", "*");
+        });
+
+        document.getElementById("zoomOutButton").addEventListener("click", function () {
+            var demoIframe = document.getElementById("demo.html");
+            demoIframe.contentWindow.postMessage("Out", "*");
+        });
+
+        document.getElementById("zoomInButton").addEventListener("mousedown", function () {
+            zoomTimer = setInterval(function () {
+                var demoIframe = document.getElementById("demo.html");
+                demoIframe.contentWindow.postMessage("In", "*");
+
+            }, 150); // Adjust the interval as needed
+        });
+
+        document.getElementById("zoomOutButton").addEventListener("mousedown", function () {
+            zoomTimer = setInterval(function () {
+                var demoIframe = document.getElementById("demo.html");
+                demoIframe.contentWindow.postMessage("Out", "*");
+            }, 150); // Adjust the interval as needed
+        });
+
+        // Stop zooming when the mouse button is released
+        document.addEventListener("mouseup", function () {
+            clearInterval(zoomTimer);
+        });
+
+        function removeBackButton() {
+            const backButton = document.getElementById("backButton");
+            if (backButton) {
+                backButton.parentNode.removeChild(backButton);
+                document.querySelector(".back-button-container").style.display = "none";
+            }
+        }
+
+        // Attach the debounced event handler to the window
+        window.addEventListener("message", eventful);
+
+        function openTab(tabUrl) {
+            url = tabUrl;
+            for (var i = 0; i < tabUrls.length; i++) {
+                var iframe = document.getElementById(tabUrls[i]);
+                var tabButton = document.querySelector(`[onclick="openTab('${tabUrls[i]}')"]`);
+                if (tabUrls[i] === tabUrl) {
+                    iframe.className = "visible-iframe";
+                    tabButton.classList.add("active-tab-button"); // Add the class
+                } else {
+                    iframe.className = "hidden-iframe";
+                    tabButton.classList.remove("active-tab-button"); // Remove the class
+                }
+                if (tabUrl != "demo.html") {
+                    removeBackButton();
+                    removeZoomButtons();
+                    removeResetButton();
+                }
+                else {
+                    if (backing == 1) {
+                        addBackButton();
+                    }
+                    addZoomButtons();
+                }
+            }
+            if (tabUrl == "cartridges.html")
+                document.getElementById("h1").textContent = "Cartridges";
+            else if (tabUrl == "options.html")
+                document.getElementById("h1").textContent = "Options";
+            else if (tabUrl == "alarms.html")
+                document.getElementById("h1").textContent = "Alarms";
+            else if (tabUrl == "data.html")
+                document.getElementById("h1").textContent = "Data";
+            else if (tabUrl == "vnc.html")
+                document.getElementById("h1").textContent = "VNC";
+            else if (tabUrl == "demo.html")
+                document.getElementById("h1").textContent = "Diagram";
+            else
+                document.getElementById("h1").textContent = "";
+        }
+
+        function showBlackScreen() {
+            document.querySelector(".black-screen").style.display = "block";
+        }
+
+        function resetInactivityTimeout() {
+            clearTimeout(inactivityTimeout);
+            inactivityTimeout = setTimeout(showBlackScreen, 300000);
+        }
+
+        window.onload = function () {
+
+            resetInactivityTimeout();
+
+            window.addEventListener("mousemove", resetInactivityTimeout);
+            window.addEventListener("keydown", resetInactivityTimeout);
+            window.addEventListener("click", resetInactivityTimeout);
+
+            // Update the date every second
+            var dateLine = document.getElementById("date-line");
+            var timeLine = document.getElementById("time-line");
+
+            function updateDateTime() {
+                var now = new Date();
+                var dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric' };
+                var timeOptions = { hour: 'numeric', minute: 'numeric', second: 'numeric' };
+
+                dateLine.textContent = now.toLocaleDateString(undefined, dateOptions);
+                timeLine.textContent = now.toLocaleTimeString(undefined, timeOptions);
+            }
+
+            var iframes = document.querySelectorAll("iframe");
+            iframes.forEach(function (iframe) {
+                iframe.contentWindow.document.addEventListener("click", resetInactivityTimeout);
+                iframe.contentWindow.document.addEventListener("keydown", resetInactivityTimeout);
+                iframe.contentWindow.document.addEventListener("mousemove", resetInactivityTimeout);
+            });
+
+        };
+
+
+        document.addEventListener("click", function () {
+            document.querySelector(".black-screen").style.display = "none";
+            resetInactivityTimeout();
+        });
+
+        document.addEventListener("mousemove", function () {
+            document.querySelector(".black-screen").style.display = "none";
+            resetInactivityTimeout();
+        });
+
+        document.addEventListener("keydown", function () {
+            document.querySelector(".black-screen").style.display = "none";
+            resetInactivityTimeout();
+        });
+
+        function showPopup(inputData) {
+            document.querySelector(".popup").textContent = inputData;
+            document.querySelector(".popup").style.display = "flex";
+        }
+
+        // Function to hide the popup
+        function hidePopup() {
+            document.querySelector(".popup").style.display = "none";
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let stopping;
+
+            document.getElementById("stop-button").addEventListener("mousedown", function () {
+                stopping = setTimeout(function () {
+                    console.log("Button is held down");
+                    hidePopup();
+                    showPopup("The System Is\nStopping...");
+                    tossData("STOP");
+                }, 3000);
+            });
+
+            document.getElementById("stop-button").addEventListener("mouseup", function () {
+                hidePopup();
+                clearInterval(stopping);
+            });
+
+            document.getElementById("auto-start-button").addEventListener("mousedown", function () {
+                hidePopup(); // Hide any existing popup
+                showPopup("The System Is\nStarting...");
+                tossData("START");
+                setTimeout(function () {
+                    hidePopup();
+                }, 3000);
+            });
+        });
+
+        const ips = ["172.16.1.101"]
+
+        const tags = ["Ptw_Recipe.cur_state"];
+
+        function createArray(length) {
+            var arr = new Array(length || 0),
+                i = length;
+
+            if (arguments.length > 1) {
+                var args = Array.prototype.slice.call(arguments, 1);
+                while (i--) arr[length - 1 - i] = createArray.apply(this, args);
+            }
+
+            return arr;
+        }
+
+        var value = createArray(ips.length, tags.length);
+
+        var idx = 0;
+
+        function tossData(index) {
+            var scriptElement = document.createElement("script");
+
+            for (idx in ips) {
+                var ipAddress = ips[idx];
+                // Check if the ipAddress already has "http://", if not, add it
+                if (!ipAddress.startsWith("http://")) {
+                    ipAddress = "http://" + ipAddress;
+                }
+
+                scriptElement.src = ipAddress + "/Get_Set_Tags.cgi?";
+                for (var i in tags) {
+                    var s = tags[i];
+                    s = s.replace(".", "_o_");
+                    var i1 = parseInt(i) + 1;
+                    if (index == "STOP") {
+                        scriptElement.src += "Variable_Name_" + i1 + "=gPrimary.FastStop" + "&Value_" + i1 + "=TRUE";
+                    } else if (index == "START") {
+                        scriptElement.src += "Variable_Name_" + i1 + "=gPrimary.AutoStart" + "&Value_" + i1 + "=TRUE";
+                    }
+                }
+            }
+
+            document.body.appendChild(scriptElement);
+        }
+
+
+    </script>
+</head>
+
+<body>
+    <div class="image-container">
+        <img src="/Images/site-icon-150x150.png" class="image">
+    </div>
+
+
+    <div class="timer-state-box" id="state-box">
+        <div class="text-line" id="state-label">System State:</div>
+        <div class="variable-line" id="state-value" style="text-overflow: auto;"></div>
+    </div>
+
+    <div class="timer-state-box" id="clock-box">
+        <div class="text-line" id="clock-label">System Clock:</div>
+        <div class="variable-line" id="date-line" style="text-align: center;"></div>
+        <div class="variable-line" id="time-line" style="text-align: center;"></div>
+    </div>
+
+    <div class="timer-state-box" id="timer-box">
+        <div class="text-line" id="timer-label" style="display:None;">System Timer:</div>
+        <div class="variable-line" id="timer-value" style="text-align: right; display:None;"></div>
+    </div>
+
+    <div id="allSampleContent" class="p-4 w-full">
+
+        <script>
+            var dateLine = document.getElementById("date-line");
+            var timeLine = document.getElementById("time-line");
+
+            function updateDateTime() {
+                var now = new Date();
+                var dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric' };
+                var timeOptions = { hour: 'numeric', minute: 'numeric', second: 'numeric' };
+
+                dateLine.textContent = now.toLocaleDateString(undefined, dateOptions);
+                timeLine.textContent = now.toLocaleTimeString(undefined, timeOptions);
+            }
+
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+        </script>
+
+        <div class="tabs">
+            <button class="tab-button" id="demo-button" onclick="openTab('demo.html')">DIAGRAM</button>
+            <button class="tab-button" id="cartridges-button" onclick="openTab('cartridges.html')">CARTRIDGES</button>
+            <button class="tab-button" id="data-button" onclick="openTab('data.html')">DATA</button>
+            <button class="tab-button" id="alarms-button" onclick="openTab('alarms.html')">ALARMS</button>
+            <button class="tab-button" id="vnc-button" onclick="openTab('vnc.html')">VNC</button>
+            <button class="tab-button" id="options-button" onclick="openTab('options.html')">OPTIONS</button>
+        </div>
+
+        <div class="back-button-container">
+        </div>
+
+        <div class="button-container">
+            <div class="start-button-container">
+                <button class="start-button" id="auto-start-button">AUTO<br>START</button>
+            </div>
+
+            <div class="stop-button-container">
+                <button class="stop-button" id="stop-button">FAST STOP<br>(HOLD)</button>
+            </div>
+        </div>
+
+        <div class="popup" style="font-size: 2vmin;">
+            <p></p>
+        </div>
+
+        <iframe id="cartridges.html" src="cartridges.html" class="hidden-iframe"></iframe>
+        <iframe id="demo.html" src="demo.html" class="hidden-iframe"></iframe>
+        <iframe id="data.html" src="data.html" class="hidden-iframe"></iframe>
+        <iframe id="alarms.html" src="alarms.html" class="hidden-iframe"></iframe>
+        <iframe id="options.html" src="options.html" class="hidden-iframe"></iframe>
+        <iframe id="vnc.html" src="vnc.html" class="hidden-iframe"></iframe>
+
+
+        <div class="black-screen">
+            <img src="/Images/EM-Stacked-Dark.png">
+        </div>
+
+        <iframe id="tab-frame" class="tab-content" frameborder="0"></iframe>
+
+        <script>
+            openTab("demo.html");
+        </script>
+</body>
+
+</html>
