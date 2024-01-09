@@ -67,7 +67,7 @@ function checkInactiveAlarms(trainData, alarms) {
     const keysToRemove = [];
     // Iterate through alarms in existingAlarms
     existingAlarms.forEach(alarmKey => {
-        const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('_');
+        const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('@');
         const alarmCode = parseInt(code);
         const alarmTrain = parseInt(train);
         // Check if the alarm's train data matches the provided trainData
@@ -81,7 +81,9 @@ function checkInactiveAlarms(trainData, alarms) {
                 else if (alarm.Code === alarmCode && alarmCode === 63) {
                     break;
                 }
-
+                else if (alarm.Code === alarmCode && alarmCode === 75) {
+                    break;
+                }
                 // Check if the alarm from activeAlarms matches an alarm from the current data
                 else if (alarm.DateTime === DateTime && alarm.Code === alarmCode && alarm.Desc === Desc && alarm.Msg_Data == Msg_Data && alarm.Active === 1) {
                     found = true;
@@ -117,13 +119,13 @@ function inactiveAlarmHandling(existingAlarms, keysToRemove, matchingAlarm) {
         matchingAlarm.active = false;
         matchingAlarm.Acknowledged = true;
         keysToRemove.forEach(alarmKey => {
-            const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('_');
+            const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('@');
             const alarmCode = parseInt(code);
             const alarmTrain = parseInt(train);
             const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === alarmTrain && data.ip === alarmIp && String(data.DateTime) === String(DateTime)
                 && data.Desc === Desc && data.Msg_Data == Msg_Data && data.Dev_Num == Dev_Num);
             removed = moveAlarmToHistory(indexToRemove);
-            if (removed && matchingAlarm.Code !== 63) {
+            if (removed && matchingAlarm.Code !== 63 && matchingAlarm.Code !== 75) {
                 existingAlarms.delete(alarmKey);
             }
         });
@@ -140,7 +142,7 @@ function inactiveAlarmHandling(existingAlarms, keysToRemove, matchingAlarm) {
         matchingAlarm.Acknowledged
     ) {
         keysToRemove.forEach(alarmKey => {
-            const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('_');
+            const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('@');
             const alarmCode = parseInt(code);
             const alarmTrain = parseInt(train);
             const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === alarmTrain && data.ip === alarmIp && String(data.DateTime) === String(DateTime)
@@ -261,7 +263,7 @@ function createCriticalAlarmRow(tableBody, entry) {
 }
 
 function createWarningAlarmRow(tableBody, entry) {
-    if (entry.Code != 63) {
+    if (entry.Code != 63 || entry.Code != 75) {
         // Create a unique row ID by concatenating "train" and "alarm code" and datetime
         var rowId = "row" + entry.Train + entry.Code + entry.Desc + entry.DateTime.trim();
         // If the row doesn't exist, create a new one

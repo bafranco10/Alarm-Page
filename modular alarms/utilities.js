@@ -2,7 +2,7 @@ var dataArray = []; // Create an array to store trainData and alarmData objects
 var historyArray = [];
 var xmlFileUrl = 'alarms.xml';
 var rowIdToData = {};
-var stopAlarmCodes = [19, 78, 1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 18, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 66, 68, 69];
+var stopAlarmCodes = [78, 1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 18, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 68, 69, 79];
 var buttonArray = []; //stores button ids
 const activeAlarms = new Set();
 const existingAlarms = new Set();
@@ -56,9 +56,9 @@ function updateGraphic(data) {
         alarms.forEach(alarm => {
             var ip = '';
             ip = getIpAddress(trainData);
-            var alarmKey = trainData + "_" + alarm.DateTime.trim() + "_" + alarm.Code
-                + "_" + alarm.Msg_Data + "_" + alarm.Desc.trim() + "_" + alarm.Dev_Num +
-                "_" + ip;
+            var alarmKey = trainData + "@" + alarm.DateTime.trim() + "@" + alarm.Code
+                + "@" + alarm.Msg_Data + "@" + alarm.Desc.trim() + "@" + alarm.Dev_Num +
+                "@" + ip;
             if (!existingAlarms.has(alarmKey)) {
                 fetchAndProcessAlarm(trainData, alarm, alarmKey);
             }
@@ -134,6 +134,9 @@ function acknowledgeAlarm(buttonId, alarmData) {
         if (matchingAlarm) {
             // Update theacknowledged status for the corresponding alarm in dataArray
             matchingAlarm.Acknowledged = true;
+            if (matchingAlarm.Code === 78) {
+                checkIfTrainAlarmNeedsToBeRemoved(matchingAlarm.ip);
+            }
         }
     }
 }
@@ -206,6 +209,7 @@ function acknowledgeAllAlarms() {
             acknowledgeAlarm(buttonId, alarmData);
         }
     });
+    checkIfTrainAlarmNeedsToBeRemoved("172.16.1.101");
     acknowledgePLC(1);
     /*
     for (let i = 0; i < 6; i++) {
@@ -299,7 +303,7 @@ function formatDate(date) {
 
 function removeCode63Alarms() {
     existingAlarms.forEach(alarmKey => {
-        const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('_');
+        const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('@');
         const alarmCode = parseInt(code);
         const alarmTrain = parseInt(train);
 
@@ -310,3 +314,15 @@ function removeCode63Alarms() {
     });
 }
 
+function removeCode75Alarms() {
+    existingAlarms.forEach(alarmKey => {
+        const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('@');
+        const alarmCode = parseInt(code);
+        const alarmTrain = parseInt(train);
+
+        // Check if the alarm's code is 75, and if so, delete the entry
+        if (alarmCode === 75) {
+            existingAlarms.delete(alarmKey);
+        }
+    });
+}
