@@ -3039,31 +3039,18 @@
 </AlarmItem>
 
 <AlarmItem>
-
   <Property Name="Acknowledge" Value="Possible"/>
-
   <Property Name="AcknowledgeActive" Value="Enabled"/>
-
   <Property Name="Bypass" Value="Enabled"/>
-
   <Property Name="Description" Value=""/>
-
   <Property Name="Index" Value="77"/>
-
   <Property Name="Latched" Value="False"/>
-
   <Property Name="Name" Value="AlarmItem_77"/>
-
   <Property Name="RecordAcknowledge" Value="True"/>
-
   <Property Name="RecordBypass" Value="All"/>
-
   <Property Name="RecordReset" Value="All"/>
-
   <Property Name="RecordTrigger" Value="True"/>
-
   <Property Name="TextID" Value="1003"/>
-
   <Property Name="TextItemText[0]" Value="The output voltage is being limited because the input power supply is starting to approach the maximum power draw of 15amps at 12v. {DESC}"/>
 
   <Property Name="TriggerGroupAlarm" Value="False"/>
@@ -3114,6 +3101,47 @@
 
     </Language>
 
+  </LanguageMngr>
+</AlarmItem>
+
+<AlarmItem>
+  <Property Name="Acknowledge" Value="Possible"/>
+  <Property Name="AcknowledgeActive" Value="Enabled"/>
+  <Property Name="Bypass" Value="Enabled"/>
+  <Property Name="Description" Value=""/>
+  <Property Name="Index" Value="79"/>
+  <Property Name="Latched" Value="False"/>
+  <Property Name="Name" Value="AlarmItem_79"/>
+  <Property Name="RecordAcknowledge" Value="True"/>
+  <Property Name="RecordBypass" Value="All"/>
+  <Property Name="RecordReset" Value="All"/>
+  <Property Name="RecordTrigger" Value="True"/>
+  <Property Name="TextID" Value="966"/>
+  <Property Name="TextItemText[0]" Value="The system was stopped with message {DESC} {MSG_DATA}"/>
+  <Property Name="TriggerGroupAlarm" Value="False"/>
+  <LanguageMngr>
+    <Property Name="FallBackLanguage" Value="None"/>
+    <Language Name="English (UNITED STATES)">
+      <Property Name="BidiMode" Value="False"/>
+      <Property Name="Compile" Value="True"/>
+      <Property Name="CountryInfo" Value="US"/>
+      <Property Name="Description" Value="English Language"/>
+      <Property Name="Index" Value="0"/>
+      <Property Name="InputMethod" Value="None"/>
+      <Property Name="LanguageInfo" Value="en"/>
+    </Language>
+  </LanguageMngr>
+  <LanguageMngr>
+    <Property Name="FallBackLanguage" Value="None"/>
+    <Language Name="English (UNITED STATES)">
+      <Property Name="BidiMode" Value="False"/>
+      <Property Name="Compile" Value="True"/>
+      <Property Name="CountryInfo" Value="US"/>
+      <Property Name="Description" Value="English Language"/>
+      <Property Name="Index" Value="0"/>
+      <Property Name="InputMethod" Value="None"/>
+      <Property Name="LanguageInfo" Value="en"/>
+    </Language>
   </LanguageMngr>
 </AlarmItem>
 </ClipboardData>
