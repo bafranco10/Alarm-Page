@@ -49,16 +49,34 @@ function displayFilteredHistory(filteredHistory) {
         historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
         historyRow.insertCell().textContent = alarmData.Train;
         historyRow.insertCell().textContent = alarmData.Code;
-        if (alarmData.Code === 78) {
-            historyRow.insertCell().textContent = alarmData.Message;
+        if (alarmData.stopAlarm) {
+            historyRow.insertCell().textContent = "Critical";
+            if (alarmData.Code === 78) {
+                //Display alarm.Message if Code is 78
+                historyRow.insertCell().textContent = alarmData.Message;
+            }
+
+            else {
+                // Display alarmDescription for other alarm codes
+                fetchAndProcessXML(alarmData.Code, alarmData, function (alarmDescription) {
+                    historyRow.insertCell().textContent = alarmDescription;
+                });
+            }
         }
         else {
-            // Fetch and display the alarm message text
-            fetchAndProcessXML(alarmData.Code, alarmData, function (alarmDescription) {
-                historyRow.insertCell().textContent = alarmDescription;
-            });
-        }
+            historyRow.insertCell().textContent = "Warning";
+            if (alarmData.Code === 78) {
+                //Display alarm.Message if Code is 78
+                historyRow.insertCell().textContent = alarmData.Message;
+            }
 
+            else {
+                // Display alarmDescription for other alarm codes
+                fetchAndProcessXML(alarmData.Code, alarmData, function (alarmDescription) {
+                    historyRow.insertCell().textContent = alarmDescription;
+                });
+            }
+        }
         historyRow.classList.add('table-success');
     });
 }
@@ -92,101 +110,149 @@ function displayAlarmHistory() {
         historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
         historyRow.insertCell().textContent = alarmData.Train;
         historyRow.insertCell().textContent = alarmData.Code;
-        if (alarmData.Code === 78) {
-            //Display alarm.Message if Code is 78
-            historyRow.insertCell().textContent = alarmData.Message;
+        if (alarmData.stopAlarm) {
+            historyRow.insertCell().textContent = "Critical";
+            if (alarmData.Code === 78) {
+                //Display alarm.Message if Code is 78
+                historyRow.insertCell().textContent = alarmData.Message;
+            }
+
+            else {
+                // Display alarmDescription for other alarm codes
+                fetchAndProcessXML(alarmData.Code, alarmData, function (alarmDescription) {
+                    historyRow.insertCell().textContent = alarmDescription;
+                });
+            }
         }
         else {
-            // Display alarmDescription for other alarm codes
-            fetchAndProcessXML(alarmData.Code, alarmData, function (alarmDescription) {
-                historyRow.insertCell().textContent = alarmDescription;
-            });
+            historyRow.insertCell().textContent = "Warning";
+            if (alarmData.Code === 78) {
+                //Display alarm.Message if Code is 78
+                historyRow.insertCell().textContent = alarmData.Message;
+            }
+
+            else {
+                // Display alarmDescription for other alarm codes
+                fetchAndProcessXML(alarmData.Code, alarmData, function (alarmDescription) {
+                    historyRow.insertCell().textContent = alarmDescription;
+                });
+            }
         }
         historyRow.classList.add('table-success');
     });
 }
 
-function displayStopAlarmHistory(filterCritical) {
+function displayStopAlarmHistory() {
     var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
     historyTable.innerHTML = ''; // Clear the existing history table
-    filterCritical = !filterCritical
-    if (filterCritical) {
-        // Filter the historyArray to include only alarms where stopAlarm is true
-        const filteredHistoryArray = historyArray.filter(alarmData => alarmData.stopAlarm);
+    // Filter the historyArray to include only alarms where stopAlarm is true
+    const filteredHistoryArray = historyArray.filter(alarmData => alarmData.stopAlarm);
 
-        // Sort the filtered historyArray based on the DateTime property, from newest to oldest
-        filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+    // Sort the filtered historyArray based on the DateTime property, from newest to oldest
+    filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
 
-        // Ensure that filteredHistoryArray contains at most 100 alarms
-        if (filteredHistoryArray.length > 100) {
-            const elementsToRemove = filteredHistoryArray.length - 100;
-            filteredHistoryArray.splice(0, elementsToRemove);
-        }
-
-        // Output all necessary fields for history
-        filteredHistoryArray.forEach(alarmData => {
-            var historyRow = historyTable.insertRow();
-            const date = new Date(alarmData.DateTime);
-            historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
-            historyRow.insertCell().textContent = alarmData.Train;
-            historyRow.insertCell().textContent = alarmData.Code;
+    // Ensure that filteredHistoryArray contains at most 100 alarms
+    if (filteredHistoryArray.length > 100) {
+        const elementsToRemove = filteredHistoryArray.length - 100;
+        filteredHistoryArray.splice(0, elementsToRemove);
+    }
+    // Output all necessary fields for history
+    filteredHistoryArray.forEach(alarmData => {
+        var historyRow = historyTable.insertRow();
+        const date = new Date(alarmData.DateTime);
+        historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+        historyRow.insertCell().textContent = alarmData.Train;
+        historyRow.insertCell().textContent = alarmData.Code;
+        if (alarmData.stopAlarm) {
+            historyRow.insertCell().textContent = "Critical";
             if (alarmData.Code === 78) {
-                // Display alarm.Message if Code is 78
+                //Display alarm.Message if Code is 78
                 historyRow.insertCell().textContent = alarmData.Message;
-            } else {
+            }
+
+            else {
                 // Display alarmDescription for other alarm codes
                 fetchAndProcessXML(alarmData.Code, alarmData, function (alarmDescription) {
                     historyRow.insertCell().textContent = alarmDescription;
                 });
             }
-            historyRow.classList.add('table-success');
-        });
-    }
+        }
+        else {
+            historyRow.insertCell().textContent = "Warning";
+            if (alarmData.Code === 78) {
+                //Display alarm.Message if Code is 78
+                historyRow.insertCell().textContent = alarmData.Message;
+            }
 
-    else {
-        displayAlarmHistory();
-    }
+            else {
+                // Display alarmDescription for other alarm codes
+                fetchAndProcessXML(alarmData.Code, alarmData, function (alarmDescription) {
+                    historyRow.insertCell().textContent = alarmDescription;
+                });
+            }
+        }
+
+        historyRow.classList.add('table-success');
+    });
 }
 
 function displayWarningHistory() {
     var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
     historyTable.innerHTML = ''; // Clear the existing history table
-    filterWarning = !filterWarning
-    if (filterWarning) {
-        // Filter the historyArray to include only alarms where stopAlarm is true
-        const filteredHistoryArray = historyArray.filter(alarmData => !alarmData.stopAlarm);
+    // Filter the historyArray to include only alarms where stopAlarm is true
+    const filteredHistoryArray = historyArray.filter(alarmData => !alarmData.stopAlarm);
 
-        // Sort the filtered historyArray based on the DateTime property, from newest to oldest
-        filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+    // Sort the filtered historyArray based on the DateTime property, from newest to oldest
+    filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
 
-        // Ensure that filteredHistoryArray contains at most 100 alarms
-        if (filteredHistoryArray.length > 100) {
-            const elementsToRemove = filteredHistoryArray.length - 100;
-            filteredHistoryArray.splice(0, elementsToRemove);
-        }
+    // Ensure that filteredHistoryArray contains at most 100 alarms
+    if (filteredHistoryArray.length > 100) {
+        const elementsToRemove = filteredHistoryArray.length - 100;
+        filteredHistoryArray.splice(0, elementsToRemove);
+    }
 
-        // Output all necessary fields for history
-        filteredHistoryArray.forEach(alarmData => {
-            var historyRow = historyTable.insertRow();
-            const date = new Date(alarmData.DateTime);
-            historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
-            historyRow.insertCell().textContent = alarmData.Train;
-            historyRow.insertCell().textContent = alarmData.Code;
+    // Output all necessary fields for history
+    filteredHistoryArray.forEach(alarmData => {
+        var historyRow = historyTable.insertRow();
+        const date = new Date(alarmData.DateTime);
+        historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+        historyRow.insertCell().textContent = alarmData.Train;
+        historyRow.insertCell().textContent = alarmData.Code;
+        if (alarmData.stopAlarm) {
+            historyRow.insertCell().textContent = "Critical";
             if (alarmData.Code === 78) {
-                // Display alarm.Message if Code is 78
+                //Display alarm.Message if Code is 78
                 historyRow.insertCell().textContent = alarmData.Message;
-            } else {
+            }
+
+            else {
                 // Display alarmDescription for other alarm codes
                 fetchAndProcessXML(alarmData.Code, alarmData, function (alarmDescription) {
                     historyRow.insertCell().textContent = alarmDescription;
                 });
             }
-            historyRow.classList.add('table-success');
-        });
-    }
-    else {
-        displayAlarmHistory();
-    }
+        }
+        else {
+            historyRow.insertCell().textContent = "Warning";
+            if (alarmData.Code === 78) {
+                //Display alarm.Message if Code is 78
+                historyRow.insertCell().textContent = alarmData.Message;
+            }
+
+            else {
+                // Display alarmDescription for other alarm codes
+                fetchAndProcessXML(alarmData.Code, alarmData, function (alarmDescription) {
+                    historyRow.insertCell().textContent = alarmDescription;
+                });
+            }
+        }
+        historyRow.classList.add('table-success');
+    });
+}
+
+function displayNoHistory() {
+    var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+    historyTable.innerHTML = '';
 }
 
 // filters data based on the dates that are input it also adds 1 to the end date so that we do not compare midight on start date to midnight at end date. 
@@ -213,7 +279,8 @@ function clearDateRange() {
     // Clear the date range inputs
     document.querySelector("#datepicker1").value = "";
     document.querySelector("#datepicker2").value = "";
-
+    myCheckbox.checked = true;
+    myCheckbox2.checked = true;
     // Display the entire historyArray
     displayAlarmHistory();
 }

@@ -86,17 +86,17 @@
         <h1>Alarm History</h1>
 
         <span id="criticalLabel">View Critical Alarms</span>
-        <label class="switch" id="toggleCritical" style = "margin-right: 40px;">
-            <input type="checkbox" id="criticalCheckBox">
+        <label class="switch" id="toggleCritical" style="margin-right: 40px;">
+            <input type="checkbox" id="criticalCheckBox" checked>
             <span class="slider round"></span>
         </label>
 
         <span id="warningLabel">View Warnings</span>
         <label class="switch" id="toggleWarning">
-            <input type="checkbox" id="warningCheckBox">
+            <input type="checkbox" id="warningCheckBox" checked>
             <span class="slider round"></span>
         </label>
-      
+
 
         <!-- Calendar that filters alarm data-->
         <form id="dateRangeForm">
@@ -137,6 +137,7 @@
                     <th>Date/Time</th>
                     <th>Train</th>
                     <th>Code</th>
+                    <th>Type</th>
                     <th>Message</th>
                 </tr>
             </thead>
@@ -191,10 +192,16 @@
 
         switchLabel.onclick = function () {
             // Toggle the functionality based on the checkbox state
-            if (myCheckbox.checked) {
-                displayStopAlarmHistory();
-            } else {
+            if (myCheckbox.checked && myCheckbox2.checked) {
                 displayAlarmHistory()
+            } else if (myCheckbox.checked && !myCheckbox2.checked) {
+                displayStopAlarmHistory();
+            }
+            else if (!myCheckbox.checked && myCheckbox2.checked) {
+                displayWarningHistory();
+            }
+            else {
+                displayNoHistory();
             }
         };
 
@@ -203,10 +210,16 @@
 
         switchLabel2.onclick = function () {
             // Toggle the functionality based on the checkbox state
-            if (myCheckbox2.checked) {
-                displayWarningHistory();
-            } else {
+            if (myCheckbox.checked && myCheckbox2.checked) {
                 displayAlarmHistory()
+            } else if (myCheckbox.checked && !myCheckbox2.checked) {
+                displayStopAlarmHistory();
+            }
+            else if (!myCheckbox.checked && myCheckbox2.checked) {
+                displayWarningHistory();
+            }
+            else {
+                displayNoHistory();
             }
         };
     </script>
