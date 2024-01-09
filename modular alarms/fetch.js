@@ -210,7 +210,8 @@ function addTrainDownAlarm(ipAddress) {
             "stopAlarm": true,
             "Message": "Train Communication Lost",
             "ip": ipAddress,
-            "active": true
+            "active": true,
+            'plcActiveBit':1
         };
         // Add the new alarm to the dataArray
         dataArray.push(newAlarm);

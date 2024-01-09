@@ -222,6 +222,11 @@
                 displayNoHistory();
             }
         };
+
+        const twoHours = 2 * 60 * 60 * 1000;
+
+        // Call clearOldAlarms every 2 hours
+        setInterval(clearOldAlarms, twoHours);
     </script>
 
 </body>

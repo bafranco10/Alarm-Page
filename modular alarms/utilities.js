@@ -2,9 +2,9 @@ var dataArray = []; // Create an array to store trainData and alarmData objects
 var historyArray = [];
 var xmlFileUrl = 'alarms.xml';
 var rowIdToData = {};
-var stopAlarmCodes = [78, 1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 18, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 68, 69, 79];
+var stopAlarmCodes = [19, 78, 1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 18, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 68, 69, 79];
 var buttonArray = []; //stores button ids
-const activeAlarms = new Set();
+const oldAlarms = new Set();
 const existingAlarms = new Set();
 const stopAlarmCounts = [0, 0, 0, 0, 0, 0];
 var filterCritical = false;
@@ -36,7 +36,7 @@ function checkIfTrainAlarmNeedsToBeRemoved(ipAddress) {
     // Check if there's a missing alarm with the specified train and alarm code
     const missingAlarm = dataArray.find(entry => entry.Train === trainToRemove && entry.Code === alarmCodeToRemove);
     if (missingAlarm) {
-        updateActiveCellText(missingAlarm.Code, missingAlarm.Train, "Inactive", missingAlarm.Desc, missingAlarm.DateTime);
+        updateActiveCellText(missingAlarm.Code, missingAlarm.Train, "Inactive", missingAlarm.Desc, missingAlarm.DateTime, missingAlarm.Msg_Data, missingAlarm.Dev_Num);
     }
     if (missingAlarm && missingAlarm.Acknowledged) {
         moveCommunicationAlarmToHistory(trainToRemove, alarmCodeToRemove);
@@ -59,7 +59,7 @@ function updateGraphic(data) {
             var alarmKey = trainData + "@" + alarm.DateTime.trim() + "@" + alarm.Code
                 + "@" + alarm.Msg_Data + "@" + alarm.Desc.trim() + "@" + alarm.Dev_Num +
                 "@" + ip;
-            if (!existingAlarms.has(alarmKey)) {
+            if (!existingAlarms.has(alarmKey) && !oldAlarms.has(alarmKey)) {
                 fetchAndProcessAlarm(trainData, alarm, alarmKey);
             }
         });
@@ -89,8 +89,8 @@ function getIpAddress(trainData) {
 }
 
 // function to change text in active column to inactive if a stop alarm is inactive but needs to be acknowledged
-function updateActiveCellText(alarmCode, trainData, newText, Desc, DateTime) {
-    var rowId = "row" + trainData + alarmCode + Desc + DateTime.trim();
+function updateActiveCellText(alarmCode, trainData, newText, Desc, DateTime, Msg_Data, Dev_Num) {
+    var rowId = "row" + trainData + alarmCode + Desc + DateTime.trim() + Msg_Data + Dev_Num;
     var buttonId = "button" + rowId;
     var row = document.getElementById(rowId);
     var buttonElement = document.getElementById(buttonId);
@@ -325,4 +325,8 @@ function removeCode75Alarms() {
             existingAlarms.delete(alarmKey);
         }
     });
+}
+
+function clearOldAlarms() {
+    oldAlarms.clear();
 }

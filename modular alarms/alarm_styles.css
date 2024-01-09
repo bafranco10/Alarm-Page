@@ -5,6 +5,10 @@
      -webkit-animation: none;
  }
 
+ body {
+    user-select: none;
+ }
+ 
  /* stops the flickering*/
  .stopFlicker {
      -webkit-animation: none !important;

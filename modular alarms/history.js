@@ -8,7 +8,7 @@ function moveCommunicationAlarmToHistory(trainData, alarmCode) {
         // Update the display
         updateDisplay();
         // Remove the corresponding row from the table 
-        deleteRow("row" + removedAlarm.Train + removedAlarm.Code + removedAlarm.Desc + removedAlarm.DateTime);
+        deleteRow("row" + removedAlarm.Train + removedAlarm.Code + removedAlarm.Desc + removedAlarm.DateTime + removedAlarm.Msg_Data + removedAlarm.Dev_Num);
     }
 }
 
@@ -22,9 +22,12 @@ function moveAlarmToHistory(indexToRemove) {
         // Check if the alarm is acknowledged before removing it
         if (alarmToRemove && alarmToRemove.Acknowledged) {
             const removedAlarm = dataArray.splice(indexToRemove, 1)[0];
+            console.log(removedAlarm);
             historyArray.push(removedAlarm);
+            console.log(historyArray);
             updateHistoryInLocalStorage(historyArray);
-            deleteRow("row" + removedAlarm.Train + removedAlarm.Code + removedAlarm.Desc + removedAlarm.DateTime.trim());
+            console.log(historyArray);
+            deleteRow("row" + removedAlarm.Train + removedAlarm.Code + removedAlarm.Desc + removedAlarm.DateTime.trim() + removedAlarm.Msg_Data + removedAlarm.Dev_Num);
             updateDisplay();
             var currentTab = document.querySelector(".tablinks.active").textContent.trim();
             if (currentTab === "Alarm History") {
@@ -98,8 +101,8 @@ function displayAlarmHistory() {
     historyArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
 
     // Ensure that historyArray contains at most 100 alarms
-    if (historyArray.length > 100) {
-        const elementsToRemove = historyArray.length - 100;
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
         historyArray.splice(0, elementsToRemove);
     }
 
@@ -152,8 +155,8 @@ function displayStopAlarmHistory() {
     filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
 
     // Ensure that filteredHistoryArray contains at most 100 alarms
-    if (filteredHistoryArray.length > 100) {
-        const elementsToRemove = filteredHistoryArray.length - 100;
+    if (filteredHistoryArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = filteredHistoryArray.length - MAX_HISTORY_ELEMENTS;
         filteredHistoryArray.splice(0, elementsToRemove);
     }
     // Output all necessary fields for history
@@ -206,8 +209,8 @@ function displayWarningHistory() {
     filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
 
     // Ensure that filteredHistoryArray contains at most 100 alarms
-    if (filteredHistoryArray.length > 100) {
-        const elementsToRemove = filteredHistoryArray.length - 100;
+    if (filteredHistoryArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = filteredHistoryArray.length - MAX_HISTORY_ELEMENTS;
         filteredHistoryArray.splice(0, elementsToRemove);
     }
 
@@ -285,7 +288,7 @@ function clearDateRange() {
     displayAlarmHistory();
 }
 
-const MAX_HISTORY_ELEMENTS = 100;
+const MAX_HISTORY_ELEMENTS = 1000;
 
 function updateHistoryInLocalStorage(historyArray) {
     // Keep only the last MAX_HISTORY_ELEMENTS elements

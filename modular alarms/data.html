@@ -14,8 +14,8 @@
         }
 
         .tabButton {
-            background-color: #3498db;
-            color: white;
+            background-color: #efefef;;
+            color: black;
             border: none;
             padding: .5vw 1vw;
             font-size: .8vw;
@@ -23,6 +23,7 @@
             cursor: pointer;
             border-radius: .3vw;
             margin-right: .1vw;
+            border: .15vw solid black;
         }
 
         /* Add custom styles for the tables */
@@ -43,7 +44,7 @@
             /* Set a maximum width for cells */
             padding: 5px;
             /* Add some padding to cells */
-            border: 1px solid #ccc;
+            border: 1px solid black;
             /* Add borders to cells */
         }
 
@@ -58,6 +59,7 @@
 
         body {
             overflow-x: hidden;
+            user-select: none;
         }
 
         /* Customize the scrollbar */
@@ -122,6 +124,7 @@
     <button class="tabButton" onclick="openTab(3)">Cartridges</button>
     <button class="tabButton" onclick="openTab(4)">Pressure</button>
     <button class="tabButton" onclick="openTab(5)">Flow</button>
+    <button class="tabButton" onclick="openTab(6)">Levels</button>
 
     <div class="dropdown">
         <button class="tabButton" id="training">All Trains</button>
@@ -136,6 +139,7 @@
     <div class="tab" id="tab3"></div>
     <div class="tab" id="tab4"></div>
     <div class="tab" id="tab5"></div>
+    <div class="tab" id="tab6"></div>
 
     <script>
         var storedValue;
@@ -157,20 +161,22 @@
 
         function table(data) {
             if (training.innerHTML == "All Trains") {
-                dataToDisplay[0] = "<table><thead><tr><th>Label</th><th>Value</th></tr></thead><tbody>";
-                dataToDisplay[1] = "<table><thead><tr><th style='width: 50px;'>Train</th><th style='width: 50px;'>ID</th><th>Label</th><th>State</th></tr></thead><tbody>";
-                dataToDisplay[2] = "<table><thead><tr><th style='width: 50px;'>Train</th><th style='width: 50px;'>ID</th><th>Label</th><th>State</th></tr></thead><tbody>";
-                dataToDisplay[3] = "<table><thead><tr><th style='width: 50px;'>Train</th><th style='width: 50px;'>ID</th><th>Label</th><th>Value</th></tr></thead><tbody>";
-                dataToDisplay[4] = "<table><thead><tr><th style='width: 50px;'>Train</th><th style='width: 50px;'>ID</th><th>Label</th><th>Value</th></tr></thead><tbody>";
-                dataToDisplay[5] = "<table><thead><tr><th style='width: 50px;'>Train</th><th style='width: 50px;'>ID</th><th>Label</th><th>Value</th></tr></thead><tbody>";
+                dataToDisplay[0] = "<table><thead><tr><th style='width: 50px;'>ID</th><th>Label</th><th>Level</th><th>Level State</th><th>Inlet Ready</th><th>Outlet Ready</th><th>LL</th><th>HH</th></tr></thead><tbody>";
+                dataToDisplay[1] = "<table><thead><tr><th style='width: 50px;'>Train</th><th style='width: 50px;'>ID</th><th>Label</th><th>Flow Rate</th><th>Flow Setpoint</th><th>State</th><th>Inlet Ready</th><th>Outlet Ready</th><th>LL Ready</th><th>HH Ready</th></tr></thead><tbody>";
+                dataToDisplay[2] = "<table><thead><tr><th style='width: 50px;'>Train</th><th style='width: 50px;'>ID</th><th>Label</th><th>Relay</th><th>Mapped State</th><th>Closed Di</th><th>Open DI</th></tr></thead><tbody>";
+                dataToDisplay[3] = "<table><thead><tr><th style='width: 50px;'>Train</th><th style='width: 50px;'>ID</th>><th>State</th><th>Current</th><th>Voltage</th><th>Regen State</th><th>MPC Temp</th></tr></thead><tbody>";
+                dataToDisplay[4] = "<table><thead><tr><th style='width: 50px;'>Train</th><th style='width: 50px;'>ID</th><th>Label</th><th>Value</th><th>LL</th><th>L</th><th>H</th><th>HH</th></tr></thead><tbody>";
+                dataToDisplay[5] = "<table><thead><tr><th style='width: 50px;'>Train</th><th style='width: 50px;'>ID</th><th>Label</th><th>Value</th><th>LL</th><th>L</th><th>H</th><th>HH</th></tr></thead><tbody>";
+                dataToDisplay[6] = "<table><thead><tr><th style='width: 50px;'>ID</th><th>Label</th><th>Value</th><th>LL</th><th>L</th><th>H</th><th>HH</th></tr></thead><tbody>";
             }
             else {
-                dataToDisplay[0] = "<table><thead><tr><th>Label</th><th>Value</th></tr></thead><tbody>";
-                dataToDisplay[1] = "<table><thead><tr><th style='width: 50px;'>ID</th><th>Label</th><th>State</th></tr></thead><tbody>";
-                dataToDisplay[2] = "<table><thead><tr><th style='width: 50px;'>ID</th><th>Label</th><th>State</th></tr></thead><tbody>";
-                dataToDisplay[3] = "<table><thead><tr><th style='width: 50px;'>ID</th><th>Label</th><th>Value</th></tr></thead><tbody>";
-                dataToDisplay[4] = "<table><thead><tr><th style='width: 50px;'>ID</th><th>Label</th><th>Value</th></tr></thead><tbody>";
-                dataToDisplay[5] = "<table><thead><tr><th style='width: 50px;'>ID</th><th>Label</th><th>Value</th></tr></thead><tbody>";
+                dataToDisplay[0] = "<table><thead><tr><th style='width: 50px;'>ID</th><th>Label</th><th>Level</th><th>Level State</th><th>Inlet Ready</th><th>Outlet Ready</th><th>LL</th><th>HH</th></tr></thead><tbody>";
+                dataToDisplay[1] = "<table><thead><tr><th style='width: 50px;'>ID</th><th>Label</th><th>Flow Rate</th><th>Flow Setpoint</th><th>State</th><th>Inlet Ready</th><th>Outlet Ready</th><th>LL Ready</th><th>HH Ready</th></tr></thead><tbody>";
+                dataToDisplay[2] = "<table><thead><tr><th style='width: 50px;'>ID</th><th>Label</th><th>Relay</th><th>Mapped State</th><th>Closed Di</th><th>Open DI</th></tr></thead><tbody>";
+                dataToDisplay[3] = "<table><thead><tr><th style='width: 50px;'>ID</th><th>State</th><th>Current</th><th>Voltage</th><th>Regen State</th><th>MPC Temp</th></tr></thead><tbody>";
+                dataToDisplay[4] = "<table><thead><tr><th style='width: 50px;'>ID</th><th>Label</th><th>Value</th><th>LL</th><th>L</th><th>H</th><th>HH</th></tr></thead><tbody>";
+                dataToDisplay[5] = "<table><thead><tr><th style='width: 50px;'>ID</th><th>Label</th><th>Value</th><th>LL</th><th>L</th><th>H</th><th>HH</th></tr></thead><tbody>";
+                dataToDisplay[6] = "<table><thead><tr><th style='width: 50px;'>ID</th><th>Label</th><th>Value</th><th>LL</th><th>L</th><th>H</th><th>HH</th></tr></thead><tbody>";
             }
 
             if (data && Array.isArray(data)) {
@@ -271,29 +277,29 @@
 
                     // If the label doesn't exist, add a new row
                     if (!labelExists) {
-                        dataToDisplay[0] += "<tr><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].Value + "</td></tr>";
+                        dataToDisplay[0] += "<tr><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].Value + "</td><td></td><td></td><td></td><td></td><td></td></tr>";
                     }
                 }
                 else if (receivedData[i].Type === 9000 && receivedData[i].Label != ',' && receivedData[i].Label != '' && ("Train " + train == training.innerHTML)) {
-                    dataToDisplay[1] += "<tr><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].Value + "</td></tr>";
+                    dataToDisplay[1] += "<tr><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td></td><td></td><td>" + receivedData[i].Value + "</td><td></td><td></td><td></td><td></td></tr>";
                 } else if (receivedData[i].Type === 9000 && receivedData[i].Label != ',' && receivedData[i].Label != '' && (training.innerHTML == "All Trains")) {
-                    dataToDisplay[1] += "<tr><td>" + train + "</td><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].Value + "</td></tr>";
+                    dataToDisplay[1] += "<tr><td>" + train + "</td><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td></td><td></td><td>" + receivedData[i].Value + "</td><td></td><td></td><td></td><td></td></tr>";
                 } else if (receivedData[i].Type === 7000 && receivedData[i].Label != ',' && receivedData[i].Label != '' && ("Train " + train == training.innerHTML)) {
-                    dataToDisplay[2] += "<tr><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].State + "</td></tr>";
+                    dataToDisplay[2] += "<tr><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td></td><td>" + receivedData[i].State + "</td><td></td><td></td></tr>";
                 } else if (receivedData[i].Type === 7000 && receivedData[i].Label != ',' && receivedData[i].Label != '' && (training.innerHTML == "All Trains")) {
-                    dataToDisplay[2] += "<tr><td>" + train + "</td><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].State + "</td></tr>";
+                    dataToDisplay[2] += "<tr><td>" + train + "</td><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td></td><td>" + receivedData[i].State + "</td><td></td><td></td></tr>";
                 } else if ((receivedData[i].Type === 5000 || receivedData[i].Type === 6000) && receivedData[i].Label != ',' && receivedData[i].Label != '' && ("Train " + train == training.innerHTML)) {
-                    dataToDisplay[3] += "<tr><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].Value + "</td></tr>";
+                    dataToDisplay[3] += "<tr><td>" + receivedData[i].Idx + "</td><td></td><td>" + receivedData[i].Value + "</td><td></td><td></td><td></td></tr>";
                 } else if ((receivedData[i].Type === 5000 || receivedData[i].Type === 6000) && receivedData[i].Label != ',' && receivedData[i].Label != '' && (training.innerHTML == "All Trains")) {
-                    dataToDisplay[3] += "<tr><td>" + train + "</td><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].Value + "</td></tr>";
+                    dataToDisplay[3] += "<tr><td>" + train + "</td><td>" + receivedData[i].Idx + "</td><td></td><td>" + receivedData[i].Value + "</td><td></td><td><td></td></td></tr>";
                 } else if (receivedData[i].Type === 3900 && receivedData[i].Label != ',' && receivedData[i].Label != '' && ("Train " + train == training.innerHTML)) {
-                    dataToDisplay[4] += "<tr><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].Value + "</td></tr>";
+                    dataToDisplay[4] += "<tr><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].Value + "</td><td></td><td></td><td></td><td></td></tr>";
                 } else if (receivedData[i].Type === 3900 && receivedData[i].Label != ',' && receivedData[i].Label != '' && (training.innerHTML == "All Trains")) {
-                    dataToDisplay[4] += "<tr><td>" + train + "</td><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].Value + "</td></tr>";
+                    dataToDisplay[4] += "<tr><td>" + train + "</td><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].Value + "</td><td></td><td></td><td></td><td></td></tr>";
                 } else if (receivedData[i].Type === 3600 && receivedData[i].Label != ',' && receivedData[i].Label != '' && ("Train " + train == training.innerHTML)) {
-                    dataToDisplay[5] += "<tr><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].Value + "</td></tr>";
+                    dataToDisplay[5] += "<tr><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].Value + "</td><td></td><td></td><td></td><td></td></tr>";
                 } else if (receivedData[i].Type === 3600 && receivedData[i].Label != ',' && receivedData[i].Label != '' && (training.innerHTML == "All Trains")) {
-                    dataToDisplay[5] += "<tr><td>" + train + "</td><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].Value + "</td></tr>";
+                    dataToDisplay[5] += "<tr><td>" + train + "</td><td>" + receivedData[i].Idx + "</td><td>" + receivedData[i].Label + "</td><td>" + receivedData[i].Value + "</td><td></td><td></td><td></td><td></td></tr>";
                 }
             }
 

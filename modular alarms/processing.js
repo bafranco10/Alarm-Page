@@ -16,11 +16,12 @@ async function fetchAndProcessAlarm(trainData, alarm, alarmKey) {
             "stopAlarm": false,
             "Message": alarmDescription,
             "ip": ip, // Add the "ip" field based on trainData
-            "active": true
+            "active": true,
+            "plcActiveBit": alarm.Active
         };
         // Pass alarmData to checkStopAlarm function
-        if (alarm.Active === 1) {
-            checkStopAlarm(alarmData);
+        checkStopAlarm(alarmData);
+        if (alarm.Active === 1 || alarmData.stopAlarm) {
             dataArray.push(alarmData);
             existingAlarms.add(alarmKey);
         }
@@ -75,20 +76,29 @@ function checkInactiveAlarms(trainData, alarms) {
             let found = false;
             // Iterate through alarms from the current data
             for (const alarm of alarms) {
-                if (alarm.DateTime === DateTime && alarm.Code === alarmCode && alarm.Desc === Desc && alarm.Msg_Data == Msg_Data && alarm.Active === 0) {
+                if (alarm.Dev_Num == Dev_Num && alarm.DateTime === DateTime && alarm.Code === alarmCode && alarm.Desc === Desc && alarm.Msg_Data == Msg_Data && alarm.Active === 0) {
+                    console.log('broke here loop1');
                     break;
                 }
                 else if (alarm.Code === alarmCode && alarmCode === 63) {
+                    console.log("broke here loop 2");
                     break;
                 }
                 else if (alarm.Code === alarmCode && alarmCode === 75) {
+                    console.log('broke here loop 3');
                     break;
                 }
                 // Check if the alarm from activeAlarms matches an alarm from the current data
-                else if (alarm.DateTime === DateTime && alarm.Code === alarmCode && alarm.Desc === Desc && alarm.Msg_Data == Msg_Data && alarm.Active === 1) {
+                else if (alarm.DateTime === DateTime && alarm.Code === alarmCode && alarm.Desc === Desc && alarm.Msg_Data == Msg_Data && alarm.Dev_Num == Dev_Num && alarm.Active === 1) {
                     found = true;
+                    console.log('found is true broke here')
                     break;
                 }
+                else if (alarm.Active === 1) {
+                    found = true;
+                    console.log('found is true broke at last condition');
+                    break;
+                }  
             }
             // If the alarm is not found in the current data, mark it for removal and call the handler function
             if (!found) {
@@ -127,13 +137,14 @@ function inactiveAlarmHandling(existingAlarms, keysToRemove, matchingAlarm) {
             removed = moveAlarmToHistory(indexToRemove);
             if (removed && matchingAlarm.Code !== 63 && matchingAlarm.Code !== 75) {
                 existingAlarms.delete(alarmKey);
+                oldAlarms.add(alarmKey);
             }
         });
     }
     // critical alarms have to be acknowledged change text and let the alarm be acknowledged now
     if (matchingAlarm && matchingAlarm.stopAlarm && !matchingAlarm.Acknowledged) {
         matchingAlarm.active = false;
-        updateActiveCellText(matchingAlarm.Code, matchingAlarm.Train, "Inactive", matchingAlarm.Desc, matchingAlarm.DateTime);
+        updateActiveCellText(matchingAlarm.Code, matchingAlarm.Train, "Inactive", matchingAlarm.Desc, matchingAlarm.DateTime, matchingAlarm.Msg_Data, matchingAlarm.Dev_Num);
     }
     // critical alarm can be safely removed
     if (
@@ -150,6 +161,7 @@ function inactiveAlarmHandling(existingAlarms, keysToRemove, matchingAlarm) {
             removed = moveAlarmToHistory(indexToRemove);
             if (removed) {
                 existingAlarms.delete(alarmKey);
+                oldAlarms.add(alarmKey);
                 decreaseCriticalAlarmCount(alarmTrain);
                 acknowledgePLC(alarmTrain);
             }
@@ -191,7 +203,7 @@ function updateDisplay() {
     var tableBody = document.querySelector("#alarmTable tbody");
     dataArray.forEach(entry => {
         // Create a unique row ID by concatenating "train" and "alarm code" and datetime
-        var rowId = "row" + entry.Train + entry.Code + entry.Desc + entry.DateTime.trim();
+        var rowId = "row" + entry.Train + entry.Code + entry.Desc + entry.DateTime.trim() + entry.Msg_Data + entry.Dev_Num;
         // Check if the row already exists
         var existingRow = document.getElementById(rowId);
         if (!existingRow) {
@@ -212,7 +224,7 @@ function updateDisplay() {
 
 function createCriticalAlarmRow(tableBody, entry) {
     // Create a unique row ID by concatenating "train" and "alarm code" and datetime
-    var rowId = "row" + entry.Train + entry.Code + entry.Desc + entry.DateTime.trim();
+    var rowId = "row" + entry.Train + entry.Code + entry.Desc + entry.DateTime.trim() + entry.Msg_Data + entry.Dev_Num;
     // If the row doesn't exist, create a new one
     var row = tableBody.insertRow(0);
     // Add this CSS style to ensure consistent cell padding
@@ -231,7 +243,12 @@ function createCriticalAlarmRow(tableBody, entry) {
     dateCell.textContent = formatDate(date);
     codeCell.textContent = entry.Code;
     msgDataCell.textContent = entry.Message;
-    activeCell.textContent = "Active";
+    if (entry.plcActiveBit === 1) {
+        activeCell.textContent = "Active";
+    }
+    else {
+        activeCell.textContent = "Inactive";
+    }
     row.classList.add('table-danger');
     // Create a cell for the Acknowledge button.
     var buttonCell = row.insertCell();
@@ -265,7 +282,7 @@ function createCriticalAlarmRow(tableBody, entry) {
 function createWarningAlarmRow(tableBody, entry) {
     if (entry.Code != 63 || entry.Code != 75) {
         // Create a unique row ID by concatenating "train" and "alarm code" and datetime
-        var rowId = "row" + entry.Train + entry.Code + entry.Desc + entry.DateTime.trim();
+        var rowId = "row" + entry.Train + entry.Code + entry.Desc + entry.DateTime.trim() + entry.Msg_Data + entry.Dev_Num;
         // If the row doesn't exist, create a new one
         var row = tableBody.insertRow();
         // Add this CSS style to ensure consistent cell padding

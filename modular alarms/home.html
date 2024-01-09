@@ -11,6 +11,7 @@
             overflow: hidden;
             /* Disable scrolling */
             position: relative;
+            user-select: none;
         }
 
         h1 {
@@ -63,13 +64,14 @@
             margin: 0;
             font-weight: bold;
             font-size: 1.1vw;
-            background-color: "#efefef";
+            background-color: #efefef;
             color: black;
             border: 1px solid black;
         }
 
         .active-tab-button {
             background-color: #7bb2ec !important;
+            color: white;
         }
 
         .tab-content {
@@ -312,7 +314,7 @@
 
         function eventful(event) {
             if (event.data.ID == undefined) {
-                if (event.data == "100%") {
+                if (event.data == "100%" || url != "demo.html") {
                     zoomReset.style.display = "none";
                 } else {
                     zoomReset.style.display = "block";
@@ -336,7 +338,7 @@
                     button.disabled = false;
                     button.style.pointerEvents = "auto";
                     button.style.backgroundColor = "green";
-                    
+
                     document.getElementById("alarms-button").style.backgroundColor = "#efefef";
                 } else {
                     console.log(event.data.alarm);
@@ -434,11 +436,10 @@
             }
         }
 
-        const resetButton = document.getElementById("resetButton");
         function removeResetButton() {
 
-            if (resetButton) {
-                resetButton.style.display = "none";
+            if (zoomReset) {
+                zoomReset.style.display = "none";
             }
         }
 
@@ -673,7 +674,6 @@
 
             document.body.appendChild(scriptElement);
         }
-
 
     </script>
 </head>
