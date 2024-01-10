@@ -692,7 +692,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="885"/>
-  <Property Name="TextItemText[0]" Value="Pump {DEV_NUM} reported a current limiting pressure condition at {DESC}"/>
+  <Property Name="TextItemText[0]" Value="Pump {DEV_NUM} reported a current limiting condition at {DESC}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>

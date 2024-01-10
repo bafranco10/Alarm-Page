@@ -99,13 +99,14 @@ function displayAlarmHistory() {
     historyTable.innerHTML = ''; // Clear the existing history table
     // Sort the historyArray based on the DateTime property, from newest to oldest
     historyArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
-
+    console.log('historyArray after sort', historyArray);
     // Ensure that historyArray contains at most 100 alarms
     if (historyArray.length > MAX_HISTORY_ELEMENTS) {
         const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
-        historyArray.splice(0, elementsToRemove);
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
     }
-
     //output all necessary fields for history
     historyArray.forEach(alarmData => {
         var historyRow = historyTable.insertRow();
@@ -155,10 +156,13 @@ function displayStopAlarmHistory() {
     filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
 
     // Ensure that filteredHistoryArray contains at most 100 alarms
-    if (filteredHistoryArray.length > MAX_HISTORY_ELEMENTS) {
-        const elementsToRemove = filteredHistoryArray.length - MAX_HISTORY_ELEMENTS;
-        filteredHistoryArray.splice(0, elementsToRemove);
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
     }
+
     // Output all necessary fields for history
     filteredHistoryArray.forEach(alarmData => {
         var historyRow = historyTable.insertRow();
@@ -209,10 +213,13 @@ function displayWarningHistory() {
     filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
 
     // Ensure that filteredHistoryArray contains at most 100 alarms
-    if (filteredHistoryArray.length > MAX_HISTORY_ELEMENTS) {
-        const elementsToRemove = filteredHistoryArray.length - MAX_HISTORY_ELEMENTS;
-        filteredHistoryArray.splice(0, elementsToRemove);
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
     }
+
 
     // Output all necessary fields for history
     filteredHistoryArray.forEach(alarmData => {
@@ -293,7 +300,7 @@ const MAX_HISTORY_ELEMENTS = 1000;
 function updateHistoryInLocalStorage(historyArray) {
     // Keep only the last MAX_HISTORY_ELEMENTS elements
     const truncatedHistory = historyArray.slice(-MAX_HISTORY_ELEMENTS);
-
+    console.log(truncatedHistory);
     // Store the truncated historyArray in local storage
     localStorage.setItem('history', JSON.stringify(truncatedHistory));
 }
