@@ -1,6 +1,6 @@
 const fetchEndpoints = [
-    "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=0",
-    "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=1",
+    "http://172.16.1.102/Get_Alarms.cgi?Acknowledge=0",
+    "http://172.16.1.102/Get_Alarms.cgi?Acknowledge=1",
     //"http://172.16.1.102/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.103/Get_Alarms.cgi?Acknowledge=0"
     //"http://172.16.1.104/Get_Alarms.cgi?Acknowledge=0",
@@ -60,7 +60,7 @@ function fetchData(index) {
         const ipAddress = ipAddressByEndpoint[fetchEndpoints[index]];
 
         let requestCompleted = false; // Flag to track if the request has completed
-        const timeoutDuration = 5000; // Set a timeout of 5 seconds
+        const timeoutDuration = 3000; // Set a timeout of 5 seconds
 
         const timeoutId = setTimeout(function () {
             if (!requestCompleted) {
@@ -192,8 +192,9 @@ function addTrainDownAlarm(ipAddress) {
             alarm.Msg_Data === "New Alarm Data" &&
             alarm.Desc === "New Alarm Description" &&
             alarm.Dev_Num === "" &&
-            alarm.Message === "Train Communication Lost" &&
-            alarm.ip === ipAddress
+            alarm.Message === "Main Lost Communication with Train " + getTrainFromIP(ipAddress) &&
+            alarm.ip === ipAddress && 
+            alarm.active === true
         );
     });
 
@@ -208,14 +209,15 @@ function addTrainDownAlarm(ipAddress) {
             "Dev_Num": "",
             "Acknowledged": false,
             "stopAlarm": true,
-            "Message": "Train Communication Lost",
+            "Message": "Main Lost Communication with Train " + getTrainFromIP(ipAddress),
             "ip": ipAddress,
             "active": true,
-            'plcActiveBit':1
+            'plcActiveBit': 1
         };
+        console.log('fuck face');
         // Add the new alarm to the dataArray
         dataArray.push(newAlarm);
-
+        communicationDateTimes.push(formattedDate);
         // Update the display with the new alarm
         updateDisplay();
     }

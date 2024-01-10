@@ -2,13 +2,12 @@ var dataArray = []; // Create an array to store trainData and alarmData objects
 var historyArray = [];
 var xmlFileUrl = 'alarms.xml';
 var rowIdToData = {};
-var stopAlarmCodes = [19, 78, 1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 18, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 68, 69, 79];
+var communicationDateTimes = [];
+var stopAlarmCodes = [78, 1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 68, 69, 79];
 var buttonArray = []; //stores button ids
 const oldAlarms = new Set();
 const existingAlarms = new Set();
 const stopAlarmCounts = [0, 0, 0, 0, 0, 0];
-var filterCritical = false;
-var filterWarning = false;
 var run = true;
 
 // formats date for my custom alarm
@@ -34,13 +33,18 @@ function checkIfTrainAlarmNeedsToBeRemoved(ipAddress) {
     const alarmCodeToRemove = 78;
 
     // Check if there's a missing alarm with the specified train and alarm code
-    const missingAlarm = dataArray.find(entry => entry.Train === trainToRemove && entry.Code === alarmCodeToRemove);
-    if (missingAlarm) {
-        updateActiveCellText(missingAlarm.Code, missingAlarm.Train, "Inactive", missingAlarm.Desc, missingAlarm.DateTime, missingAlarm.Msg_Data, missingAlarm.Dev_Num);
-    }
-    if (missingAlarm && missingAlarm.Acknowledged) {
-        moveCommunicationAlarmToHistory(trainToRemove, alarmCodeToRemove);
-        decreaseCriticalAlarmCount(trainToRemove);
+    // Check if there's a missing alarm with the specified train and alarm code
+    for (let i = 0; i < communicationDateTimes.length; i++) {
+        const missingAlarm = dataArray.find(entry => entry.Train === trainToRemove && entry.Code === alarmCodeToRemove && communicationDateTimes[i] === entry.DateTime);
+        if (missingAlarm) {
+            missingAlarm.active = false;
+            updateActiveCellText(missingAlarm.Code, missingAlarm.Train, "Inactive", missingAlarm.Desc, missingAlarm.DateTime, missingAlarm.Msg_Data, missingAlarm.Dev_Num);
+        }
+
+        if (missingAlarm && missingAlarm.Acknowledged) {
+            moveCommunicationAlarmToHistory(trainToRemove, alarmCodeToRemove, communicationDateTimes[i]);
+            decreaseCriticalAlarmCount(trainToRemove);
+        }
     }
 }
 

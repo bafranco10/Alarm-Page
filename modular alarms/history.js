@@ -1,8 +1,8 @@
 // finds communication alarm in dataArray and removes it from here
 //once it is removed it moves the data to the historyArray where it can now be displayed in history
-function moveCommunicationAlarmToHistory(trainData, alarmCode) {
+function moveCommunicationAlarmToHistory(trainData, alarmCode, DateTime) {
     // Find the alarm in dataArray and move it to historyArray
-    const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === trainData);
+    const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === trainData && data.DateTime === DateTime);
     if (indexToRemove !== -1) {
         const removedAlarm = dataArray.splice(indexToRemove, 1)[0];
         // Update the display

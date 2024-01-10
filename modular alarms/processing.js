@@ -163,7 +163,6 @@ function inactiveAlarmHandling(existingAlarms, keysToRemove, matchingAlarm) {
                 existingAlarms.delete(alarmKey);
                 oldAlarms.add(alarmKey);
                 decreaseCriticalAlarmCount(alarmTrain);
-                acknowledgePLC(alarmTrain);
             }
         });
     }
@@ -174,6 +173,7 @@ function decreaseCriticalAlarmCount(alarmTrain) {
     if (stopAlarmCounts[index] !== undefined) {
         --stopAlarmCounts[index];
         parent.postMessage({ alarm: stopAlarmCounts, ID: "processing" }, "*");
+        acknowledgePLC(alarmTrain);
         // Check if every element in stopAlarmCounts is zero
         const allZeros = stopAlarmCounts.every(count => count === 0);
         // If all elements are zero, set run to true

@@ -692,7 +692,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="885"/>
-  <Property Name="TextItemText[0]" Value="Backflush positioning error."/>
+  <Property Name="TextItemText[0]" Value="Pump {DEV_NUM} reported a current limiting pressure condition at {DESC}"/>
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>
@@ -3101,6 +3101,46 @@
 
     </Language>
 
+  </LanguageMngr>
+</AlarmItem>
+<AlarmItem>
+  <Property Name="Acknowledge" Value="Possible"/>
+  <Property Name="AcknowledgeActive" Value="Enabled"/>
+  <Property Name="Bypass" Value="Enabled"/>
+  <Property Name="Description" Value=""/>
+  <Property Name="Index" Value="78"/>
+  <Property Name="Latched" Value="False"/>
+  <Property Name="Name" Value="AlarmItem_79"/>
+  <Property Name="RecordAcknowledge" Value="True"/>
+  <Property Name="RecordBypass" Value="All"/>
+  <Property Name="RecordReset" Value="All"/>
+  <Property Name="RecordTrigger" Value="True"/>
+  <Property Name="TextID" Value="966"/>
+  <Property Name="TextItemText[0]" Value="Train Lost Communication with Main"/>
+  <Property Name="TriggerGroupAlarm" Value="False"/>
+  <LanguageMngr>
+    <Property Name="FallBackLanguage" Value="None"/>
+    <Language Name="English (UNITED STATES)">
+      <Property Name="BidiMode" Value="False"/>
+      <Property Name="Compile" Value="True"/>
+      <Property Name="CountryInfo" Value="US"/>
+      <Property Name="Description" Value="English Language"/>
+      <Property Name="Index" Value="0"/>
+      <Property Name="InputMethod" Value="None"/>
+      <Property Name="LanguageInfo" Value="en"/>
+    </Language>
+  </LanguageMngr>
+  <LanguageMngr>
+    <Property Name="FallBackLanguage" Value="None"/>
+    <Language Name="English (UNITED STATES)">
+      <Property Name="BidiMode" Value="False"/>
+      <Property Name="Compile" Value="True"/>
+      <Property Name="CountryInfo" Value="US"/>
+      <Property Name="Description" Value="English Language"/>
+      <Property Name="Index" Value="0"/>
+      <Property Name="InputMethod" Value="None"/>
+      <Property Name="LanguageInfo" Value="en"/>
+    </Language>
   </LanguageMngr>
 </AlarmItem>
 
