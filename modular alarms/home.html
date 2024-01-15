@@ -322,7 +322,7 @@
                 updateZoomPercentageLabel(event.data);
             } else if (event.data.ID == "processing") {
                 if (event.data.alarm.some(value => value !== 0) && !isIntervalRunning) {
-                    console.log("going" + event.data.alarm);
+                   // console.log("going" + event.data.alarm);
                     flashingInterval = setInterval(flashColor, 500);
                     isIntervalRunning = true; // Set the flag to indicate the interval is running
                     var button = document.getElementById("auto-start-button");
@@ -331,7 +331,7 @@
                     button.style.backgroundColor = "rgb(12, 91, 12)";
 
                 } else if (event.data.alarm.every(value => value === 0) && isIntervalRunning) {
-                    console.log("ended" + event.data.alarm);
+                    //console.log("ended" + event.data.alarm);
                     isIntervalRunning = false; // Reset the flag when clearing the interval
                     clearInterval(flashingInterval);
                     var button = document.getElementById("auto-start-button");
@@ -341,7 +341,7 @@
 
                     document.getElementById("alarms-button").style.backgroundColor = "#efefef";
                 } else {
-                    console.log(event.data.alarm);
+                   // console.log(event.data.alarm);
                 }
             }
             else if (event.data.ID != -1) {
@@ -576,7 +576,6 @@
 
         };
 
-
         document.addEventListener("click", function () {
             document.querySelector(".black-screen").style.display = "none";
             resetInactivityTimeout();
@@ -607,7 +606,7 @@
 
             document.getElementById("stop-button").addEventListener("mousedown", function () {
                 stopping = setTimeout(function () {
-                    console.log("Button is held down");
+                   // console.log("Button is held down");
                     hidePopup();
                     showPopup("The System Is\nStopping...");
                     tossData("STOP");

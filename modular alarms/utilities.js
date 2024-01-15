@@ -2,6 +2,7 @@ var dataArray = []; // Create an array to store trainData and alarmData objects
 var historyArray = [];
 var xmlFileUrl = 'alarms.xml';
 var rowIdToData = {};
+var filteredRowIdToData = {};
 var communicationDateTimes = [];
 var stopAlarmCodes = [78, 1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 68, 69, 79];
 var buttonArray = []; //stores button ids
@@ -9,6 +10,46 @@ const oldAlarms = new Set();
 const existingAlarms = new Set();
 const stopAlarmCounts = [0, 0, 0, 0, 0, 0];
 var run = true;
+var trainSelection = 'all';
+var mainTrainSelection = 'allTrains';
+var filteredDisplay = []; //keeps track of all filters during display 
+
+function handleTrainSelectionMain(selectedTrain) {
+    if (selectedTrain === "allTrains") {
+        showAllTrains();
+    } else if (selectedTrain === '1') {
+        showTrain1();
+    } else if (selectedTrain === '2') {
+        showTrain2();
+    }
+    else if (selectedTrain === '3') {
+        showTrain3();
+    }
+    else if (selectedTrain === '4') {
+        showTrain4();
+    }
+    else if (selectedTrain === '5') {
+        showTrain5();
+    }
+    else if (selectedTrain === '6') {
+        showTrain6();
+    }
+    else if (selectedTrain === '7') {
+        showTrain7();
+    }
+}
+
+function showAllTrains() {
+    if (myCheckbox3.checked && myCheckbox4.checked) {
+        showAllRows();
+    } else if (myCheckbox3.checked && !myCheckbox4.checked) {
+        hideNonCriticalRows();
+    } else if (!myCheckbox3.checked && myCheckbox4.checked) {
+        hideCriticalRows();
+    } else {
+        //
+    }
+}
 
 // formats date for my custom alarm
 // takes in a standard javascript date and returns a date formatted to match the other ones
@@ -323,7 +364,6 @@ function removeCode75Alarms() {
         const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('@');
         const alarmCode = parseInt(code);
         const alarmTrain = parseInt(train);
-
         // Check if the alarm's code is 75, and if so, delete the entry
         if (alarmCode === 75) {
             existingAlarms.delete(alarmKey);
@@ -331,6 +371,92 @@ function removeCode75Alarms() {
     });
 }
 
+// prevents the set from getting huge if that warning is present repeatedly
 function clearOldAlarms() {
     oldAlarms.clear();
+}
+
+function hideNonCriticalRows() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        // Check if the row has enough cells
+        if (row.cells.length > 4) {
+            var alarmTypeCell = row.cells[4]; // Assuming alarm type is in the 5th cell
+            if (alarmTypeCell.textContent !== "Critical") {
+                // Hide rows that are not "Critical"
+                row.style.display = 'none';
+            } else {
+                // Show rows that are "Critical"
+                row.style.display = '';
+            }
+        }
+    }
+}
+
+function hideCriticalRows() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        // Check if the row has enough cells
+        if (row.cells.length > 4) {
+            var alarmTypeCell = row.cells[4]; // Assuming alarm type is in the 5th cell
+            if (alarmTypeCell.textContent === "Critical") {
+                // Hide rows that are not "Critical"
+                row.style.display = 'none';
+            } else {
+                // Show rows that are "Critical"
+                row.style.display = '';
+            }
+        }
+    }
+}
+
+function showAllRows() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        row.style.display = '';
+    }
+}
+
+function hideAllRows() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        row.style.display = 'none';
+    }
+}
+
+function handleToggleClickMain() {
+    if (!myCheckbox3.checked && !myCheckbox4.checked) {
+        hideAllRows();
+    }
+    else if (mainTrainSelection === "allTrains") {
+        showAllTrains();
+    } else if (mainTrainSelection === '1') {
+        showTrain1();
+    } else if (mainTrainSelection === '2') {
+        showTrain2();
+    }
+    else if (mainTrainSelection === '3') {
+        showTrain3();
+    }
+    else if (mainTrainSelection === '4') {
+        showTrain4();
+    }
+    else if (mainTrainSelection === '5') {
+        showTrain5();
+    }
+    else if (mainTrainSelection === '6') {
+        showTrain6();
+    }
+    else if (mainTrainSelection === '7') {
+        showTrain7();
+    }
+   
 }

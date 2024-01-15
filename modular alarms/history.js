@@ -54,31 +54,13 @@ function displayFilteredHistory(filteredHistory) {
         historyRow.insertCell().textContent = alarmData.Code;
         if (alarmData.stopAlarm) {
             historyRow.insertCell().textContent = "Critical";
-            if (alarmData.Code === 78) {
-                //Display alarm.Message if Code is 78
-                historyRow.insertCell().textContent = alarmData.Message;
-            }
-
-            else {
-                // Display alarmDescription for other alarm codes
-                fetchAndProcessXML(alarmData.Code, alarmData, function (alarmDescription) {
-                    historyRow.insertCell().textContent = alarmDescription;
-                });
-            }
+            //Display alarm.Message if Code is 78
+            historyRow.insertCell().textContent = alarmData.Message;
         }
         else {
             historyRow.insertCell().textContent = "Warning";
-            if (alarmData.Code === 78) {
-                //Display alarm.Message if Code is 78
-                historyRow.insertCell().textContent = alarmData.Message;
-            }
-
-            else {
-                // Display alarmDescription for other alarm codes
-                fetchAndProcessXML(alarmData.Code, alarmData, function (alarmDescription) {
-                    historyRow.insertCell().textContent = alarmDescription;
-                });
-            }
+            //Display alarm.Message if Code is 78
+            historyRow.insertCell().textContent = alarmData.Message;
         }
         historyRow.classList.add('table-success');
     });
@@ -116,31 +98,12 @@ function displayAlarmHistory() {
         historyRow.insertCell().textContent = alarmData.Code;
         if (alarmData.stopAlarm) {
             historyRow.insertCell().textContent = "Critical";
-            if (alarmData.Code === 78) {
-                //Display alarm.Message if Code is 78
-                historyRow.insertCell().textContent = alarmData.Message;
-            }
-
-            else {
-                // Display alarmDescription for other alarm codes
-                fetchAndProcessXML(alarmData.Code, alarmData, function (alarmDescription) {
-                    historyRow.insertCell().textContent = alarmDescription;
-                });
-            }
+            //Display alarm.Message if Code is 78
+            historyRow.insertCell().textContent = alarmData.Message;
         }
         else {
             historyRow.insertCell().textContent = "Warning";
-            if (alarmData.Code === 78) {
-                //Display alarm.Message if Code is 78
-                historyRow.insertCell().textContent = alarmData.Message;
-            }
-
-            else {
-                // Display alarmDescription for other alarm codes
-                fetchAndProcessXML(alarmData.Code, alarmData, function (alarmDescription) {
-                    historyRow.insertCell().textContent = alarmDescription;
-                });
-            }
+            historyRow.insertCell().textContent = alarmData.Message;
         }
         historyRow.classList.add('table-success');
     });
@@ -162,7 +125,6 @@ function displayStopAlarmHistory() {
             historyArray.pop();
         }
     }
-
     // Output all necessary fields for history
     filteredHistoryArray.forEach(alarmData => {
         var historyRow = historyTable.insertRow();
@@ -172,31 +134,8 @@ function displayStopAlarmHistory() {
         historyRow.insertCell().textContent = alarmData.Code;
         if (alarmData.stopAlarm) {
             historyRow.insertCell().textContent = "Critical";
-            if (alarmData.Code === 78) {
-                //Display alarm.Message if Code is 78
-                historyRow.insertCell().textContent = alarmData.Message;
-            }
-
-            else {
-                // Display alarmDescription for other alarm codes
-                fetchAndProcessXML(alarmData.Code, alarmData, function (alarmDescription) {
-                    historyRow.insertCell().textContent = alarmDescription;
-                });
-            }
-        }
-        else {
-            historyRow.insertCell().textContent = "Warning";
-            if (alarmData.Code === 78) {
-                //Display alarm.Message if Code is 78
-                historyRow.insertCell().textContent = alarmData.Message;
-            }
-
-            else {
-                // Display alarmDescription for other alarm codes
-                fetchAndProcessXML(alarmData.Code, alarmData, function (alarmDescription) {
-                    historyRow.insertCell().textContent = alarmDescription;
-                });
-            }
+            //Display alarm.Message if Code is 78
+            historyRow.insertCell().textContent = alarmData.Message;
         }
 
         historyRow.classList.add('table-success');
@@ -208,10 +147,8 @@ function displayWarningHistory() {
     historyTable.innerHTML = ''; // Clear the existing history table
     // Filter the historyArray to include only alarms where stopAlarm is true
     const filteredHistoryArray = historyArray.filter(alarmData => !alarmData.stopAlarm);
-
     // Sort the filtered historyArray based on the DateTime property, from newest to oldest
     filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
-
     // Ensure that filteredHistoryArray contains at most 100 alarms
     if (historyArray.length > MAX_HISTORY_ELEMENTS) {
         const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
@@ -219,8 +156,6 @@ function displayWarningHistory() {
             historyArray.pop();
         }
     }
-
-
     // Output all necessary fields for history
     filteredHistoryArray.forEach(alarmData => {
         var historyRow = historyTable.insertRow();
@@ -229,32 +164,11 @@ function displayWarningHistory() {
         historyRow.insertCell().textContent = alarmData.Train;
         historyRow.insertCell().textContent = alarmData.Code;
         if (alarmData.stopAlarm) {
-            historyRow.insertCell().textContent = "Critical";
-            if (alarmData.Code === 78) {
-                //Display alarm.Message if Code is 78
-                historyRow.insertCell().textContent = alarmData.Message;
-            }
-
-            else {
-                // Display alarmDescription for other alarm codes
-                fetchAndProcessXML(alarmData.Code, alarmData, function (alarmDescription) {
-                    historyRow.insertCell().textContent = alarmDescription;
-                });
-            }
         }
         else {
             historyRow.insertCell().textContent = "Warning";
-            if (alarmData.Code === 78) {
-                //Display alarm.Message if Code is 78
-                historyRow.insertCell().textContent = alarmData.Message;
-            }
-
-            else {
-                // Display alarmDescription for other alarm codes
-                fetchAndProcessXML(alarmData.Code, alarmData, function (alarmDescription) {
-                    historyRow.insertCell().textContent = alarmDescription;
-                });
-            }
+            //Display alarm.Message if Code is 78
+            historyRow.insertCell().textContent = alarmData.Message;
         }
         historyRow.classList.add('table-success');
     });
@@ -329,4 +243,761 @@ function initializeHistoryFromLocalStorage() {
             historyArray.push(newAlarm);
         }
     });
+}
+
+function displayAllTrain1Alarms() {
+    var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+    historyTable.innerHTML = ''; // Clear the existing history table
+    // Filter the historyArray to include only alarms where stopAlarm is true
+    const filteredHistoryArray = historyArray.filter(alarmData => alarmData.Train === 1);
+    // Sort the filtered historyArray based on the DateTime property, from newest to oldest
+    filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+    // Ensure that filteredHistoryArray contains at most 100 alarms
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
+    }
+    // Output all necessary fields for history
+    filteredHistoryArray.forEach(alarmData => {
+        var historyRow = historyTable.insertRow();
+        const date = new Date(alarmData.DateTime);
+        historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+        historyRow.insertCell().textContent = alarmData.Train;
+        historyRow.insertCell().textContent = alarmData.Code;
+        if (alarmData.stopAlarm) {
+            historyRow.insertCell().textContent = "Critical";
+            historyRow.insertCell().textContent = alarmData.Message;
+        }
+        else {
+            historyRow.insertCell().textContent = "Warning";
+            historyRow.insertCell().textContent = alarmData.Message;
+        }
+        historyRow.classList.add('table-success');
+    });
+}
+
+function displayTrain1Warnings() {
+    var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+    historyTable.innerHTML = ''; // Clear the existing history table
+    // Filter the historyArray to include only alarms where stopAlarm is true
+    const filteredHistoryArray = historyArray.filter(alarmData => alarmData.Train === 1 && !alarmData.stopAlarm);
+    // Sort the filtered historyArray based on the DateTime property, from newest to oldest
+    filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+    // Ensure that filteredHistoryArray contains at most 100 alarms
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
+    }
+    // Output all necessary fields for history
+    filteredHistoryArray.forEach(alarmData => {
+        var historyRow = historyTable.insertRow();
+        const date = new Date(alarmData.DateTime);
+        historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+        historyRow.insertCell().textContent = alarmData.Train;
+        historyRow.insertCell().textContent = alarmData.Code;
+        historyRow.insertCell().textContent = "Warning";
+        historyRow.insertCell().textContent = alarmData.Message;
+        historyRow.classList.add('table-success');
+    });
+}
+
+function displayTrain1CriticalAlarms() {
+    var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+    historyTable.innerHTML = ''; // Clear the existing history table
+    // Filter the historyArray to include only alarms where stopAlarm is true
+    const filteredHistoryArray = historyArray.filter(alarmData => alarmData.Train === 1 && alarmData.stopAlarm);
+    // Sort the filtered historyArray based on the DateTime property, from newest to oldest
+    filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+    // Ensure that filteredHistoryArray contains at most 100 alarms
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
+    }
+    // Output all necessary fields for history
+    filteredHistoryArray.forEach(alarmData => {
+        var historyRow = historyTable.insertRow();
+        const date = new Date(alarmData.DateTime);
+        historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+        historyRow.insertCell().textContent = alarmData.Train;
+        historyRow.insertCell().textContent = alarmData.Code;
+        historyRow.insertCell().textContent = "Critical";
+        historyRow.insertCell().textContent = alarmData.Message;
+        historyRow.classList.add('table-success');
+    });
+}
+
+function displayTrain2Alarms() {
+    var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+    historyTable.innerHTML = ''; // Clear the existing history table
+    // Filter the historyArray to include only alarms where stopAlarm is true
+    const filteredHistoryArray = historyArray.filter(alarmData => alarmData.Train === 2);
+    // Sort the filtered historyArray based on the DateTime property, from newest to oldest
+    filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+    // Ensure that filteredHistoryArray contains at most 100 alarms
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
+    }
+    // Output all necessary fields for history
+    filteredHistoryArray.forEach(alarmData => {
+        var historyRow = historyTable.insertRow();
+        const date = new Date(alarmData.DateTime);
+        historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+        historyRow.insertCell().textContent = alarmData.Train;
+        historyRow.insertCell().textContent = alarmData.Code;
+        if (alarmData.stopAlarm) {
+            historyRow.insertCell().textContent = "Critical";
+            historyRow.insertCell().textContent = alarmData.Message;
+        }
+        else {
+            historyRow.insertCell().textContent = "Warning";
+            historyRow.insertCell().textContent = alarmData.Message;
+        }
+        historyRow.classList.add('table-success');
+    });
+}
+
+function displayTrain2Warnings() {
+    var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+    historyTable.innerHTML = ''; // Clear the existing history table
+    // Filter the historyArray to include only alarms where stopAlarm is true
+    const filteredHistoryArray = historyArray.filter(alarmData => alarmData.Train === 2 && !alarmData.stopAlarm);
+    // Sort the filtered historyArray based on the DateTime property, from newest to oldest
+    filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+    // Ensure that filteredHistoryArray contains at most 100 alarms
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
+    }
+    // Output all necessary fields for history
+    filteredHistoryArray.forEach(alarmData => {
+        var historyRow = historyTable.insertRow();
+        const date = new Date(alarmData.DateTime);
+        historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+        historyRow.insertCell().textContent = alarmData.Train;
+        historyRow.insertCell().textContent = alarmData.Code;
+        historyRow.insertCell().textContent = "Warning";
+        historyRow.insertCell().textContent = alarmData.Message;
+        historyRow.classList.add('table-success');
+    });
+}
+
+function displayTrain2CriticalAlarms() {
+    var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+    historyTable.innerHTML = ''; // Clear the existing history table
+    // Filter the historyArray to include only alarms where stopAlarm is true
+    const filteredHistoryArray = historyArray.filter(alarmData => alarmData.Train === 2 && alarmData.stopAlarm);
+    // Sort the filtered historyArray based on the DateTime property, from newest to oldest
+    filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+    // Ensure that filteredHistoryArray contains at most 100 alarms
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
+    }
+    // Output all necessary fields for history
+    filteredHistoryArray.forEach(alarmData => {
+        var historyRow = historyTable.insertRow();
+        const date = new Date(alarmData.DateTime);
+        historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+        historyRow.insertCell().textContent = alarmData.Train;
+        historyRow.insertCell().textContent = alarmData.Code;
+        historyRow.insertCell().textContent = "Critical";
+        historyRow.insertCell().textContent = alarmData.Message;
+        historyRow.classList.add('table-success');
+    });
+}
+
+function displayTrain3Alarms() {
+    var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+    historyTable.innerHTML = ''; // Clear the existing history table
+    // Filter the historyArray to include only alarms where stopAlarm is true
+    const filteredHistoryArray = historyArray.filter(alarmData => alarmData.Train === 3);
+    // Sort the filtered historyArray based on the DateTime property, from newest to oldest
+    filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+    // Ensure that filteredHistoryArray contains at most 100 alarms
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
+    }
+    // Output all necessary fields for history
+    filteredHistoryArray.forEach(alarmData => {
+        var historyRow = historyTable.insertRow();
+        const date = new Date(alarmData.DateTime);
+        historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+        historyRow.insertCell().textContent = alarmData.Train;
+        historyRow.insertCell().textContent = alarmData.Code;
+        if (alarmData.stopAlarm) {
+            historyRow.insertCell().textContent = "Critical";
+            historyRow.insertCell().textContent = alarmData.Message;
+        }
+        else {
+            historyRow.insertCell().textContent = "Warning";
+            historyRow.insertCell().textContent = alarmData.Message;
+        }
+        historyRow.classList.add('table-success');
+    });
+}
+
+function displayTrain3Warnings() {
+    var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+    historyTable.innerHTML = ''; // Clear the existing history table
+    // Filter the historyArray to include only alarms where stopAlarm is true
+    const filteredHistoryArray = historyArray.filter(alarmData => alarmData.Train === 3 && !alarmData.stopAlarm);
+    // Sort the filtered historyArray based on the DateTime property, from newest to oldest
+    filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+    // Ensure that filteredHistoryArray contains at most 100 alarms
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
+    }
+    // Output all necessary fields for history
+    filteredHistoryArray.forEach(alarmData => {
+        var historyRow = historyTable.insertRow();
+        const date = new Date(alarmData.DateTime);
+        historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+        historyRow.insertCell().textContent = alarmData.Train;
+        historyRow.insertCell().textContent = alarmData.Code;
+        historyRow.insertCell().textContent = "Warning";
+        historyRow.insertCell().textContent = alarmData.Message;
+        historyRow.classList.add('table-success');
+    });
+}
+
+function displayTrain3CriticalAlarms() {
+    var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+    historyTable.innerHTML = ''; // Clear the existing history table
+    // Filter the historyArray to include only alarms where stopAlarm is true
+    const filteredHistoryArray = historyArray.filter(alarmData => alarmData.Train === 3 && alarmData.stopAlarm);
+    // Sort the filtered historyArray based on the DateTime property, from newest to oldest
+    filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+    // Ensure that filteredHistoryArray contains at most 100 alarms
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
+    }
+    // Output all necessary fields for history
+    filteredHistoryArray.forEach(alarmData => {
+        var historyRow = historyTable.insertRow();
+        const date = new Date(alarmData.DateTime);
+        historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+        historyRow.insertCell().textContent = alarmData.Train;
+        historyRow.insertCell().textContent = alarmData.Code;
+        historyRow.insertCell().textContent = "Critical";
+        historyRow.insertCell().textContent = alarmData.Message;
+        historyRow.classList.add('table-success');
+    });
+}
+
+function displayTrain4Alarms() {
+    var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+    historyTable.innerHTML = ''; // Clear the existing history table
+    // Filter the historyArray to include only alarms where stopAlarm is true
+    const filteredHistoryArray = historyArray.filter(alarmData => alarmData.Train === 4);
+    // Sort the filtered historyArray based on the DateTime property, from newest to oldest
+    filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+    // Ensure that filteredHistoryArray contains at most 100 alarms
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
+    }
+    // Output all necessary fields for history
+    filteredHistoryArray.forEach(alarmData => {
+        var historyRow = historyTable.insertRow();
+        const date = new Date(alarmData.DateTime);
+        historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+        historyRow.insertCell().textContent = alarmData.Train;
+        historyRow.insertCell().textContent = alarmData.Code;
+        if (alarmData.stopAlarm) {
+            historyRow.insertCell().textContent = "Critical";
+            historyRow.insertCell().textContent = alarmData.Message;
+        }
+        else {
+            historyRow.insertCell().textContent = "Warning";
+            historyRow.insertCell().textContent = alarmData.Message;
+        }
+        historyRow.classList.add('table-success');
+    });
+}
+
+function displayTrain4Warnings() {
+    var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+    historyTable.innerHTML = ''; // Clear the existing history table
+    // Filter the historyArray to include only alarms where stopAlarm is true
+    const filteredHistoryArray = historyArray.filter(alarmData => alarmData.Train === 4 && !alarmData.stopAlarm);
+    // Sort the filtered historyArray based on the DateTime property, from newest to oldest
+    filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+    // Ensure that filteredHistoryArray contains at most 100 alarms
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
+    }
+    // Output all necessary fields for history
+    filteredHistoryArray.forEach(alarmData => {
+        var historyRow = historyTable.insertRow();
+        const date = new Date(alarmData.DateTime);
+        historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+        historyRow.insertCell().textContent = alarmData.Train;
+        historyRow.insertCell().textContent = alarmData.Code;
+        historyRow.insertCell().textContent = "Warning";
+        historyRow.insertCell().textContent = alarmData.Message;
+        historyRow.classList.add('table-success');
+    });
+}
+
+function displayTrain4CriticalAlarms() {
+    var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+    historyTable.innerHTML = ''; // Clear the existing history table
+    // Filter the historyArray to include only alarms where stopAlarm is true
+    const filteredHistoryArray = historyArray.filter(alarmData => alarmData.Train === 4 && alarmData.stopAlarm);
+    // Sort the filtered historyArray based on the DateTime property, from newest to oldest
+    filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+    // Ensure that filteredHistoryArray contains at most 100 alarms
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
+    }
+    // Output all necessary fields for history
+    filteredHistoryArray.forEach(alarmData => {
+        var historyRow = historyTable.insertRow();
+        const date = new Date(alarmData.DateTime);
+        historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+        historyRow.insertCell().textContent = alarmData.Train;
+        historyRow.insertCell().textContent = alarmData.Code;
+        historyRow.insertCell().textContent = "Critical";
+        historyRow.insertCell().textContent = alarmData.Message;
+        historyRow.classList.add('table-success');
+    });
+}
+
+function displayTrain5Alarms() {
+    var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+    historyTable.innerHTML = ''; // Clear the existing history table
+    // Filter the historyArray to include only alarms where stopAlarm is true
+    const filteredHistoryArray = historyArray.filter(alarmData => alarmData.Train === 5);
+    // Sort the filtered historyArray based on the DateTime property, from newest to oldest
+    filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+    // Ensure that filteredHistoryArray contains at most 100 alarms
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
+    }
+    // Output all necessary fields for history
+    filteredHistoryArray.forEach(alarmData => {
+        var historyRow = historyTable.insertRow();
+        const date = new Date(alarmData.DateTime);
+        historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+        historyRow.insertCell().textContent = alarmData.Train;
+        historyRow.insertCell().textContent = alarmData.Code;
+        if (alarmData.stopAlarm) {
+            historyRow.insertCell().textContent = "Critical";
+            historyRow.insertCell().textContent = alarmData.Message;
+        }
+        else {
+            historyRow.insertCell().textContent = "Warning";
+            historyRow.insertCell().textContent = alarmData.Message;
+        }
+        historyRow.classList.add('table-success');
+    });
+}
+
+function displayTrain5Warnings() {
+    var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+    historyTable.innerHTML = ''; // Clear the existing history table
+    // Filter the historyArray to include only alarms where stopAlarm is true
+    const filteredHistoryArray = historyArray.filter(alarmData => alarmData.Train === 5 && !alarmData.stopAlarm);
+    // Sort the filtered historyArray based on the DateTime property, from newest to oldest
+    filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+    // Ensure that filteredHistoryArray contains at most 100 alarms
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
+    }
+    // Output all necessary fields for history
+    filteredHistoryArray.forEach(alarmData => {
+        var historyRow = historyTable.insertRow();
+        const date = new Date(alarmData.DateTime);
+        historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+        historyRow.insertCell().textContent = alarmData.Train;
+        historyRow.insertCell().textContent = alarmData.Code;
+        historyRow.insertCell().textContent = "Warning";
+        historyRow.insertCell().textContent = alarmData.Message;
+        historyRow.classList.add('table-success');
+    });
+}
+
+function displayTrain5CriticalAlarms() {
+    var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+    historyTable.innerHTML = ''; // Clear the existing history table
+    // Filter the historyArray to include only alarms where stopAlarm is true
+    const filteredHistoryArray = historyArray.filter(alarmData => alarmData.Train === 5 && alarmData.stopAlarm);
+    // Sort the filtered historyArray based on the DateTime property, from newest to oldest
+    filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+    // Ensure that filteredHistoryArray contains at most 100 alarms
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
+    }
+    // Output all necessary fields for history
+    filteredHistoryArray.forEach(alarmData => {
+        var historyRow = historyTable.insertRow();
+        const date = new Date(alarmData.DateTime);
+        historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+        historyRow.insertCell().textContent = alarmData.Train;
+        historyRow.insertCell().textContent = alarmData.Code;
+        historyRow.insertCell().textContent = "Critical";
+        historyRow.insertCell().textContent = alarmData.Message;
+        historyRow.classList.add('table-success');
+    });
+}
+
+function displayTrain6Alarms() {
+    var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+    historyTable.innerHTML = ''; // Clear the existing history table
+    // Filter the historyArray to include only alarms where stopAlarm is true
+    const filteredHistoryArray = historyArray.filter(alarmData => alarmData.Train === 6);
+    // Sort the filtered historyArray based on the DateTime property, from newest to oldest
+    filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+    // Ensure that filteredHistoryArray contains at most 100 alarms
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
+    }
+    // Output all necessary fields for history
+    filteredHistoryArray.forEach(alarmData => {
+        var historyRow = historyTable.insertRow();
+        const date = new Date(alarmData.DateTime);
+        historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+        historyRow.insertCell().textContent = alarmData.Train;
+        historyRow.insertCell().textContent = alarmData.Code;
+        if (alarmData.stopAlarm) {
+            historyRow.insertCell().textContent = "Critical";
+            historyRow.insertCell().textContent = alarmData.Message;
+        }
+        else {
+            historyRow.insertCell().textContent = "Warning";
+            historyRow.insertCell().textContent = alarmData.Message;
+        }
+        historyRow.classList.add('table-success');
+    });
+}
+
+function displayTrain6Warnings() {
+    var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+    historyTable.innerHTML = ''; // Clear the existing history table
+    // Filter the historyArray to include only alarms where stopAlarm is true
+    const filteredHistoryArray = historyArray.filter(alarmData => alarmData.Train === 6 && !alarmData.stopAlarm);
+    // Sort the filtered historyArray based on the DateTime property, from newest to oldest
+    filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+    // Ensure that filteredHistoryArray contains at most 100 alarms
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
+    }
+    // Output all necessary fields for history
+    filteredHistoryArray.forEach(alarmData => {
+        var historyRow = historyTable.insertRow();
+        const date = new Date(alarmData.DateTime);
+        historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+        historyRow.insertCell().textContent = alarmData.Train;
+        historyRow.insertCell().textContent = alarmData.Code;
+        historyRow.insertCell().textContent = "Warning";
+        historyRow.insertCell().textContent = alarmData.Message;
+        historyRow.classList.add('table-success');
+    });
+}
+
+function displayTrain6CriticalAlarms() {
+    var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+    historyTable.innerHTML = ''; // Clear the existing history table
+    // Filter the historyArray to include only alarms where stopAlarm is true
+    const filteredHistoryArray = historyArray.filter(alarmData => alarmData.Train === 6 && alarmData.stopAlarm);
+    // Sort the filtered historyArray based on the DateTime property, from newest to oldest
+    filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+    // Ensure that filteredHistoryArray contains at most 100 alarms
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
+    }
+    // Output all necessary fields for history
+    filteredHistoryArray.forEach(alarmData => {
+        var historyRow = historyTable.insertRow();
+        const date = new Date(alarmData.DateTime);
+        historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+        historyRow.insertCell().textContent = alarmData.Train;
+        historyRow.insertCell().textContent = alarmData.Code;
+        historyRow.insertCell().textContent = "Critical";
+        historyRow.insertCell().textContent = alarmData.Message;
+        historyRow.classList.add('table-success');
+    });
+}
+
+function displayTrain7Alarms() {
+    var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+    historyTable.innerHTML = ''; // Clear the existing history table
+    // Filter the historyArray to include only alarms where stopAlarm is true
+    const filteredHistoryArray = historyArray.filter(alarmData => alarmData.Train === 7);
+    // Sort the filtered historyArray based on the DateTime property, from newest to oldest
+    filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+    // Ensure that filteredHistoryArray contains at most 100 alarms
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
+    }
+    // Output all necessary fields for history
+    filteredHistoryArray.forEach(alarmData => {
+        var historyRow = historyTable.insertRow();
+        const date = new Date(alarmData.DateTime);
+        historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+        historyRow.insertCell().textContent = alarmData.Train;
+        historyRow.insertCell().textContent = alarmData.Code;
+        if (alarmData.stopAlarm) {
+            historyRow.insertCell().textContent = "Critical";
+            historyRow.insertCell().textContent = alarmData.Message;
+        }
+        else {
+            historyRow.insertCell().textContent = "Warning";
+            historyRow.insertCell().textContent = alarmData.Message;
+        }
+        historyRow.classList.add('table-success');
+    });
+}
+
+function displayTrain7Warnings() {
+    var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+    historyTable.innerHTML = ''; // Clear the existing history table
+    // Filter the historyArray to include only alarms where stopAlarm is true
+    const filteredHistoryArray = historyArray.filter(alarmData => alarmData.Train === 7 && !alarmData.stopAlarm);
+    // Sort the filtered historyArray based on the DateTime property, from newest to oldest
+    filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+    // Ensure that filteredHistoryArray contains at most 100 alarms
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
+    }
+    // Output all necessary fields for history
+    filteredHistoryArray.forEach(alarmData => {
+        var historyRow = historyTable.insertRow();
+        const date = new Date(alarmData.DateTime);
+        historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+        historyRow.insertCell().textContent = alarmData.Train;
+        historyRow.insertCell().textContent = alarmData.Code;
+        historyRow.insertCell().textContent = "Warning";
+        historyRow.insertCell().textContent = alarmData.Message;
+        historyRow.classList.add('table-success');
+    });
+}
+
+function displayTrain7CriticalAlarms() {
+    var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
+    historyTable.innerHTML = ''; // Clear the existing history table
+    // Filter the historyArray to include only alarms where stopAlarm is true
+    const filteredHistoryArray = historyArray.filter(alarmData => alarmData.Train === 7 && alarmData.stopAlarm);
+    // Sort the filtered historyArray based on the DateTime property, from newest to oldest
+    filteredHistoryArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
+    // Ensure that filteredHistoryArray contains at most 100 alarms
+    if (historyArray.length > MAX_HISTORY_ELEMENTS) {
+        const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
+        for (let i = 0; i < elementsToRemove; i++) {
+            historyArray.pop();
+        }
+    }
+    // Output all necessary fields for history
+    filteredHistoryArray.forEach(alarmData => {
+        var historyRow = historyTable.insertRow();
+        const date = new Date(alarmData.DateTime);
+        historyRow.insertCell().textContent = formatDate(date); // Use the formatDate function
+        historyRow.insertCell().textContent = alarmData.Train;
+        historyRow.insertCell().textContent = alarmData.Code;
+        historyRow.insertCell().textContent = "Critical";
+        historyRow.insertCell().textContent = alarmData.Message;
+        historyRow.classList.add('table-success');
+    });
+}
+
+function handleAllTrainAlarms() {
+    if (myCheckbox.checked && myCheckbox2.checked) {
+        displayAlarmHistory();
+    } else if (myCheckbox.checked && !myCheckbox2.checked) {
+        displayStopAlarmHistory();
+    } else if (!myCheckbox.checked && myCheckbox2.checked) {
+        displayWarningHistory();
+    } else {
+        displayNoHistory();
+    }
+}
+
+function handleTrain1Alarms() {
+    if (myCheckbox.checked && myCheckbox2.checked) {
+        displayAllTrain1Alarms();
+    } else if (myCheckbox.checked && !myCheckbox2.checked) {
+        displayTrain1CriticalAlarms();
+    } else if (!myCheckbox.checked && myCheckbox2.checked) {
+        displayTrain1Warnings();
+    } else {
+        displayNoHistory();
+    }
+}
+
+function handleTrain2Alarms() {
+    if (myCheckbox.checked && myCheckbox2.checked) {
+        displayTrain2Alarms();
+    } else if (myCheckbox.checked && !myCheckbox2.checked) {
+        displayTrain2CriticalAlarms();
+    } else if (!myCheckbox.checked && myCheckbox2.checked) {
+        displayTrain2Warnings();
+    } else {
+        displayNoHistory();
+    }
+}
+
+function handleTrain3Alarms() {
+    if (myCheckbox.checked && myCheckbox2.checked) {
+        displayTrain3Alarms();
+    } else if (myCheckbox.checked && !myCheckbox2.checked) {
+        displayTrain3CriticalAlarms();
+    } else if (!myCheckbox.checked && myCheckbox2.checked) {
+        displayTrain3Warnings();
+    } else {
+        displayNoHistory();
+    }
+}
+
+function handleTrain4Alarms() {
+    if (myCheckbox.checked && myCheckbox2.checked) {
+        displayTrain4Alarms();
+    } else if (myCheckbox.checked && !myCheckbox2.checked) {
+        displayTrain4CriticalAlarms();
+    } else if (!myCheckbox.checked && myCheckbox2.checked) {
+        displayTrain4Warnings();
+    } else {
+        displayNoHistory();
+    }
+}
+
+function handleTrain5Alarms() {
+    if (myCheckbox.checked && myCheckbox2.checked) {
+        displayTrain5Alarms();
+    } else if (myCheckbox.checked && !myCheckbox2.checked) {
+        displayTrain5CriticalAlarms();
+    } else if (!myCheckbox.checked && myCheckbox2.checked) {
+        displayTrain5Warnings();
+    } else {
+        displayNoHistory();
+    }
+}
+
+function handleTrain6Alarms() {
+    if (myCheckbox.checked && myCheckbox2.checked) {
+        displayTrain6Alarms();
+    } else if (myCheckbox.checked && !myCheckbox2.checked) {
+        displayTrain6CriticalAlarms();
+    } else if (!myCheckbox.checked && myCheckbox2.checked) {
+        displayTrain6Warnings();
+    } else {
+        displayNoHistory();
+    }
+}
+
+function handleTrain7Alarms() {
+    if (myCheckbox.checked && myCheckbox2.checked) {
+        displayTrain7Alarms();
+    } else if (myCheckbox.checked && !myCheckbox2.checked) {
+        displayTrain7CriticalAlarms();
+    } else if (!myCheckbox.checked && myCheckbox2.checked) {
+        displayTrain7Warnings();
+    } else {
+        displayNoHistory();
+    }
+}
+
+function handleTrainSelection(selectedTrain) {
+    trainSelection = selectedTrain;
+    if (selectedTrain === "all") {
+        handleAllTrainAlarms();
+    } else if (selectedTrain === 'train1') {
+        handleTrain1Alarms();
+    } else if (selectedTrain === 'train2') {
+        handleTrain2Alarms();
+    }
+    else if (selectedTrain === 'train3') {
+        handleTrain3Alarms();
+    }
+    else if (selectedTrain === 'train4') {
+        handleTrain4Alarms();
+    }
+    else if (selectedTrain === 'train5') {
+        handleTrain5Alarms();
+    }
+    else if (selectedTrain === 'train6') {
+        handleTrain6Alarms();
+    }
+    else if (selectedTrain === 'train7') {
+        handleTrain7Alarms();
+    }
+}
+
+function handleToggleClick() {
+    // Use the global variable for trainSelection
+    if (trainSelection === "all") {
+        handleAllTrainAlarms();
+    } else if (trainSelection === 'train1') {
+        handleTrain1Alarms();
+    } else if (trainSelection === 'train2') {
+        handleTrain2Alarms();
+    }
+    else if (trainSelection === 'train3') {
+        handleTrain3Alarms();
+    }
+    else if (trainSelection === 'train4') {
+        handleTrain4Alarms();
+    }
+    else if (trainSelection === 'train5') {
+        handleTrain5Alarms();
+    }
+    else if (trainSelection === 'train6') {
+        handleTrain6Alarms();
+    }
+    else if (trainSelection === 'train7') {
+        handleTrain7Alarms();
+    }
 }

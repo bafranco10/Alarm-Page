@@ -1014,7 +1014,7 @@
       }
       catch { }
       if ((linkModel !== modelHolder) || (!areStatesEqual(model[ID].linkDataArray, linkHolder))) {
-        console.log("updated");
+       // console.log("updated");
         myDiagram.model.linkDataArray = [...model[ID].linkDataArray];
         modelHolder = linkModel;
         linkHolder = [...model[ID].linkDataArray];
@@ -1473,7 +1473,7 @@
         }
 
       } catch {
-        console.log("okey");
+        //console.log("okey");
       }
       updated = 0;
 
@@ -1586,7 +1586,7 @@
 
             // Handle the "Timeout" error by updating the State
             if (error.message === "Timeout" && sourceIndex != undefined) {
-              console.log("Off");
+             // console.log("Off");
               const Index = model[-1].nodeDataArray.findIndex(node => node.which === sourceIndex.toString());
               model[-1].nodeDataArray[Index].State = "Off";
 
@@ -1820,7 +1820,7 @@
         myDiagram.autoScale = go.Diagram.None;
       }
       else {
-        console.log(event.data);
+        //console.log(event.data);
       }
     }
 

@@ -39,7 +39,30 @@
     <!-- Tab content -->
     <div id="Current Alarms" class="tabcontent border-bottom-0">
         <h1>Current Alarms</h1>
+        <span id="criticalLabelMain">View Critical Alarms</span>
+        <label class="switch" id="toggleCriticalMain" style="margin-right: 40px;">
+            <input type="checkbox" id="criticalCheckBoxMain" checked>
+            <span class="slider round"></span>
+        </label>
 
+        <span id="warningLabelMain">View Warnings</span>
+        <label class="switch" id="toggleWarningMain" style="margin-right: 40px;">
+            <input type="checkbox" id="warningCheckBoxMain" checked>
+            <span class="slider round"></span>
+        </label>
+
+        <label for="trainSelectorMain">Select Train To View:</label>
+        <select id="trainSelectorMain" onchange="handleTrainSelectionMain(this.value)">
+            <option value="allTrains">All Trains</option>
+            <option value="1">Train 1</option>
+            <option value="2">Train 2</option>
+            <option value="3">Train 3</option>
+            <option value="4">Train 4</option>
+            <option value="5">Train 5</option>
+            <option value="6">Train 6</option>
+            <option value="7">Train 7</option>
+            <!-- Add options for train4 to train7 as needed -->
+        </select>
         <button type="button" class="btn btn-primary btn-acknowledge" id="acknowledgeAllButton"
             onclick="confirmAcknowledgeAll();">Acknowledge
             All</button>
@@ -92,11 +115,23 @@
         </label>
 
         <span id="warningLabel">View Warnings</span>
-        <label class="switch" id="toggleWarning">
+        <label class="switch" id="toggleWarning" style="margin-right: 40px;">
             <input type="checkbox" id="warningCheckBox" checked>
             <span class="slider round"></span>
         </label>
 
+        <label for="trainSelector">Select Train To View:</label>
+        <select id="trainSelector" onchange="handleTrainSelection(this.value)">
+            <option value="all">All Trains</option>
+            <option value="train1">Train 1</option>
+            <option value="train2">Train 2</option>
+            <option value="train3">Train 3</option>
+            <option value="train4">Train 4</option>
+            <option value="train5">Train 5</option>
+            <option value="train6">Train 6</option>
+            <option value="train7">Train 7</option>
+            <!-- Add options for train4 to train7 as needed -->
+        </select>
 
         <!-- Calendar that filters alarm data-->
         <form id="dateRangeForm">
@@ -191,36 +226,29 @@
         var myCheckbox = document.getElementById("criticalCheckBox");
 
         switchLabel.onclick = function () {
-            // Toggle the functionality based on the checkbox state
-            if (myCheckbox.checked && myCheckbox2.checked) {
-                displayAlarmHistory()
-            } else if (myCheckbox.checked && !myCheckbox2.checked) {
-                displayStopAlarmHistory();
-            }
-            else if (!myCheckbox.checked && myCheckbox2.checked) {
-                displayWarningHistory();
-            }
-            else {
-                displayNoHistory();
-            }
+            handleToggleClick();
         };
 
         var switchLabel2 = document.getElementById("toggleWarning");
         var myCheckbox2 = document.getElementById("warningCheckBox");
 
         switchLabel2.onclick = function () {
-            // Toggle the functionality based on the checkbox state
-            if (myCheckbox.checked && myCheckbox2.checked) {
-                displayAlarmHistory()
-            } else if (myCheckbox.checked && !myCheckbox2.checked) {
-                displayStopAlarmHistory();
-            }
-            else if (!myCheckbox.checked && myCheckbox2.checked) {
-                displayWarningHistory();
-            }
-            else {
-                displayNoHistory();
-            }
+         handleToggleClick();
+        };
+
+        // these are for current alarms page 
+        var switchLabel3 = document.getElementById("toggleCriticalMain");
+        var myCheckbox3 = document.getElementById("criticalCheckBoxMain");
+
+        switchLabel3.onclick = function () {
+            handleToggleClickMain();
+        };
+
+        var switchLabel4 = document.getElementById("toggleWarningMain");
+        var myCheckbox4 = document.getElementById("warningCheckBoxMain");
+
+        switchLabel4.onclick = function () {
+         handleToggleClickMain();
         };
 
         const twoHours = 2 * 60 * 60 * 1000;

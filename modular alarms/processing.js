@@ -73,35 +73,38 @@ function checkInactiveAlarms(trainData, alarms) {
         const alarmTrain = parseInt(train);
         // Check if the alarm's train data matches the provided trainData
         if (alarmTrain === trainData) {
+            
             let found = false;
             // Iterate through alarms from the current data
             for (const alarm of alarms) {
+                console.log(alarmKey);
                 if (alarm.Dev_Num == Dev_Num && alarm.DateTime === DateTime && alarm.Code === alarmCode && alarm.Desc === Desc && alarm.Msg_Data == Msg_Data && alarm.Active === 0) {
-                    console.log('broke here loop1');
+                    console.log('broke here loop1', alarm);
                     break;
                 }
                 else if (alarm.Code === alarmCode && alarmCode === 63) {
-                    console.log("broke here loop 2");
+                    console.log("broke here loop 2", alarm);
                     break;
                 }
                 else if (alarm.Code === alarmCode && alarmCode === 75) {
-                    console.log('broke here loop 3');
+                    console.log('broke here loop 3', alarm);
                     break;
                 }
                 // Check if the alarm from activeAlarms matches an alarm from the current data
                 else if (alarm.DateTime === DateTime && alarm.Code === alarmCode && alarm.Desc === Desc && alarm.Msg_Data == Msg_Data && alarm.Dev_Num == Dev_Num && alarm.Active === 1) {
                     found = true;
-                    console.log('found is true broke here')
+                    console.log('found is true broke here', alarm)
                     break;
                 }
-                else if (alarm.Active === 1) {
+                else if (alarm.DateTime === DateTime && alarm.Code === alarmCode && alarm.Active === 1 && alarm.Dev_Num == Dev_Num && alarm.Desc === Desc) {
                     found = true;
-                    console.log('found is true broke at last condition');
+                    console.log('found is true broke at last condition', alarm);
                     break;
-                }  
+                }
             }
             // If the alarm is not found in the current data, mark it for removal and call the handler function
             if (!found) {
+                console.log('pushing alarmKey');
                 keysToRemove.push(alarmKey);
                 const matchingAlarm = dataArray.find(data => {
                     const condition1 = data.Code === alarmCode;
@@ -141,6 +144,7 @@ function inactiveAlarmHandling(existingAlarms, keysToRemove, matchingAlarm) {
             }
         });
     }
+
     // critical alarms have to be acknowledged change text and let the alarm be acknowledged now
     if (matchingAlarm && matchingAlarm.stopAlarm && !matchingAlarm.Acknowledged) {
         matchingAlarm.active = false;
@@ -173,6 +177,7 @@ function decreaseCriticalAlarmCount(alarmTrain) {
     if (stopAlarmCounts[index] !== undefined) {
         --stopAlarmCounts[index];
         parent.postMessage({ alarm: stopAlarmCounts, ID: "processing" }, "*");
+        parent.document.getElementById("demo.html").contentWindow.postMessage({ ID: "Alarm", alarms: dataArray }, "*");
         acknowledgePLC(alarmTrain);
         // Check if every element in stopAlarmCounts is zero
         const allZeros = stopAlarmCounts.every(count => count === 0);
@@ -219,7 +224,463 @@ function updateDisplay() {
             rowIdToData[rowId] = entry;
         }
         parent.postMessage({ alarm: stopAlarmCounts, ID: "processing" }, "*");
+        parent.document.getElementById("demo.html").contentWindow.postMessage({ ID: "Alarm", alarms: dataArray }, "*");
     });
+}
+
+function showAllTrain1() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        // Check if the row has enough cells
+        if (row.cells.length > 1) {
+            var alarmTypeCell = row.cells[1];
+            if (alarmTypeCell.textContent !== "1") {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        }
+    }
+}
+
+function showAllTrain1Warnings() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        // Check if the row has enough cells
+        if (row.cells.length > 4) {
+            var alarmTypeCell = row.cells[4];
+            var alarmTrainCell = row.cells[1];
+            if (alarmTrainCell.textContent !== "1" || alarmTypeCell.textContent === "Critical") {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        }
+    }
+}
+
+function showAllTrain1Criticals() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        // Check if the row has enough cells
+        if (row.cells.length > 4) {
+            var alarmTypeCell = row.cells[4];
+            var alarmTrainCell = row.cells[1];
+            if (alarmTrainCell.textContent !== "1" || alarmTypeCell.textContent === "Warning") {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        }
+    }
+}
+
+function showTrain1() {
+    if (myCheckbox3.checked && myCheckbox4.checked) {
+        showAllTrain1();
+    } else if (myCheckbox3.checked && !myCheckbox4.checked) {
+        showAllTrain1Criticals();
+    } else if (!myCheckbox3.checked && myCheckbox4.checked) {
+        showAllTrain1Warnings();
+    } else if (!myCheckbox3.checked && !myCheckbox4.checked) {
+        hideAllRows();
+    }
+}
+
+function showAllTrain2() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        // Check if the row has enough cells
+        if (row.cells.length > 1) {
+            var alarmTypeCell = row.cells[1];
+            if (alarmTypeCell.textContent !== "2") {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        }
+    }
+}
+
+function showAllTrain2Warnings() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        // Check if the row has enough cells
+        if (row.cells.length > 4) {
+            var alarmTypeCell = row.cells[4];
+            var alarmTrainCell = row.cells[1];
+            if (alarmTrainCell.textContent !== "2" || alarmTypeCell.textContent === "Critical") {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        }
+    }
+}
+
+function showAllTrain2Criticals() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        // Check if the row has enough cells
+        if (row.cells.length > 4) {
+            var alarmTypeCell = row.cells[4];
+            var alarmTrainCell = row.cells[1];
+            if (alarmTrainCell.textContent !== "2" || alarmTypeCell.textContent === "Warning") {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        }
+    }
+}
+
+function showTrain2() {
+    if (myCheckbox3.checked && myCheckbox4.checked) {
+        showAllTrain2();
+    } else if (myCheckbox3.checked && !myCheckbox4.checked) {
+        showAllTrain2Criticals();
+    } else if (!myCheckbox3.checked && myCheckbox4.checked) {
+        showAllTrain2Warnings();
+    } else {
+        hideAllRows();
+    }
+}
+
+function showAllTrain3() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        // Check if the row has enough cells
+        if (row.cells.length > 1) {
+            var alarmTypeCell = row.cells[1];
+            if (alarmTypeCell.textContent !== "3") {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        }
+    }
+}
+
+function showAllTrain3Warnings() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        // Check if the row has enough cells
+        if (row.cells.length > 4) {
+            var alarmTypeCell = row.cells[4];
+            var alarmTrainCell = row.cells[1];
+            if (alarmTrainCell.textContent !== "3" || alarmTypeCell.textContent === "Critical") {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        }
+    }
+}
+
+function showAllTrain3Criticals() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        // Check if the row has enough cells
+        if (row.cells.length > 4) {
+            var alarmTypeCell = row.cells[4];
+            var alarmTrainCell = row.cells[1];
+            if (alarmTrainCell.textContent !== "3" || alarmTypeCell.textContent === "Warning") {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        }
+    }
+}
+
+function showTrain3() {
+    if (myCheckbox3.checked && myCheckbox4.checked) {
+        showAllTrain3();
+    } else if (myCheckbox3.checked && !myCheckbox4.checked) {
+        showAllTrain3Criticals();
+    } else if (!myCheckbox3.checked && myCheckbox4.checked) {
+        showAllTrain3Warnings();
+    } else {
+        hideAllRows();
+    }
+}
+
+function showAllTrain4() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        // Check if the row has enough cells
+        if (row.cells.length > 1) {
+            var alarmTypeCell = row.cells[1];
+            if (alarmTypeCell.textContent !== "4") {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        }
+    }
+}
+
+function showAllTrain4Warnings() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        // Check if the row has enough cells
+        if (row.cells.length > 4) {
+            var alarmTypeCell = row.cells[4];
+            var alarmTrainCell = row.cells[1];
+            if (alarmTrainCell.textContent !== "4" || alarmTypeCell.textContent === "Critical") {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        }
+    }
+}
+
+function showAllTrain4Criticals() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        // Check if the row has enough cells
+        if (row.cells.length > 4) {
+            var alarmTypeCell = row.cells[4];
+            var alarmTrainCell = row.cells[1];
+            if (alarmTrainCell.textContent !== "4" || alarmTypeCell.textContent === "Warning") {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        }
+    }
+}
+
+function showTrain4() {
+    if (myCheckbox3.checked && myCheckbox4.checked) {
+        showAllTrain4();
+    } else if (myCheckbox3.checked && !myCheckbox4.checked) {
+        showAllTrain4Criticals();
+    } else if (!myCheckbox3.checked && myCheckbox4.checked) {
+        showAllTrain4Warnings();
+    } else {
+        hideAllRows();
+    }
+}
+
+function showAllTrain5() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        // Check if the row has enough cells
+        if (row.cells.length > 1) {
+            var alarmTypeCell = row.cells[1];
+            if (alarmTypeCell.textContent !== "5") {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        }
+    }
+}
+
+function showAllTrain5Warnings() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        // Check if the row has enough cells
+        if (row.cells.length > 4) {
+            var alarmTypeCell = row.cells[4];
+            var alarmTrainCell = row.cells[1];
+            if (alarmTrainCell.textContent !== "5" || alarmTypeCell.textContent === "Critical") {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        }
+    }
+}
+
+function showAllTrain5Criticals() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        // Check if the row has enough cells
+        if (row.cells.length > 4) {
+            var alarmTypeCell = row.cells[4];
+            var alarmTrainCell = row.cells[1];
+            if (alarmTrainCell.textContent !== "5" || alarmTypeCell === "Warning") {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        }
+    }
+}
+
+function showTrain5() {
+    if (myCheckbox3.checked && myCheckbox4.checked) {
+        showAllTrain5();
+    } else if (myCheckbox3.checked && !myCheckbox4.checked) {
+        showAllTrain5Criticals();
+    } else if (!myCheckbox3.checked && myCheckbox4.checked) {
+        showAllTrain5Warnings();
+    } else {
+        hideAllRows();
+    }
+}
+
+function showAllTrain6() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        // Check if the row has enough cells
+        if (row.cells.length > 1) {
+            var alarmTypeCell = row.cells[1];
+            if (alarmTypeCell.textContent !== "6") {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        }
+    }
+}
+
+function showAllTrain6Warnings() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        // Check if the row has enough cells
+        if (row.cells.length > 4) {
+            var alarmTypeCell = row.cells[4];
+            var alarmTrainCell = row.cells[1];
+            if (alarmTrainCell.textContent !== "6" || alarmTypeCell.textContent === "Critical") {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        }
+    }
+}
+
+function showAllTrain6Criticals() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        // Check if the row has enough cells
+        if (row.cells.length > 4) {
+            var alarmTypeCell = row.cells[4];
+            var alarmTrainCell = row.cells[1];
+            if (alarmTrainCell.textContent !== "6" || alarmTypeCell.textContent === "Warning") {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        }
+    }
+}
+
+function showTrain6() {
+    if (myCheckbox3.checked && myCheckbox4.checked) {
+        showAllTrain6();
+    } else if (myCheckbox3.checked && !myCheckbox4.checked) {
+        showAllTrain6Criticals();
+    } else if (!myCheckbox3.checked && myCheckbox4.checked) {
+        showAllTrain6Warnings();
+    } else {
+        hideAllRows();
+    }
+}
+
+function showAllTrain7() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        // Check if the row has enough cells
+        if (row.cells.length > 1) {
+            var alarmTypeCell = row.cells[1];
+            if (alarmTypeCell.textContent !== "7") {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        }
+    }
+}
+
+function showAllTrain7Warnings() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        // Check if the row has enough cells
+        if (row.cells.length > 4) {
+            var alarmTypeCell = row.cells[4];
+            var alarmTrainCell = row.cells[1];
+            if (alarmTrainCell.textContent !== "7" || alarmTypeCell.textContent === "Critical") {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        }
+    }
+}
+
+function showAllTrain7Criticals() {
+    var tableBody = document.querySelector("#alarmTable tbody");
+    var rows = tableBody.getElementsByTagName('tr');
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        // Check if the row has enough cells
+        if (row.cells.length > 4) {
+            var alarmTypeCell = row.cells[4];
+            var alarmTrainCell = row.cells[1];
+            if (alarmTrainCell.textContent !== "7" || alarmTypeCell.textContent === "Warning") {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        }
+    }
+}
+
+function showTrain7() {
+    if (myCheckbox3.checked && myCheckbox4.checked) {
+        showAllTrain7();
+    } else if (myCheckbox3.checked && !myCheckbox4.checked) {
+        showAllTrain7Criticals();
+    } else if (!myCheckbox3.checked && myCheckbox4.checked) {
+        showAllTrain7Warnings();
+    } else {
+        hideAllRows();
+    }
 }
 
 function createCriticalAlarmRow(tableBody, entry) {
@@ -259,7 +720,13 @@ function createCriticalAlarmRow(tableBody, entry) {
     buttonArray.push(acknowledgeButton.id);
     acknowledgeButton.type = "button";
     acknowledgeButton.className = "btn btn-danger";
-    acknowledgeButton.disabled = true;
+    if (entry.plcActiveBit === 1) {
+        acknowledgeButton.disabled = true;
+    }
+    else {
+        acknowledgeButton.disabled = false;
+    }
+
     acknowledgeButton.textContent = "Acknowledge";
     acknowledgeButton.onclick = function () {
         // Show the custom popup
@@ -277,6 +744,37 @@ function createCriticalAlarmRow(tableBody, entry) {
         };
     };
     buttonCell.appendChild(acknowledgeButton);
+    setVisibility(row);
+}
+
+function setVisibility(row) {
+    var alarmTypeCell = row.cells[4];
+    var alarmTrainCell = row.cells[1];
+
+    if (myCheckbox3.checked && myCheckbox4.checked) {
+        if (alarmTrainCell !== mainTrainSelection && mainTrainSelection !== 'allTrains') {
+            row.style.display = 'none';
+        } else {
+            row.style.display = '';
+        }
+    } else if (!myCheckbox3.checked && myCheckbox4.checked) {
+        if (alarmTypeCell.textContent === "Critical" || alarmTrainCell !== mainTrainSelection) {
+            row.style.display = 'none';
+        } else {
+            row.style.display = '';
+        }
+    } else if (myCheckbox3.checked && !myCheckbox4.checked) {
+        if (alarmTypeCell.textContent === "Warning" || alarmTrainCell !== mainTrainSelection) {
+            row.style.display = 'none';
+        } else {
+            row.style.display = '';
+        }
+    } else if (mainTrainSelection === 'allTrains') {
+        row.style.display = '';
+    }
+    else {
+        row.style.display = '';
+    }
 }
 
 function createWarningAlarmRow(tableBody, entry) {
@@ -320,5 +818,6 @@ function createWarningAlarmRow(tableBody, entry) {
         })(acknowledgeButton.id, entry);
         // Append the button to the cell
         buttonCell.appendChild(acknowledgeButton);
+        setVisibility(row);
     }
 }

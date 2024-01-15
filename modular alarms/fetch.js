@@ -1,6 +1,6 @@
 const fetchEndpoints = [
-    "http://172.16.1.102/Get_Alarms.cgi?Acknowledge=0",
-    "http://172.16.1.102/Get_Alarms.cgi?Acknowledge=1",
+    "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=0",
+    "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=1",
     //"http://172.16.1.102/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.103/Get_Alarms.cgi?Acknowledge=0"
     //"http://172.16.1.104/Get_Alarms.cgi?Acknowledge=0",
@@ -68,7 +68,6 @@ function fetchData(index) {
                 scriptElement.onerror();
             }
         }, timeoutDuration);
-
         scriptElement.src = `${fetchEndpoints[index]}&IPAddress=${ipAddress}`;
         scriptElement.onerror = function () {
             clearTimeout(timeoutId); // Clear the timeout
@@ -165,14 +164,17 @@ function getTrainFromIP(ipAddress) {
     } else if (ipAddress === "172.16.1.103") {
         return 3;
     }
-    else if (ipaddress === "172.16.1.104") {
+    else if (ipAddress === "172.16.1.104") {
         return 4;
     }
-    else if (ipaddress === "172.16.1.105") {
+    else if (ipAddress === "172.16.1.105") {
         return 5;
     }
-    else if (ipaddress === "172.16.1.106") {
+    else if (ipAddress === "172.16.1.106") {
         return 6;
+    }
+    else if (ipAddress === "172.16.1.107") {
+        return 7;
     }
     else {
         return error; // returns an error if message 
@@ -214,12 +216,10 @@ function addTrainDownAlarm(ipAddress) {
             "active": true,
             'plcActiveBit': 1
         };
-        console.log('fuck face');
         // Add the new alarm to the dataArray
         dataArray.push(newAlarm);
         communicationDateTimes.push(formattedDate);
         // Update the display with the new alarm
         updateDisplay();
     }
-
 }
