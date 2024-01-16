@@ -14,6 +14,7 @@ var trainSelection = 'all';
 var mainTrainSelection = 'allTrains';
 var filteredDisplay = []; //keeps track of all filters during display 
 
+// checks all logic to ensure the right train logic is implemented
 function handleTrainSelectionMain(selectedTrain) {
     if (selectedTrain === "allTrains") {
         showAllTrains();
@@ -39,6 +40,8 @@ function handleTrainSelectionMain(selectedTrain) {
     }
 }
 
+// default option
+// shows alarms for all trains taking the filters into account 
 function showAllTrains() {
     if (myCheckbox3.checked && myCheckbox4.checked) {
         showAllRows();
@@ -186,6 +189,9 @@ function acknowledgeAlarm(buttonId, alarmData) {
     }
 }
 
+// when acknowledge all is clicked this function is called
+// THIS WILL NEED TO BE CHANGED IT WILL NOT WORK  
+// nevermind
 function acknowledgePLC(train) {
     //this index will need to change to 6 this is just for testing
     if (train === 1 && stopAlarmCounts[0] === 0) {
@@ -194,7 +200,8 @@ function acknowledgePLC(train) {
     }
     // this index will need to change to 7 it is just this for testing
     else if (train === 2 && stopAlarmCounts[1] === 0) {
-        fetchData(7);
+        fetchData(3);
+        console.log("acknowledged train 2");
     }
     else if (train === 3 && stopAlarmCounts[2] === 0) {
         fetchData(8);
@@ -255,14 +262,14 @@ function acknowledgeAllAlarms() {
         }
     });
     checkIfTrainAlarmNeedsToBeRemoved("172.16.1.101");
-    acknowledgePLC(1);
-    /*
-    for (let i = 0; i < 6; i++) {
+    
+    for (let i = 0; i < 2; i++) {
         acknowledgePLC(i + 1);
     }
-    */
+    
 }
 
+// displays a popup to ensure that an operator is sure he wants to acknowledge all alarms
 function confirmAcknowledgeAll() {
     // Show the custom popup
     document.getElementById("customPopup2").style.display = "block";
@@ -279,6 +286,7 @@ function confirmAcknowledgeAll() {
     };
 };
 
+// displays a popup to ensure that an operator is sure he wants to clear all alarms
 function confirmClearAll() {
     // Show the custom popup
     document.getElementById("customPopup3").style.display = "block";
@@ -295,6 +303,7 @@ function confirmClearAll() {
     };
 };
 
+// this function sends the acknowledgment bit to all trains 
 function acknowledgeAllTrains() {
     fetchData(1); // remove this eventually 
     /*
@@ -346,6 +355,8 @@ function formatDate(date) {
     return date.toLocaleString(undefined, options);
 }
 
+// makes sure we dont have code 63 alarms exist forever in our set
+// this function is called every 2 hours
 function removeCode63Alarms() {
     existingAlarms.forEach(alarmKey => {
         const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('@');
@@ -359,6 +370,8 @@ function removeCode63Alarms() {
     });
 }
 
+// makes sure we dont have code 75 alarms exist forever in our set
+// this function is called every 2 hours
 function removeCode75Alarms() {
     existingAlarms.forEach(alarmKey => {
         const [train, DateTime, code, Msg_Data, Desc, Dev_Num, alarmIp] = alarmKey.split('@');
@@ -414,6 +427,7 @@ function hideCriticalRows() {
     }
 }
 
+// shows all elements in the table
 function showAllRows() {
     var tableBody = document.querySelector("#alarmTable tbody");
     var rows = tableBody.getElementsByTagName('tr');
@@ -423,6 +437,7 @@ function showAllRows() {
     }
 }
 
+//clears all elements from the table
 function hideAllRows() {
     var tableBody = document.querySelector("#alarmTable tbody");
     var rows = tableBody.getElementsByTagName('tr');
@@ -432,6 +447,7 @@ function hideAllRows() {
     }
 }
 
+//handles the logic necessary for display when the current alarms checkboxes are selected
 function handleToggleClickMain() {
     if (!myCheckbox3.checked && !myCheckbox4.checked) {
         hideAllRows();

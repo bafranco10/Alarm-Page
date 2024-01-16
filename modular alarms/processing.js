@@ -77,34 +77,30 @@ function checkInactiveAlarms(trainData, alarms) {
             let found = false;
             // Iterate through alarms from the current data
             for (const alarm of alarms) {
-                console.log(alarmKey);
                 if (alarm.Dev_Num == Dev_Num && alarm.DateTime === DateTime && alarm.Code === alarmCode && alarm.Desc === Desc && alarm.Msg_Data == Msg_Data && alarm.Active === 0) {
-                    console.log('broke here loop1', alarm);
                     break;
                 }
+                // these next two should go straight to history per project manager request
                 else if (alarm.Code === alarmCode && alarmCode === 63) {
-                    console.log("broke here loop 2", alarm);
                     break;
                 }
                 else if (alarm.Code === alarmCode && alarmCode === 75) {
-                    console.log('broke here loop 3', alarm);
                     break;
                 }
                 // Check if the alarm from activeAlarms matches an alarm from the current data
                 else if (alarm.DateTime === DateTime && alarm.Code === alarmCode && alarm.Desc === Desc && alarm.Msg_Data == Msg_Data && alarm.Dev_Num == Dev_Num && alarm.Active === 1) {
                     found = true;
-                    console.log('found is true broke here', alarm)
                     break;
                 }
+                //safe guard for minimal unique key an alarm can have
                 else if (alarm.DateTime === DateTime && alarm.Code === alarmCode && alarm.Active === 1 && alarm.Dev_Num == Dev_Num && alarm.Desc === Desc) {
                     found = true;
-                    console.log('found is true broke at last condition', alarm);
                     break;
                 }
             }
+
             // If the alarm is not found in the current data, mark it for removal and call the handler function
             if (!found) {
-                console.log('pushing alarmKey');
                 keysToRemove.push(alarmKey);
                 const matchingAlarm = dataArray.find(data => {
                     const condition1 = data.Code === alarmCode;
@@ -138,6 +134,7 @@ function inactiveAlarmHandling(existingAlarms, keysToRemove, matchingAlarm) {
             const indexToRemove = dataArray.findIndex(data => data.Code === alarmCode && data.Train === alarmTrain && data.ip === alarmIp && String(data.DateTime) === String(DateTime)
                 && data.Desc === Desc && data.Msg_Data == Msg_Data && data.Dev_Num == Dev_Num);
             removed = moveAlarmToHistory(indexToRemove);
+            // these alarms are special and are handled differently these remain in the keys to remove set for 2 hours so that we are not taking up screen space with internal warnings
             if (removed && matchingAlarm.Code !== 63 && matchingAlarm.Code !== 75) {
                 existingAlarms.delete(alarmKey);
                 oldAlarms.add(alarmKey);
@@ -172,6 +169,7 @@ function inactiveAlarmHandling(existingAlarms, keysToRemove, matchingAlarm) {
     }
 }
 
+// this keeps track of the amount of critical alarms we have per train. It decreases from the corresponding index
 function decreaseCriticalAlarmCount(alarmTrain) {
     const index = alarmTrain - 1;
     if (stopAlarmCounts[index] !== undefined) {
@@ -227,6 +225,11 @@ function updateDisplay() {
         parent.document.getElementById("demo.html").contentWindow.postMessage({ ID: "Alarm", alarms: dataArray }, "*");
     });
 }
+
+// the next big chunk of code does the same thing for many different trains.
+// these all allow a user to filter by train, critical, and warnings to better look at critical alarms
+//these take in no parameters because they are handled by the toggle click handlers attached to the checkboxes 
+// logic for which function and train to call is handled in utilities.js 
 
 function showAllTrain1() {
     var tableBody = document.querySelector("#alarmTable tbody");
@@ -683,6 +686,9 @@ function showTrain7() {
     }
 }
 
+// takes in the table and all corresponding entries
+// handles assignment of classes and button enablement for all critical alarms
+
 function createCriticalAlarmRow(tableBody, entry) {
     // Create a unique row ID by concatenating "train" and "alarm code" and datetime
     var rowId = "row" + entry.Train + entry.Code + entry.Desc + entry.DateTime.trim() + entry.Msg_Data + entry.Dev_Num;
@@ -747,6 +753,7 @@ function createCriticalAlarmRow(tableBody, entry) {
     setVisibility(row);
 }
 
+// based on the filters currently selected by the user we show and hide th rows dependng on what is selected
 function setVisibility(row) {
     var alarmTypeCell = row.cells[4];
     var alarmTrainCell = row.cells[1];
@@ -777,6 +784,7 @@ function setVisibility(row) {
     }
 }
 
+// handles the assignment of classes and alarm type for warnings
 function createWarningAlarmRow(tableBody, entry) {
     if (entry.Code != 63 || entry.Code != 75) {
         // Create a unique row ID by concatenating "train" and "alarm code" and datetime

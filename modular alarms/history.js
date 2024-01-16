@@ -22,11 +22,8 @@ function moveAlarmToHistory(indexToRemove) {
         // Check if the alarm is acknowledged before removing it
         if (alarmToRemove && alarmToRemove.Acknowledged) {
             const removedAlarm = dataArray.splice(indexToRemove, 1)[0];
-            console.log(removedAlarm);
             historyArray.push(removedAlarm);
-            console.log(historyArray);
             updateHistoryInLocalStorage(historyArray);
-            console.log(historyArray);
             deleteRow("row" + removedAlarm.Train + removedAlarm.Code + removedAlarm.Desc + removedAlarm.DateTime.trim() + removedAlarm.Msg_Data + removedAlarm.Dev_Num);
             updateDisplay();
             var currentTab = document.querySelector(".tablinks.active").textContent.trim();
@@ -81,7 +78,6 @@ function displayAlarmHistory() {
     historyTable.innerHTML = ''; // Clear the existing history table
     // Sort the historyArray based on the DateTime property, from newest to oldest
     historyArray.sort((a, b) => new Date(b.DateTime) - new Date(a.DateTime));
-    console.log('historyArray after sort', historyArray);
     // Ensure that historyArray contains at most 100 alarms
     if (historyArray.length > MAX_HISTORY_ELEMENTS) {
         const elementsToRemove = historyArray.length - MAX_HISTORY_ELEMENTS;
@@ -214,7 +210,6 @@ const MAX_HISTORY_ELEMENTS = 1000;
 function updateHistoryInLocalStorage(historyArray) {
     // Keep only the last MAX_HISTORY_ELEMENTS elements
     const truncatedHistory = historyArray.slice(-MAX_HISTORY_ELEMENTS);
-    console.log(truncatedHistory);
     // Store the truncated historyArray in local storage
     localStorage.setItem('history', JSON.stringify(truncatedHistory));
 }

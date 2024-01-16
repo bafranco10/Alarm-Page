@@ -1,13 +1,13 @@
 const fetchEndpoints = [
     "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=0",
     "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=1",
-    //"http://172.16.1.102/Get_Alarms.cgi?Acknowledge=0",
+    "http://172.16.1.102/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.103/Get_Alarms.cgi?Acknowledge=0"
     //"http://172.16.1.104/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.105/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.106/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.101/Get_Alarms.cgi?Acknowledge=1",
-    //"http://172.16.1.102/Get_Alarms.cgi?Acknowledge=1",
+    "http://172.16.1.102/Get_Alarms.cgi?Acknowledge=1",
     //"http://172.16.1.103/Get_Alarms.cgi?Acknowledge=1"
     //"http://172.16.1.104/Get_Alarms.cgi?Acknowledge=1",
     //"http://172.16.1.105/Get_Alarms.cgi?Acknowledge=1",
@@ -42,6 +42,7 @@ fetchEndpoints.forEach(endpoint => {
     ipAddressByEndpoint[endpoint] = ipAddress;
 });
 
+
 const isFetching = Array.from({ length: fetchEndpoints.length }, () => false);
 let currentFetchIndex = 0;
 let retryCount = 0;
@@ -49,6 +50,7 @@ let retryCount = 0;
 //fetches data and moves between indexes of sources
 // Inside fetchData function
 function fetchData(index) {
+    console.log('fetching', index)
     return new Promise((resolve, reject) => {
         if (isFetching[index]) {
             reject(new Error('Already fetching data'));
@@ -73,7 +75,7 @@ function fetchData(index) {
             clearTimeout(timeoutId); // Clear the timeout
             isFetching[index] = false;
             addTrainDownAlarm(ipAddress);
-            if (index != 6 || index != 7 || index != 8 || index != 9 || index != 10 || index != 1) {
+            if (index != 6 || index != 7 || index != 8 || index != 9 || index != 10 || index != 1 || index != 3) {
                 fetchAgain(index, resolve, reject);
             }
         };
@@ -83,7 +85,7 @@ function fetchData(index) {
             requestCompleted = true;
             isFetching[index] = false;
             checkIfTrainAlarmNeedsToBeRemoved(ipAddress);
-            if (index != 6 || index != 7 || index != 8 || index != 9 || index != 10 || index != 1) {
+            if (index != 6 || index != 7 || index != 8 || index != 9 || index != 10 || index != 1 || index != 3) {
                 fetchAgain(index, resolve, reject);
             }
         };
@@ -121,14 +123,14 @@ function fetchAgain(index, resolve, reject) {
                 .catch(() => reject()); // Reject the promise on error
         }, 3000); // 3-second delay
     }
-
+/*
     if (index === 3) {
         setTimeout(() => {
             fetchData(index)
                 .then(() => resolve())  // Resolve the promise on success
                 .catch(() => reject()); // Reject the promise on error
         }, 3000); // 3-second delay
-    }
+    } */ 
 
     if (index === 4) {
         setTimeout(() => {
