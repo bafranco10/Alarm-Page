@@ -692,11 +692,27 @@ function showTrain7() {
 function createCriticalAlarmRow(tableBody, entry) {
     // Create a unique row ID by concatenating "train" and "alarm code" and datetime
     var rowId = "row" + entry.Train + entry.Code + entry.Desc + entry.DateTime.trim() + entry.Msg_Data + entry.Dev_Num;
-    // If the row doesn't exist, create a new one
-    var row = tableBody.insertRow(0);
+
+    // Create a new row
+    var row = tableBody.insertRow();
+
+    // Sort the rows based on datetime in descending order (newer entries first)
+    var rows = Array.from(tableBody.getElementsByTagName('tr'));
+    rows.sort(function (a, b) {
+        var dateA = new Date(a.cells[0].textContent);
+        var dateB = new Date(b.cells[0].textContent);
+        return dateB - dateA;
+    });
+
+    // Insert the sorted rows back into the table
+    rows.forEach(function (sortedRow) {
+        tableBody.appendChild(sortedRow);
+    });
+
     // Add this CSS style to ensure consistent cell padding
     row.style.padding = "0";
     row.id = rowId;
+
     // Create individual cell elements
     var dateCell = row.insertCell();
     var trainCell = row.insertCell();
@@ -704,36 +720,29 @@ function createCriticalAlarmRow(tableBody, entry) {
     var msgDataCell = row.insertCell();
     var alarmTypeCell = row.insertCell();
     var activeCell = row.insertCell();
+
     // Set text content for each cell
     trainCell.textContent = entry.Train;
     const date = new Date(entry.DateTime);
     dateCell.textContent = formatDate(date);
     codeCell.textContent = entry.Code;
     msgDataCell.textContent = entry.Message;
-    if (entry.plcActiveBit === 1) {
-        activeCell.textContent = "Active";
-    }
-    else {
-        activeCell.textContent = "Inactive";
-    }
+    activeCell.textContent = "Active";
     row.classList.add('table-danger');
+
     // Create a cell for the Acknowledge button.
     var buttonCell = row.insertCell();
     var acknowledgeButton = document.createElement("button");
     alarmTypeCell.textContent = "Critical";
+
     // Use a unique ID for each button based on k
     acknowledgeButton.id = "button" + rowId;
     buttonArray.push(acknowledgeButton.id);
     acknowledgeButton.type = "button";
     acknowledgeButton.className = "btn btn-danger";
-    if (entry.plcActiveBit === 1) {
-        acknowledgeButton.disabled = true;
-    }
-    else {
-        acknowledgeButton.disabled = false;
-    }
-
+    acknowledgeButton.disabled = true;
     acknowledgeButton.textContent = "Acknowledge";
+
     acknowledgeButton.onclick = function () {
         // Show the custom popup
         document.getElementById("customPopup").style.display = "block";
@@ -749,6 +758,7 @@ function createCriticalAlarmRow(tableBody, entry) {
             document.getElementById("customPopup").style.display = "none";
         };
     };
+
     buttonCell.appendChild(acknowledgeButton);
     setVisibility(row);
 }
