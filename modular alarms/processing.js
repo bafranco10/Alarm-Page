@@ -699,9 +699,16 @@ function createCriticalAlarmRow(tableBody, entry) {
     // Sort the rows based on datetime in descending order (newer entries first)
     var rows = Array.from(tableBody.getElementsByTagName('tr'));
     rows.sort(function (a, b) {
-        var dateA = new Date(a.cells[0].textContent);
-        var dateB = new Date(b.cells[0].textContent);
-        return dateB - dateA;
+        var dateA = parseCustomDate(a.cells[0].textContent);
+        var dateB = parseCustomDate(b.cells[0].textContent);
+
+        // Ensure that both parsed dates are valid before comparison
+        if (!isNaN(dateA) && !isNaN(dateB)) {
+            return dateB - dateA;
+        }
+
+        // Handle the case where one or both parsed dates are invalid
+        return 0;
     });
 
     // Insert the sorted rows back into the table
@@ -762,6 +769,23 @@ function createCriticalAlarmRow(tableBody, entry) {
     buttonCell.appendChild(acknowledgeButton);
     setVisibility(row);
 }
+
+// Function to parse dates in the custom format
+function parseCustomDate(dateString) {
+    // Parse the custom date format
+    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    var parts = dateString.split(" ");
+    var month = months.indexOf(parts[1]);
+    var day = parseInt(parts[2]);
+    var year = parseInt(parts[3]);
+    var timeParts = parts[4].split(":");
+    var hour = parseInt(timeParts[0]);
+    var minute = parseInt(timeParts[1]);
+    var second = parseInt(timeParts[2]);
+
+    return new Date(year, month, day, hour, minute, second);
+}
+
 
 // based on the filters currently selected by the user we show and hide th rows dependng on what is selected
 function setVisibility(row) {
