@@ -1,22 +1,6 @@
- /* prevents the items inside of a table from blinking */
- .no-blink {
-     visibility: visible;
-     animation: none;
-     -webkit-animation: none;
- }
 
  body {
     user-select: none;
- }
- 
- /* stops the flickering*/
- .stopFlicker {
-     -webkit-animation: none !important;
-     -moz-animation: none !important;
-     -ms-animation: none !important;
-     -o-animation: none !important;
-     animation: none !important;
-     opacity: 1 !important;
  }
 
  .tab-container {
@@ -71,7 +55,7 @@
  /* Places the calendars side by side */
  .datepicker-container {
      display: flex;
-     gap: 10px;
+     gap: 2vw;
  }
 
  .submit-container {
@@ -83,7 +67,38 @@
  .submit-button {
      height: 38px;
      padding: 6px 12px;
+     margin-right: 80px;
  }
+
+ .submit-button2 {
+    height: 38px;
+    padding: 6px 12px;
+    float: right;
+    clear: both;
+     margin-top: 24px;
+}
+
+#trainSelectorMain {
+    font-size: large;
+}
+
+#trainSelectorMain option {
+    font-size: 1.25em;
+    /* Adjust the size as needed */
+    line-height: 200;
+    /* Adjust the line height as needed */
+}
+
+#trainSelector {
+    font-size: large;
+}
+
+#trainSelector option {
+    font-size: 1.25em;
+    /* Adjust the size as needed */
+    line-height: 200;
+    /* Adjust the line height as needed */
+}
 
  #searchbar {
      padding: 7px;
@@ -181,3 +196,15 @@
      -ms-transform: translateX(26px);
      transform: translateX(26px);
  }
+
+ .current-month {
+    width: 3vw; /* 10% of the viewport width */
+    height: 10vh; /* 10% of the viewport height */
+    /* Add any other styling as needed */
+}
+
+td.current-month.gj-cursor-pointer div {
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+  }

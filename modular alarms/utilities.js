@@ -4,7 +4,7 @@ var xmlFileUrl = 'alarms.xml';
 var rowIdToData = {};
 var filteredRowIdToData = {};
 var communicationDateTimes = [];
-var stopAlarmCodes = [78, 1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 48, 49, 50, 68, 69, 79];
+var stopAlarmCodes = [78, 1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 43, 44, 45, 46, 48, 49, 50, 67, 68, 69, 79];
 var buttonArray = []; //stores button ids
 const oldAlarms = new Set();
 const existingAlarms = new Set();
@@ -105,7 +105,7 @@ function updateGraphic(data) {
             var ip = '';
             ip = getIpAddress(trainData);
             var alarmKey = trainData + "@" + alarm.DateTime.trim() + "@" + alarm.Code
-                + "@" + alarm.Msg_Data + "@" + alarm.Desc.trim() + "@" + alarm.Dev_Num +
+                + "@" + alarm.Msg_Data + "@" + alarm.Desc + "@" + alarm.Dev_Num +
                 "@" + ip;
             if (!existingAlarms.has(alarmKey) && !oldAlarms.has(alarmKey)) {
                 fetchAndProcessAlarm(trainData, alarm, alarmKey);
@@ -142,7 +142,9 @@ function updateActiveCellText(alarmCode, trainData, newText, Desc, DateTime, Msg
     var buttonId = "button" + rowId;
     var row = document.getElementById(rowId);
     var buttonElement = document.getElementById(buttonId);
-    buttonElement.disabled = false;
+    if (buttonElement.disabled) {
+        buttonElement.disabled = false;
+    }
     if (row) {
         var cells = row.cells;
         var activeCell = cells[cells.length - 2]; // Access the second to last cell in the row
@@ -178,7 +180,7 @@ function acknowledgeAlarm(buttonId, alarmData) {
         // Remove the buttonId from buttonArray
         buttonArray = buttonArray.filter(id => id !== buttonId);
         // Find the corresponding alarm in dataArray and update its `acknowledged` status
-        const matchingAlarm = dataArray.find(data => data.Code === alarmData.Code && data.Train === alarmData.Train && data.DateTime === alarmData.DateTime);
+        const matchingAlarm = dataArray.find(data => data.Code === alarmData.Code && data.Train === alarmData.Train && data.DateTime === alarmData.DateTime && alarmData.Dev_Num == data.Dev_Num && alarmData.Desc === data.Desc && alarmData.Msg_Data == data.Msg_Data);
         if (matchingAlarm) {
             // Update theacknowledged status for the corresponding alarm in dataArray
             matchingAlarm.Acknowledged = true;
@@ -256,17 +258,23 @@ function acknowledgeAllAlarms() {
     buttonArray.forEach(buttonId => {
         const alarmData = rowIdToData[buttonId.replace("button", "")];
         const buttonElement = document.getElementById(buttonId);
+        const rowElement = document.getElementById(buttonId.replace("button", ""));
+        console.log(rowElement)
         // Check if the button is not disabled and the alarmData is present and not acknowledged
-        if (buttonElement && !buttonElement.disabled && alarmData && !alarmData.Acknowledged) {
+        if (buttonElement && !buttonElement.disabled && alarmData && !alarmData.Acknowledged &&
+            rowElement &&
+            !isHidden(rowElement)) {
             acknowledgeAlarm(buttonId, alarmData);
         }
     });
-    checkIfTrainAlarmNeedsToBeRemoved("172.16.1.101");
-    
+
     for (let i = 0; i < 2; i++) {
         acknowledgePLC(i + 1);
     }
-    
+}
+
+function isHidden(element) {
+    return window.getComputedStyle(element).display === 'none';
 }
 
 // displays a popup to ensure that an operator is sure he wants to acknowledge all alarms
@@ -316,7 +324,7 @@ function acknowledgeAllTrains() {
      */
     removeCode63Alarms();
 }
-
+/*
 function clearAllAlarms() {
     dataArray.forEach(alarm => {
         alarm.Active = false;
@@ -338,9 +346,9 @@ function clearAllAlarms() {
     fetch(3);
     fetch(4);
     fetch(5);
-*/
-}
 
+}
+*/
 // Function to format a Date object as "MM/DD/YYYY HH:MM:SS" (e.g., "09/11/2023 08:25:22")
 //takes in a data object and reformats it to ensure consistency with the PLC data output
 function formatDate(date) {
@@ -474,5 +482,11 @@ function handleToggleClickMain() {
     else if (mainTrainSelection === '7') {
         showTrain7();
     }
-   
+
+}
+
+function resetFilters() {
+    myCheckbox3.checked = true;
+    myCheckbox4.checked = true;
+    mainTrainSelection = 'allTrains';
 }

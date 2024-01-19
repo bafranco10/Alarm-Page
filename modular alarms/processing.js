@@ -4,7 +4,6 @@ async function fetchAndProcessAlarm(trainData, alarm, alarmKey) {
     fetchAndProcessXML(alarm.Code, alarm, function (alarmDescription) {
         let ip = '';
         ip = getIpAddress(trainData);
-        alarm.Desc = alarm.Desc.trim();
         var alarmData = {
             "Train": trainData,
             "DateTime": alarm.DateTime,
@@ -26,7 +25,6 @@ async function fetchAndProcessAlarm(trainData, alarm, alarmKey) {
             existingAlarms.add(alarmKey);
         }
     });
-
     updateDisplay();
 }
 
@@ -56,7 +54,6 @@ function fetchAndProcessXML(alarmCode, alarm, callback) {
             }
         }
     });
-
     // Call the callback function with the fetched description
     callback(description);
 }
@@ -73,11 +70,12 @@ function checkInactiveAlarms(trainData, alarms) {
         const alarmTrain = parseInt(train);
         // Check if the alarm's train data matches the provided trainData
         if (alarmTrain === trainData) {
-            
+
             let found = false;
             // Iterate through alarms from the current data
             for (const alarm of alarms) {
                 if (alarm.Dev_Num == Dev_Num && alarm.DateTime === DateTime && alarm.Code === alarmCode && alarm.Desc === Desc && alarm.Msg_Data == Msg_Data && alarm.Active === 0) {
+                    console.log('first condition');
                     break;
                 }
                 // these next two should go straight to history per project manager request
@@ -89,11 +87,13 @@ function checkInactiveAlarms(trainData, alarms) {
                 }
                 // Check if the alarm from activeAlarms matches an alarm from the current data
                 else if (alarm.DateTime === DateTime && alarm.Code === alarmCode && alarm.Desc === Desc && alarm.Msg_Data == Msg_Data && alarm.Dev_Num == Dev_Num && alarm.Active === 1) {
+                    console.log('broke here');
                     found = true;
                     break;
                 }
                 //safe guard for minimal unique key an alarm can have
                 else if (alarm.DateTime === DateTime && alarm.Code === alarmCode && alarm.Active === 1 && alarm.Dev_Num == Dev_Num && alarm.Desc === Desc) {
+                    console.log('broke in the last condition');
                     found = true;
                     break;
                 }
@@ -688,38 +688,14 @@ function showTrain7() {
 
 // takes in the table and all corresponding entries
 // handles assignment of classes and button enablement for all critical alarms
-
 function createCriticalAlarmRow(tableBody, entry) {
     // Create a unique row ID by concatenating "train" and "alarm code" and datetime
     var rowId = "row" + entry.Train + entry.Code + entry.Desc + entry.DateTime.trim() + entry.Msg_Data + entry.Dev_Num;
-
-    // Create a new row
-    var row = tableBody.insertRow();
-
-    // Sort the rows based on datetime in descending order (newer entries first)
-    var rows = Array.from(tableBody.getElementsByTagName('tr'));
-    rows.sort(function (a, b) {
-        var dateA = parseCustomDate(a.cells[0].textContent);
-        var dateB = parseCustomDate(b.cells[0].textContent);
-
-        // Ensure that both parsed dates are valid before comparison
-        if (!isNaN(dateA) && !isNaN(dateB)) {
-            return dateB - dateA;
-        }
-
-        // Handle the case where one or both parsed dates are invalid
-        return 0;
-    });
-
-    // Insert the sorted rows back into the table
-    rows.forEach(function (sortedRow) {
-        tableBody.appendChild(sortedRow);
-    });
-
+    // If the row doesn't exist, create a new one
+    var row = tableBody.insertRow(0);
     // Add this CSS style to ensure consistent cell padding
     row.style.padding = "0";
     row.id = rowId;
-
     // Create individual cell elements
     var dateCell = row.insertCell();
     var trainCell = row.insertCell();
@@ -727,7 +703,6 @@ function createCriticalAlarmRow(tableBody, entry) {
     var msgDataCell = row.insertCell();
     var alarmTypeCell = row.insertCell();
     var activeCell = row.insertCell();
-
     // Set text content for each cell
     trainCell.textContent = entry.Train;
     const date = new Date(entry.DateTime);
@@ -736,12 +711,10 @@ function createCriticalAlarmRow(tableBody, entry) {
     msgDataCell.textContent = entry.Message;
     activeCell.textContent = "Active";
     row.classList.add('table-danger');
-
     // Create a cell for the Acknowledge button.
     var buttonCell = row.insertCell();
     var acknowledgeButton = document.createElement("button");
     alarmTypeCell.textContent = "Critical";
-
     // Use a unique ID for each button based on k
     acknowledgeButton.id = "button" + rowId;
     buttonArray.push(acknowledgeButton.id);
@@ -749,7 +722,6 @@ function createCriticalAlarmRow(tableBody, entry) {
     acknowledgeButton.className = "btn btn-danger";
     acknowledgeButton.disabled = true;
     acknowledgeButton.textContent = "Acknowledge";
-
     acknowledgeButton.onclick = function () {
         // Show the custom popup
         document.getElementById("customPopup").style.display = "block";
@@ -765,27 +737,9 @@ function createCriticalAlarmRow(tableBody, entry) {
             document.getElementById("customPopup").style.display = "none";
         };
     };
-
     buttonCell.appendChild(acknowledgeButton);
     setVisibility(row);
 }
-
-// Function to parse dates in the custom format
-function parseCustomDate(dateString) {
-    // Parse the custom date format
-    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    var parts = dateString.split(" ");
-    var month = months.indexOf(parts[1]);
-    var day = parseInt(parts[2]);
-    var year = parseInt(parts[3]);
-    var timeParts = parts[4].split(":");
-    var hour = parseInt(timeParts[0]);
-    var minute = parseInt(timeParts[1]);
-    var second = parseInt(timeParts[2]);
-
-    return new Date(year, month, day, hour, minute, second);
-}
-
 
 // based on the filters currently selected by the user we show and hide th rows dependng on what is selected
 function setVisibility(row) {

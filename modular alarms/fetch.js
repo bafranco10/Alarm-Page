@@ -42,7 +42,6 @@ fetchEndpoints.forEach(endpoint => {
     ipAddressByEndpoint[endpoint] = ipAddress;
 });
 
-
 const isFetching = Array.from({ length: fetchEndpoints.length }, () => false);
 let currentFetchIndex = 0;
 let retryCount = 0;
@@ -50,7 +49,6 @@ let retryCount = 0;
 //fetches data and moves between indexes of sources
 // Inside fetchData function
 function fetchData(index) {
-    console.log('fetching', index)
     return new Promise((resolve, reject) => {
         if (isFetching[index]) {
             reject(new Error('Already fetching data'));
@@ -62,7 +60,7 @@ function fetchData(index) {
         const ipAddress = ipAddressByEndpoint[fetchEndpoints[index]];
 
         let requestCompleted = false; // Flag to track if the request has completed
-        const timeoutDuration = 3000; // Set a timeout of 5 seconds
+        const timeoutDuration = 3000; // Set a timeout of 3 seconds
 
         const timeoutId = setTimeout(function () {
             if (!requestCompleted) {

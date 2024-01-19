@@ -71,7 +71,7 @@ function updateHistory() {
     displayAlarmHistory();
 }
 
-//takes no paramters
+//takes no parameters
 //gets history array and displays all data to table
 function displayAlarmHistory() {
     var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
@@ -105,6 +105,7 @@ function displayAlarmHistory() {
     });
 }
 
+// selects items that are critical only and adds these to our filteredArray that is then displayed
 function displayStopAlarmHistory() {
     var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
     historyTable.innerHTML = ''; // Clear the existing history table
@@ -138,6 +139,7 @@ function displayStopAlarmHistory() {
     });
 }
 
+// selects items that are warnings only and adds these to our filteredArray that is then displayed
 function displayWarningHistory() {
     var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
     historyTable.innerHTML = ''; // Clear the existing history table
@@ -195,6 +197,7 @@ function filterData() {
     displayFilteredHistory(filteredData);
 }
 
+// removes the value of all filters present on the history page
 function clearDateRange() {
     // Clear the date range inputs
     document.querySelector("#datepicker1").value = "";
@@ -219,6 +222,7 @@ function getHistoryFromLocalStorage() {
     return storedHistory ? JSON.parse(storedHistory) : [];
 }
 
+// gets the value of historyArray in local storage and puts it into historyArray removing duplicates
 function initializeHistoryFromLocalStorage() {
     // Retrieve data from local storage
     const storedHistory = getHistoryFromLocalStorage();
@@ -240,6 +244,9 @@ function initializeHistoryFromLocalStorage() {
     });
 }
 
+// this next chunk of functions is very repetitive but does the same thing for each train
+// it creates a new array from the historyArray that removes all elements that dont fit the current filters
+//these filters can be toggle switches, dropdown menus, and other items
 function displayAllTrain1Alarms() {
     var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
     historyTable.innerHTML = ''; // Clear the existing history table
@@ -945,6 +952,7 @@ function handleTrain7Alarms() {
     }
 }
 
+// function that handles the logic depending on the selected value of the dropdown menu
 function handleTrainSelection(selectedTrain) {
     trainSelection = selectedTrain;
     if (selectedTrain === "all") {
@@ -971,6 +979,7 @@ function handleTrainSelection(selectedTrain) {
     }
 }
 
+//handles the logic depending on the state of each checkbox and the state of the dropdown menu
 function handleToggleClick() {
     // Use the global variable for trainSelection
     if (trainSelection === "all") {

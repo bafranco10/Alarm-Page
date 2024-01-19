@@ -63,6 +63,7 @@
             <option value="7">Train 7</option>
             <!-- Add options for train4 to train7 as needed -->
         </select>
+
         <button type="button" class="btn btn-primary btn-acknowledge" id="acknowledgeAllButton"
             onclick="confirmAcknowledgeAll();">Acknowledge
             All</button>
@@ -146,12 +147,13 @@
                 </div>
                 <div class="submit-container"> <!-- Submit button -->
                     <button class="btn btn-primary submit-button" type="button" onclick="filterData()">Submit</button>
-                </div>
-            </div>
-            <button class="btn btn-primary submit-button" type="button" onclick="clearDateRange()">Clear
-                Filters</button>
-        </form>
 
+                </div>
+                
+                <button class="btn btn-primary submit-button2" type="button" onclick="clearDateRange()">Clear
+                    Filters</button>
+            </div>
+        </form>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 $('#datepicker1').datepicker({
@@ -233,7 +235,7 @@
         var myCheckbox2 = document.getElementById("warningCheckBox");
 
         switchLabel2.onclick = function () {
-         handleToggleClick();
+            handleToggleClick();
         };
 
         // these are for current alarms page 
@@ -248,7 +250,7 @@
         var myCheckbox4 = document.getElementById("warningCheckBoxMain");
 
         switchLabel4.onclick = function () {
-         handleToggleClickMain();
+            handleToggleClickMain();
         };
 
         const twoHours = 2 * 60 * 60 * 1000;
