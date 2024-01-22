@@ -3157,7 +3157,7 @@
   <Property Name="RecordReset" Value="All"/>
   <Property Name="RecordTrigger" Value="True"/>
   <Property Name="TextID" Value="966"/>
-  <Property Name="TextItemText[0]" Value="The system was stopped with message {DESC} {MSG_DATA}"/>
+  <Property Name="TextItemText[0]" Value= />
   <Property Name="TriggerGroupAlarm" Value="False"/>
   <LanguageMngr>
     <Property Name="FallBackLanguage" Value="None"/>

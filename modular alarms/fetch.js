@@ -49,6 +49,7 @@ let retryCount = 0;
 //fetches data and moves between indexes of sources
 // Inside fetchData function
 function fetchData(index) {
+    console.log(mainTrainSelection);
     return new Promise((resolve, reject) => {
         if (isFetching[index]) {
             reject(new Error('Already fetching data'));

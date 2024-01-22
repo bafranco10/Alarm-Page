@@ -38,6 +38,7 @@ function handleTrainSelectionMain(selectedTrain) {
     else if (selectedTrain === '7') {
         showTrain7();
     }
+    mainTrainSelection = selectedTrain;
 }
 
 // default option
@@ -324,7 +325,6 @@ function acknowledgeAllTrains() {
      */
     removeCode63Alarms();
 }
-/*
 function clearAllAlarms() {
     dataArray.forEach(alarm => {
         alarm.Active = false;
@@ -346,9 +346,9 @@ function clearAllAlarms() {
     fetch(3);
     fetch(4);
     fetch(5);
-
+    */
 }
-*/
+
 // Function to format a Date object as "MM/DD/YYYY HH:MM:SS" (e.g., "09/11/2023 08:25:22")
 //takes in a data object and reformats it to ensure consistency with the PLC data output
 function formatDate(date) {

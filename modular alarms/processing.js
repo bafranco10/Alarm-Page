@@ -706,6 +706,7 @@ function createCriticalAlarmRow(tableBody, entry) {
     // Set text content for each cell
     trainCell.textContent = entry.Train;
     const date = new Date(entry.DateTime);
+    console.log(date);
     dateCell.textContent = formatDate(date);
     codeCell.textContent = entry.Code;
     msgDataCell.textContent = entry.Message;
@@ -739,6 +740,7 @@ function createCriticalAlarmRow(tableBody, entry) {
     };
     buttonCell.appendChild(acknowledgeButton);
     setVisibility(row);
+    sortTableRows(tableBody);
 }
 
 // based on the filters currently selected by the user we show and hide th rows dependng on what is selected
@@ -815,44 +817,56 @@ function createWarningAlarmRow(tableBody, entry) {
         // Append the button to the cell
         buttonCell.appendChild(acknowledgeButton);
         setVisibility(row);
+        sortTableRows(tableBody);
     }
 }
+
 function sortTableRows(tableBody) {
     // Convert the HTMLCollection to an array for sorting
     const rowsArray = Array.from(tableBody.rows);
-
-    // Sort the rows based on the date in descending order
-    rowsArray.sort((a, b) => {
-        const dateA = new Date(a.cells[0].textContent); // Assuming the date is in the first cell
-        const dateB = new Date(b.cells[0].textContent);
-        return dateB - dateA; // Compare dates in descending order
+    // Separate rows into three groups: Critical, Warning, and Other Non-Critical
+    const criticalRows = rowsArray.filter(row => row.cells[4]?.textContent === 'Critical');
+    const warningRows = rowsArray.filter(row => row.cells[4]?.textContent === 'Warning');
+    const otherNonCriticalRows = rowsArray.filter(row => row.cells[4]?.textContent !== 'Critical' && row.cells[4]?.textContent !== 'Warning');
+    // Sort the critical rows based on the date in descending order (recent times at the top)
+    criticalRows.sort((a, b) => {
+        const textContentA = (a.cells[0] && a.cells[0].textContent) || ''; // Check if cells[0] exists
+        const textContentB = (b.cells[0] && b.cells[0].textContent) || ''; // Check if cells[0] exists
+        const dateA = new Date(textContentA.replace(/,/g, ''));
+        const dateB = new Date(textContentB.replace(/,/g, ''));
+        return dateB.getTime() - dateA.getTime(); // Reverse the order for descending sorting
+    });
+    // Sort the warning rows based on the date in descending order (recent times at the top)
+    warningRows.sort((a, b) => {
+        const textContentA = (a.cells[0] && a.cells[0].textContent) || ''; // Check if cells[0] exists
+        const textContentB = (b.cells[0] && b.cells[0].textContent) || ''; // Check if cells[0] exists
+        const dateA = new Date(textContentA.replace(/,/g, ''));
+        const dateB = new Date(textContentB.replace(/,/g, ''));
+        return dateB.getTime() - dateA.getTime(); // Reverse the order for descending sorting
     });
 
+    // Sort the other non-critical rows based on the date in descending order (recent times at the top)
+    otherNonCriticalRows.sort((a, b) => {
+        const textContentA = (a.cells[0] && a.cells[0].textContent) || ''; // Check if cells[0] exists
+        const textContentB = (b.cells[0] && b.cells[0].textContent) || ''; // Check if cells[0] exists
+        const dateA = new Date(textContentA.replace(/,/g, ''));
+        const dateB = new Date(textContentB.replace(/,/g, ''));
+        return dateB.getTime() - dateA.getTime(); // Reverse the order for descending sorting
+    });
     // Clear the existing rows
     while (tableBody.firstChild) {
         tableBody.removeChild(tableBody.firstChild);
     }
-
-    // Append the sorted rows back to the table
-    rowsArray.forEach(row => {
+    // Append the sorted critical rows back to the table
+    criticalRows.forEach(row => {
         tableBody.appendChild(row);
     });
-}
-
-// Insert a new row at the correct position based on date
-function insertRowSorted(tableBody, newRow) {
-    const dateToInsert = new Date(newRow.cells[0].textContent); // Assuming the date is in the first cell
-    const rows = tableBody.rows;
-
-    let insertIndex = 0;
-    while (insertIndex < rows.length) {
-        const currentDate = new Date(rows[insertIndex].cells[0].textContent);
-        if (dateToInsert > currentDate) {
-            break;
-        }
-        insertIndex++;
-    }
-
-    // Insert the new row at the calculated index
-    tableBody.insertBefore(newRow, tableBody.children[insertIndex]);
+    // Append the sorted warning rows back to the table
+    warningRows.forEach(row => {
+        tableBody.appendChild(row);
+    });
+    // Append the sorted other non-critical rows back to the table
+    otherNonCriticalRows.forEach(row => {
+        tableBody.appendChild(row);
+    });
 }
