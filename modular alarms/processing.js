@@ -817,3 +817,42 @@ function createWarningAlarmRow(tableBody, entry) {
         setVisibility(row);
     }
 }
+function sortTableRows(tableBody) {
+    // Convert the HTMLCollection to an array for sorting
+    const rowsArray = Array.from(tableBody.rows);
+
+    // Sort the rows based on the date in descending order
+    rowsArray.sort((a, b) => {
+        const dateA = new Date(a.cells[0].textContent); // Assuming the date is in the first cell
+        const dateB = new Date(b.cells[0].textContent);
+        return dateB - dateA; // Compare dates in descending order
+    });
+
+    // Clear the existing rows
+    while (tableBody.firstChild) {
+        tableBody.removeChild(tableBody.firstChild);
+    }
+
+    // Append the sorted rows back to the table
+    rowsArray.forEach(row => {
+        tableBody.appendChild(row);
+    });
+}
+
+// Insert a new row at the correct position based on date
+function insertRowSorted(tableBody, newRow) {
+    const dateToInsert = new Date(newRow.cells[0].textContent); // Assuming the date is in the first cell
+    const rows = tableBody.rows;
+
+    let insertIndex = 0;
+    while (insertIndex < rows.length) {
+        const currentDate = new Date(rows[insertIndex].cells[0].textContent);
+        if (dateToInsert > currentDate) {
+            break;
+        }
+        insertIndex++;
+    }
+
+    // Insert the new row at the calculated index
+    tableBody.insertBefore(newRow, tableBody.children[insertIndex]);
+}
