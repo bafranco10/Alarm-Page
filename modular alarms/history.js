@@ -208,7 +208,7 @@ function clearDateRange() {
     displayAlarmHistory();
 }
 
-const MAX_HISTORY_ELEMENTS = 1000;
+const MAX_HISTORY_ELEMENTS = 100;
 
 function updateHistoryInLocalStorage(historyArray) {
     // Keep only the last MAX_HISTORY_ELEMENTS elements

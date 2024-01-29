@@ -67,7 +67,7 @@
  .submit-button {
      height: 38px;
      padding: 6px 12px;
-     margin-right: 80px;
+     margin-right: 800px;
  }
 
  .submit-button2 {
@@ -202,9 +202,3 @@
     height: 10vh; /* 10% of the viewport height */
     /* Add any other styling as needed */
 }
-
-td.current-month.gj-cursor-pointer div {
-    font-size: 20px;
-    font-weight: bold;
-    cursor: pointer;
-  }

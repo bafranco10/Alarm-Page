@@ -268,7 +268,6 @@ function acknowledgeAllAlarms() {
             acknowledgeAlarm(buttonId, alarmData);
         }
     });
-
     for (let i = 0; i < 2; i++) {
         acknowledgePLC(i + 1);
     }
@@ -315,6 +314,7 @@ function confirmClearAll() {
 // this function sends the acknowledgment bit to all trains 
 function acknowledgeAllTrains() {
     fetchData(1); // remove this eventually 
+    fetchData(3);
     /*
      fetchData(6);
      fetchData(7);
@@ -325,6 +325,7 @@ function acknowledgeAllTrains() {
      */
     removeCode63Alarms();
 }
+
 function clearAllAlarms() {
     dataArray.forEach(alarm => {
         alarm.Active = false;
@@ -336,6 +337,7 @@ function clearAllAlarms() {
     acknowledgeAllAlarms();
     acknowledgeAllTrains();
     fetchData(0);
+    fetchData(2);
     var tableBody = document.querySelector("#alarmTable tbody");
     tableBody.innerHTML = '';
     // After removing elements, you might want to update the display or perform any other necessary actions

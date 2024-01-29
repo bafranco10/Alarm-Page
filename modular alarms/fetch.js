@@ -1,13 +1,13 @@
 const fetchEndpoints = [
-    "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=0",
-    "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=1",
-    "http://172.16.1.102/Get_Alarms.cgi?Acknowledge=0",
+    "http://172.16.1.131/Get_Alarms.cgi?Acknowledge=0",
+    "http://172.16.1.131/Get_Alarms.cgi?Acknowledge=1",
+    "http://172.16.1.132/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.103/Get_Alarms.cgi?Acknowledge=0"
     //"http://172.16.1.104/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.105/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.106/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.101/Get_Alarms.cgi?Acknowledge=1",
-    "http://172.16.1.102/Get_Alarms.cgi?Acknowledge=1",
+    "http://172.16.1.132/Get_Alarms.cgi?Acknowledge=1",
     //"http://172.16.1.103/Get_Alarms.cgi?Acknowledge=1"
     //"http://172.16.1.104/Get_Alarms.cgi?Acknowledge=1",
     //"http://172.16.1.105/Get_Alarms.cgi?Acknowledge=1",
@@ -17,13 +17,13 @@ const fetchEndpoints = [
 ];
 
 const ipAddresses = {
-    '172.16.1.101': false,
-    '172.16.1.102': false,
-    '172.16.1.103': false,
-    '172.16.1.104': false,
-    '172.16.1.105': false,
-    '172.16.1.106': false,
-    '172.16.1.107': false
+    '172.16.1.131': false,
+    '172.16.1.132': false,
+    '172.16.1.133': false,
+    '172.16.1.134': false,
+    '172.16.1.135': false,
+    '172.16.1.136': false,
+    '172.16.1.137': false
 };
 
 const retryDelay = 3000;
@@ -40,6 +40,7 @@ function getIpAddressFromEndpoint(endpoint) {
 fetchEndpoints.forEach(endpoint => {
     const ipAddress = getIpAddressFromEndpoint(endpoint);
     ipAddressByEndpoint[endpoint] = ipAddress;
+    console.log(ipAddressByEndpoint[endpoint]);
 });
 
 const isFetching = Array.from({ length: fetchEndpoints.length }, () => false);
@@ -122,14 +123,14 @@ function fetchAgain(index, resolve, reject) {
                 .catch(() => reject()); // Reject the promise on error
         }, 3000); // 3-second delay
     }
-/*
-    if (index === 3) {
-        setTimeout(() => {
-            fetchData(index)
-                .then(() => resolve())  // Resolve the promise on success
-                .catch(() => reject()); // Reject the promise on error
-        }, 3000); // 3-second delay
-    } */ 
+    /*
+        if (index === 3) {
+            setTimeout(() => {
+                fetchData(index)
+                    .then(() => resolve())  // Resolve the promise on success
+                    .catch(() => reject()); // Reject the promise on error
+            }, 3000); // 3-second delay
+        } */
 
     if (index === 4) {
         setTimeout(() => {
@@ -158,9 +159,9 @@ function parseResponse(jsonData) {
 }
 
 function getTrainFromIP(ipAddress) {
-    if (ipAddress === "172.16.1.101") {
+    if (ipAddress === "172.16.1.131") {
         return 1;
-    } else if (ipAddress === "172.16.1.102") {
+    } else if (ipAddress === "172.16.1.132") {
         return 2;
     } else if (ipAddress === "172.16.1.103") {
         return 3;
@@ -178,7 +179,7 @@ function getTrainFromIP(ipAddress) {
         return 7;
     }
     else {
-        return error; // returns an error if message 
+        throw new Error("Invalid IP address. Please provide a valid IP.");
     }
 }
 
@@ -196,7 +197,7 @@ function addTrainDownAlarm(ipAddress) {
             alarm.Desc === "New Alarm Description" &&
             alarm.Dev_Num === "" &&
             alarm.Message === "Main Lost Communication with Train " + getTrainFromIP(ipAddress) &&
-            alarm.ip === ipAddress && 
+            alarm.ip === ipAddress &&
             alarm.active === true
         );
     });
