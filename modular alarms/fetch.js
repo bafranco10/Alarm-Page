@@ -1,21 +1,24 @@
+// my code is structured to have it be 0-6 is  the fetch endpoints and then 7-13 are the acknowledge bits
 const fetchEndpoints = [
     "http://172.16.1.131/Get_Alarms.cgi?Acknowledge=0",
     "http://172.16.1.131/Get_Alarms.cgi?Acknowledge=1",
     "http://172.16.1.132/Get_Alarms.cgi?Acknowledge=0",
-    //"http://172.16.1.103/Get_Alarms.cgi?Acknowledge=0"
-    //"http://172.16.1.104/Get_Alarms.cgi?Acknowledge=0",
-    //"http://172.16.1.105/Get_Alarms.cgi?Acknowledge=0",
-    //"http://172.16.1.106/Get_Alarms.cgi?Acknowledge=0",
+    //"http://172.16.1.133/Get_Alarms.cgi?Acknowledge=0"
+    //"http://172.16.1.134/Get_Alarms.cgi?Acknowledge=0",
+    //"http://172.16.1.135/Get_Alarms.cgi?Acknowledge=0",
+    //"http://172.16.1.136/Get_Alarms.cgi?Acknowledge=0",
+    //"http://172.16.1.137/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.101/Get_Alarms.cgi?Acknowledge=1",
     "http://172.16.1.132/Get_Alarms.cgi?Acknowledge=1",
-    //"http://172.16.1.103/Get_Alarms.cgi?Acknowledge=1"
-    //"http://172.16.1.104/Get_Alarms.cgi?Acknowledge=1",
-    //"http://172.16.1.105/Get_Alarms.cgi?Acknowledge=1",
-    //"http://172.16.1.106/Get_Alarms.cgi?Acknowledge=1"
-
+    //"http://172.16.1.133/Get_Alarms.cgi?Acknowledge=1"
+    //"http://172.16.1.134/Get_Alarms.cgi?Acknowledge=1",
+    //"http://172.16.1.135/Get_Alarms.cgi?Acknowledge=1",
+    //"http://172.16.1.136/Get_Alarms.cgi?Acknowledge=1"
+    //"http://172.16.1.137/Get_Alarms.cgi?Acknowledge=1",
     //add any missing ips here 
 ];
 
+// boolean flags for each ip address
 const ipAddresses = {
     '172.16.1.131': false,
     '172.16.1.132': false,
@@ -26,8 +29,8 @@ const ipAddresses = {
     '172.16.1.137': false
 };
 
-const retryDelay = 3000;
-let currentServerIndex = 0;
+const retryDelay = 3000; // time that elapses after a failed fetch
+let currentServerIndex = 0; 
 const ipAddressByEndpoint = {};
 
 // Function to extract the IP address from a fetchEndpoint
@@ -40,17 +43,15 @@ function getIpAddressFromEndpoint(endpoint) {
 fetchEndpoints.forEach(endpoint => {
     const ipAddress = getIpAddressFromEndpoint(endpoint);
     ipAddressByEndpoint[endpoint] = ipAddress;
-    console.log(ipAddressByEndpoint[endpoint]);
 });
 
 const isFetching = Array.from({ length: fetchEndpoints.length }, () => false);
 let currentFetchIndex = 0;
 let retryCount = 0;
 
-//fetches data and moves between indexes of sources
+// fetches data and moves between indexes of sources
 // Inside fetchData function
 function fetchData(index) {
-    console.log(mainTrainSelection);
     return new Promise((resolve, reject) => {
         if (isFetching[index]) {
             reject(new Error('Already fetching data'));
@@ -98,6 +99,8 @@ function fetchData(index) {
         document.body.appendChild(scriptElement);
     });
 }
+
+// function that ensures that each valid source is fetched from multiple times
 
 function fetchAgain(index, resolve, reject) {
     if (index === 0) {
@@ -147,6 +150,14 @@ function fetchAgain(index, resolve, reject) {
                 .catch(() => reject()); // Reject the promise on error
         }, 3000); // 3-second delay
     }
+
+    if (index === 6) {
+        setTimeout(() => {
+            fetchData(index)
+                .then(() => resolve())  // Resolve the promise on success
+                .catch(() => reject()); // Reject the promise on error
+        }, 3000); // 3-second delay
+    }
 }
 
 function parseResponse(jsonData) {
@@ -158,24 +169,25 @@ function parseResponse(jsonData) {
     }
 }
 
+// this function is used to get the train number in the train down alarm. It is useful for an accurate representation of what the train is that is down
 function getTrainFromIP(ipAddress) {
     if (ipAddress === "172.16.1.131") {
         return 1;
     } else if (ipAddress === "172.16.1.132") {
         return 2;
-    } else if (ipAddress === "172.16.1.103") {
+    } else if (ipAddress === "172.16.1.133") {
         return 3;
     }
-    else if (ipAddress === "172.16.1.104") {
+    else if (ipAddress === "172.16.1.134") {
         return 4;
     }
-    else if (ipAddress === "172.16.1.105") {
+    else if (ipAddress === "172.16.1.135") {
         return 5;
     }
-    else if (ipAddress === "172.16.1.106") {
+    else if (ipAddress === "172.16.1.136") {
         return 6;
     }
-    else if (ipAddress === "172.16.1.107") {
+    else if (ipAddress === "172.16.1.137") {
         return 7;
     }
     else {
@@ -183,7 +195,8 @@ function getTrainFromIP(ipAddress) {
     }
 }
 
-//if communication is lost post a message to the screen
+// if a fetch request is unsuccessful post a message to the screen
+// this adds all necessary fields to the alarm
 function addTrainDownAlarm(ipAddress) {
     var currentDate = new Date();
     var formattedDate = formatDateToCustomString(currentDate);

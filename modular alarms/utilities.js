@@ -8,7 +8,7 @@ var stopAlarmCodes = [78, 1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 29, 32, 33, 34, 35,
 var buttonArray = []; //stores button ids
 const oldAlarms = new Set();
 const existingAlarms = new Set();
-const stopAlarmCounts = [0, 0, 0, 0, 0, 0];
+const stopAlarmCounts = [0, 0, 0, 0, 0, 0, 0];
 var run = true;
 var trainSelection = 'all';
 var mainTrainSelection = 'allTrains';
@@ -116,6 +116,7 @@ function updateGraphic(data) {
 }
 
 //takes in the train information and finds which ip is tied to it depending on what the endpoint is
+// it is called from updateGraphic which uses the ip address to create a unique key for each alarm
 function getIpAddress(trainData) {
     var ip = '';
     if (trainData === 1) {
@@ -133,6 +134,9 @@ function getIpAddress(trainData) {
     }
     else if (trainData === 6) {
         ip = ipAddressByEndpoint[fetchEndpoints[5]];
+    }
+    else if (trainData === 7) {
+        ip = ipAddressByEndpoint[fetchEndpoints[6]];
     }
     return ip;
 }
@@ -193,34 +197,37 @@ function acknowledgeAlarm(buttonId, alarmData) {
 }
 
 // when acknowledge all is clicked this function is called
-// THIS WILL NEED TO BE CHANGED IT WILL NOT WORK  
-// nevermind
 function acknowledgePLC(train) {
     //this index will need to change to 6 this is just for testing
     if (train === 1 && stopAlarmCounts[0] === 0) {
-        fetchData(1);
+        fetchData(1); // this will need to be changed to 7 when finished
         console.log("acknowledged train 1");
     }
     // this index will need to change to 7 it is just this for testing
     else if (train === 2 && stopAlarmCounts[1] === 0) {
-        fetchData(3);
+        fetchData(3); // will need to be changed to 8 when finished
         console.log("acknowledged train 2");
     }
     else if (train === 3 && stopAlarmCounts[2] === 0) {
-        fetchData(8);
-    }
-
-    else if (train === 4 && stopAlarmCounts[3] === 0) {
         fetchData(9);
     }
 
-    else if (train === 5 && stopAlarmCounts[4] === 0) {
+    else if (train === 4 && stopAlarmCounts[3] === 0) {
         fetchData(10);
     }
 
-    else if (train === 6 && stopAlarmCounts[5] === 0) {
+    else if (train === 5 && stopAlarmCounts[4] === 0) {
         fetchData(11);
     }
+
+    else if (train === 6 && stopAlarmCounts[5] === 0) {
+        fetchData(12);
+    }
+
+    else if (train === 7 && stopAlarmCounts[6] === 0) {
+        fetchData(13);
+    }
+
     else {
         return
     }
@@ -273,11 +280,12 @@ function acknowledgeAllAlarms() {
     }
 }
 
+// checks if an element is being displayed
 function isHidden(element) {
     return window.getComputedStyle(element).display === 'none';
 }
 
-// displays a popup to ensure that an operator is sure he wants to acknowledge all alarms
+// displays a popup to ensure that an operator is sure they want to acknowledge all alarms
 function confirmAcknowledgeAll() {
     // Show the custom popup
     document.getElementById("customPopup2").style.display = "block";
@@ -294,7 +302,7 @@ function confirmAcknowledgeAll() {
     };
 };
 
-// displays a popup to ensure that an operator is sure he wants to clear all alarms
+// displays a popup to ensure that an operator is sure they want to clear all alarms
 function confirmClearAll() {
     // Show the custom popup
     document.getElementById("customPopup3").style.display = "block";
@@ -314,18 +322,20 @@ function confirmClearAll() {
 // this function sends the acknowledgment bit to all trains 
 function acknowledgeAllTrains() {
     fetchData(1); // remove this eventually 
-    fetchData(3);
+    fetchData(3);// remove this too
     /*
-     fetchData(6);
      fetchData(7);
      fetchData(8);
      fetchData(9);
      fetchData(10);
      fetchData(11);
+     fetchData(12);
+     fetchData(14);
      */
     removeCode63Alarms();
 }
 
+// this function should attempt to fetch from all sources again when finished because the acknowledgement bit is programmed to only send once
 function clearAllAlarms() {
     dataArray.forEach(alarm => {
         alarm.Active = false;
@@ -343,11 +353,13 @@ function clearAllAlarms() {
     // After removing elements, you might want to update the display or perform any other necessary actions
     updateDisplay();
     /*
-    fetch(1);
-    fetch(2);
-    fetch(3);
-    fetch(4);
-    fetch(5);
+    fetchData(0);
+    fetchData(1);
+    fetchData(2);
+    fetchData(3);
+    fetchData(4);
+    fetchData(5);
+    fetchData(6);
     */
 }
 
@@ -399,6 +411,7 @@ function clearOldAlarms() {
     oldAlarms.clear();
 }
 
+// self explanatory it hides all warnings
 function hideNonCriticalRows() {
     var tableBody = document.querySelector("#alarmTable tbody");
     var rows = tableBody.getElementsByTagName('tr');
@@ -418,6 +431,7 @@ function hideNonCriticalRows() {
     }
 }
 
+// self explanatory it hides all warnings
 function hideCriticalRows() {
     var tableBody = document.querySelector("#alarmTable tbody");
     var rows = tableBody.getElementsByTagName('tr');
@@ -484,11 +498,18 @@ function handleToggleClickMain() {
     else if (mainTrainSelection === '7') {
         showTrain7();
     }
-
 }
 
+// resets all the filters to show all active alarms
 function resetFilters() {
     myCheckbox3.checked = true;
     myCheckbox4.checked = true;
     mainTrainSelection = 'allTrains';
+    handleTrainSelectionMain(mainTrainSelection);
+    // Get the dropdown element
+    var trainSelectorMain = document.getElementById('trainSelectorMain'); 
+    // Find the index of the "All Trains" option
+    var allTrainsIndex = Array.from(trainSelectorMain.options).findIndex(option => option.value === 'allTrains');
+    // Set the selected index to the index of "All Trains"
+    trainSelectorMain.selectedIndex = allTrainsIndex;
 }

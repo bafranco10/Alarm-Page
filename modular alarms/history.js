@@ -1,3 +1,5 @@
+const MAX_HISTORY_ELEMENTS = 100;
+
 // finds communication alarm in dataArray and removes it from here
 //once it is removed it moves the data to the historyArray where it can now be displayed in history
 function moveCommunicationAlarmToHistory(trainData, alarmCode, DateTime) {
@@ -65,6 +67,7 @@ function displayFilteredHistory(filteredHistory) {
 
 //takes no parameters
 // every time a new alarm is added to history it adds it to dataArray and displays the new table
+// this ensures that the history table is able to be refreshed
 function updateHistory() {
     var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
     historyTable.innerHTML = ''; // Clear the existing history table
@@ -106,6 +109,7 @@ function displayAlarmHistory() {
 }
 
 // selects items that are critical only and adds these to our filteredArray that is then displayed
+// only criticals are displayed
 function displayStopAlarmHistory() {
     var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
     historyTable.innerHTML = ''; // Clear the existing history table
@@ -140,6 +144,7 @@ function displayStopAlarmHistory() {
 }
 
 // selects items that are warnings only and adds these to our filteredArray that is then displayed
+// only warnings are displayed
 function displayWarningHistory() {
     var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
     historyTable.innerHTML = ''; // Clear the existing history table
@@ -172,6 +177,7 @@ function displayWarningHistory() {
     });
 }
 
+// if neither warnings or criticals is selected then show nothing
 function displayNoHistory() {
     var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
     historyTable.innerHTML = '';
@@ -198,6 +204,7 @@ function filterData() {
 }
 
 // removes the value of all filters present on the history page
+// bad name for it but I did not ever change it
 function clearDateRange() {
     // Clear the date range inputs
     document.querySelector("#datepicker1").value = "";
@@ -208,8 +215,7 @@ function clearDateRange() {
     displayAlarmHistory();
 }
 
-const MAX_HISTORY_ELEMENTS = 100;
-
+// adds the newest history array to be stored in local storage
 function updateHistoryInLocalStorage(historyArray) {
     // Keep only the last MAX_HISTORY_ELEMENTS elements
     const truncatedHistory = historyArray.slice(-MAX_HISTORY_ELEMENTS);
@@ -217,6 +223,7 @@ function updateHistoryInLocalStorage(historyArray) {
     localStorage.setItem('history', JSON.stringify(truncatedHistory));
 }
 
+// gets all the old history from local storage
 function getHistoryFromLocalStorage() {
     const storedHistory = localStorage.getItem('history');
     return storedHistory ? JSON.parse(storedHistory) : [];
@@ -226,7 +233,6 @@ function getHistoryFromLocalStorage() {
 function initializeHistoryFromLocalStorage() {
     // Retrieve data from local storage
     const storedHistory = getHistoryFromLocalStorage();
-
     // Ensure uniqueness before concatenating
     storedHistory.forEach(newAlarm => {
         const isDuplicate = historyArray.some(existingAlarm => {
@@ -856,6 +862,8 @@ function displayTrain7CriticalAlarms() {
     });
 }
 
+// this next chunk handles the checkbox logic for each drop down option
+// each one is called depending on the value of the dropdown
 function handleAllTrainAlarms() {
     if (myCheckbox.checked && myCheckbox2.checked) {
         displayAlarmHistory();

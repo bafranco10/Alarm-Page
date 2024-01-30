@@ -230,7 +230,6 @@ function updateDisplay() {
 // these all allow a user to filter by train, critical, and warnings to better look at critical alarms
 //these take in no parameters because they are handled by the toggle click handlers attached to the checkboxes 
 // logic for which function and train to call is handled in utilities.js 
-
 function showAllTrain1() {
     var tableBody = document.querySelector("#alarmTable tbody");
     var rows = tableBody.getElementsByTagName('tr');
@@ -743,7 +742,9 @@ function createCriticalAlarmRow(tableBody, entry) {
     sortTableRows(tableBody);
 }
 
-// based on the filters currently selected by the user we show and hide th rows dependng on what is selected
+// based on the filters currently selected by the user we show and hide the rows dependng on what is selected
+// so if we have warnings only toggled on then critical alarms will be hidden but still appended to the table and vice versa
+// same goes for train selections
 function setVisibility(row) {
     var alarmTypeCell = row.cells[4];
     var alarmTrainCell = row.cells[1];
@@ -775,6 +776,8 @@ function setVisibility(row) {
 }
 
 // handles the assignment of classes and alarm type for warnings
+// so it adds the warning text to the alarm type field 
+// also ensures that the display for warnings are yellow
 function createWarningAlarmRow(tableBody, entry) {
     if (entry.Code != 63 || entry.Code != 75) {
         // Create a unique row ID by concatenating "train" and "alarm code" and datetime
@@ -821,6 +824,8 @@ function createWarningAlarmRow(tableBody, entry) {
     }
 }
 
+// ensures that the newest alarm dates are displayed first with critica taking priority and being on top sorted from newest to oldest
+// warnings are under critical alarms and are sorted newest to oldest
 function sortTableRows(tableBody) {
     // Convert the HTMLCollection to an array for sorting
     const rowsArray = Array.from(tableBody.rows);

@@ -61,12 +61,15 @@
             <option value="5">Train 5</option>
             <option value="6">Train 6</option>
             <option value="7">Train 7</option>
-            <!-- Add options for train4 to train7 as needed -->
+            <!-- Add options as needed -->
         </select>
 
+        <button type="button" class="btn btn-primary btn-acknowledge" id="showAll"
+        onclick="confirmAcknowledgeAll();">Acknowledge
+        All</button>
+
         <button type="button" class="btn btn-primary btn-acknowledge" id="acknowledgeAllButton"
-            onclick="confirmAcknowledgeAll();">Acknowledge
-            All</button>
+            onclick="resetFilters();">Show All Alarms</button>
 
         <div id="customPopup" class="custom-popup">
             <div class="popup-content">
@@ -224,6 +227,7 @@
             initializeHistoryFromLocalStorage();
         };
 
+        // setup the checkboxes for the alarm hisotry page
         var switchLabel = document.getElementById("toggleCritical");
         var myCheckbox = document.getElementById("criticalCheckBox");
 
@@ -255,7 +259,7 @@
 
         const twoHours = 2 * 60 * 60 * 1000;
 
-        // Call clearOldAlarms every 2 hours
+        // Call clearOldAlarms every 2 hours to prevent a massive set from forming
         setInterval(clearOldAlarms, twoHours);
     </script>
 
