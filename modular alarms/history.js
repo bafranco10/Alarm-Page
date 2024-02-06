@@ -1013,3 +1013,33 @@ function handleToggleClick() {
         handleTrain7Alarms();
     }
 }
+
+// takes in an input from search bar if it is a number it searches for an alarm code with a matching number
+// if it is a string it searches for corresponding keyword in message field 
+//if no matching result then it displays nothing
+function search_code() {
+    // Get the search input
+    let input = document.getElementById('searchbar').value.trim().toLowerCase(); // Convert input to lowercase
+    if (input !== "") {
+        // Split the input into individual words
+        const inputWords = input.split(' ');
+        // Search by code or keyword
+        const filteredHistory = historyArray.filter(alarmData => {
+            const codeMatch = String(alarmData.Code).includes(input); // Check for partial code match
+            if (codeMatch) {
+                return true; // Return true if there's a code match
+            }
+            if (inputWords.length > 0 && alarmData.Message && typeof alarmData.Message === 'string') {
+                // Check for partial message match for each word in the input
+                const messageWords = alarmData.Message.toLowerCase().split(' ');
+                return inputWords.every(word => messageWords.some(messageWord => messageWord.includes(word)));
+            }
+            return false; 
+        });
+
+        displayFilteredHistory(filteredHistory);
+    } else {
+        // If the input is empty, display the entire history array
+        displayFilteredHistory(historyArray);
+    }
+}

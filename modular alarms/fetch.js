@@ -1,15 +1,15 @@
 // my code is structured to have it be 0-6 is  the fetch endpoints and then 7-13 are the acknowledge bits
 const fetchEndpoints = [
-    "http://172.16.1.131/Get_Alarms.cgi?Acknowledge=0",
-    "http://172.16.1.131/Get_Alarms.cgi?Acknowledge=1",
-    "http://172.16.1.132/Get_Alarms.cgi?Acknowledge=0",
+    "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=0",
+    "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=1",
+    "http://172.16.1.160/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.133/Get_Alarms.cgi?Acknowledge=0"
     //"http://172.16.1.134/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.135/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.136/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.137/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.101/Get_Alarms.cgi?Acknowledge=1",
-    "http://172.16.1.132/Get_Alarms.cgi?Acknowledge=1",
+    "http://172.16.1.160/Get_Alarms.cgi?Acknowledge=1",
     //"http://172.16.1.133/Get_Alarms.cgi?Acknowledge=1"
     //"http://172.16.1.134/Get_Alarms.cgi?Acknowledge=1",
     //"http://172.16.1.135/Get_Alarms.cgi?Acknowledge=1",
@@ -26,7 +26,8 @@ const ipAddresses = {
     '172.16.1.134': false,
     '172.16.1.135': false,
     '172.16.1.136': false,
-    '172.16.1.137': false
+    '172.16.1.137': false,
+    '172.16.1.160': false
 };
 
 const retryDelay = 3000; // time that elapses after a failed fetch
@@ -171,9 +172,9 @@ function parseResponse(jsonData) {
 
 // this function is used to get the train number in the train down alarm. It is useful for an accurate representation of what the train is that is down
 function getTrainFromIP(ipAddress) {
-    if (ipAddress === "172.16.1.131") {
+    if (ipAddress === "172.16.1.101") {
         return 1;
-    } else if (ipAddress === "172.16.1.132") {
+    } else if (ipAddress === "172.16.1.160") {
         return 2;
     } else if (ipAddress === "172.16.1.133") {
         return 3;
