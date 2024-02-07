@@ -1,3 +1,4 @@
+// denotes the max size of history table
 const MAX_HISTORY_ELEMENTS = 100;
 
 // finds communication alarm in dataArray and removes it from here
@@ -41,7 +42,7 @@ function moveAlarmToHistory(indexToRemove) {
     }
 }
 
-// displays history based on the filters imposed by search bar or date picker
+// displays history based on the filters imposed by search bar, date picker, or toggle switches 
 function displayFilteredHistory(filteredHistory) {
     var historyTable = document.getElementById("historyTable").getElementsByTagName('tbody')[0];
     historyTable.innerHTML = ''; // Clear the existing history table
@@ -65,7 +66,7 @@ function displayFilteredHistory(filteredHistory) {
     });
 }
 
-//takes no parameters
+// takes no parameters
 // every time a new alarm is added to history it adds it to dataArray and displays the new table
 // this ensures that the history table is able to be refreshed
 function updateHistory() {
@@ -126,6 +127,7 @@ function displayStopAlarmHistory() {
             historyArray.pop();
         }
     }
+
     // Output all necessary fields for history
     filteredHistoryArray.forEach(alarmData => {
         var historyRow = historyTable.insertRow();
@@ -864,6 +866,7 @@ function displayTrain7CriticalAlarms() {
 
 // this next chunk handles the checkbox logic for each drop down option
 // each one is called depending on the value of the dropdown
+// these are all handler functions
 function handleAllTrainAlarms() {
     if (myCheckbox.checked && myCheckbox2.checked) {
         displayAlarmHistory();

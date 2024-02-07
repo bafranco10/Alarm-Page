@@ -169,7 +169,8 @@ function inactiveAlarmHandling(existingAlarms, keysToRemove, matchingAlarm) {
     }
 }
 
-// this keeps track of the amount of critical alarms we have per train. It decreases from the corresponding index
+// takes in the train number
+// this keeps track of the amount of critical alarms we have per train. It decreases from the corresponding index in the stopAlarmCounts Array
 function decreaseCriticalAlarmCount(alarmTrain) {
     const index = alarmTrain - 1;
     if (stopAlarmCounts[index] !== undefined) {
@@ -824,7 +825,8 @@ function createWarningAlarmRow(tableBody, entry) {
     }
 }
 
-// ensures that the newest alarm dates are displayed first with critica taking priority and being on top sorted from newest to oldest
+// takes in all the table rows
+// ensures that the newest alarm dates are displayed first with critical taking priority and being on top sorted from newest to oldest
 // warnings are under critical alarms and are sorted newest to oldest
 function sortTableRows(tableBody) {
     // Convert the HTMLCollection to an array for sorting

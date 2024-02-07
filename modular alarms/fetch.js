@@ -1,15 +1,15 @@
 // my code is structured to have it be 0-6 is  the fetch endpoints and then 7-13 are the acknowledge bits
 const fetchEndpoints = [
-    "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=0",
-    "http://172.16.1.101/Get_Alarms.cgi?Acknowledge=1",
-    "http://172.16.1.160/Get_Alarms.cgi?Acknowledge=0",
+    "http://172.16.1.131/Get_Alarms.cgi?Acknowledge=0",
+    "http://172.16.1.131/Get_Alarms.cgi?Acknowledge=1",
+    "http://172.16.1.132/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.133/Get_Alarms.cgi?Acknowledge=0"
     //"http://172.16.1.134/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.135/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.136/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.137/Get_Alarms.cgi?Acknowledge=0",
     //"http://172.16.1.101/Get_Alarms.cgi?Acknowledge=1",
-    "http://172.16.1.160/Get_Alarms.cgi?Acknowledge=1",
+    "http://172.16.1.132/Get_Alarms.cgi?Acknowledge=1",
     //"http://172.16.1.133/Get_Alarms.cgi?Acknowledge=1"
     //"http://172.16.1.134/Get_Alarms.cgi?Acknowledge=1",
     //"http://172.16.1.135/Get_Alarms.cgi?Acknowledge=1",
@@ -35,6 +35,7 @@ let currentServerIndex = 0;
 const ipAddressByEndpoint = {};
 
 // Function to extract the IP address from a fetchEndpoint
+// so from http://172.16.1.132/Get_Alarms.cgi?Acknowledge=1 it will pull just the ip address
 function getIpAddressFromEndpoint(endpoint) {
     const url = new URL(endpoint);
     return url.hostname;
@@ -77,11 +78,12 @@ function fetchData(index) {
             clearTimeout(timeoutId); // Clear the timeout
             isFetching[index] = false;
             addTrainDownAlarm(ipAddress);
+            // if it fails try again
             if (index != 6 || index != 7 || index != 8 || index != 9 || index != 10 || index != 1 || index != 3) {
                 fetchAgain(index, resolve, reject);
             }
         };
-
+        // if request succeeds try again we will keep trying
         scriptElement.onload = function () {
             clearTimeout(timeoutId);
             requestCompleted = true;
@@ -161,6 +163,7 @@ function fetchAgain(index, resolve, reject) {
     }
 }
 
+// wrapper function that calls the heavy lifters with the appropriate JSON Data
 function parseResponse(jsonData) {
     try {
         updateGraphic(jsonData);
@@ -172,9 +175,9 @@ function parseResponse(jsonData) {
 
 // this function is used to get the train number in the train down alarm. It is useful for an accurate representation of what the train is that is down
 function getTrainFromIP(ipAddress) {
-    if (ipAddress === "172.16.1.101") {
+    if (ipAddress === "172.16.1.131") {
         return 1;
-    } else if (ipAddress === "172.16.1.160") {
+    } else if (ipAddress === "172.16.1.132") {
         return 2;
     } else if (ipAddress === "172.16.1.133") {
         return 3;
@@ -201,7 +204,6 @@ function getTrainFromIP(ipAddress) {
 function addTrainDownAlarm(ipAddress) {
     var currentDate = new Date();
     var formattedDate = formatDateToCustomString(currentDate);
-
     // Check if an alarm with the same characteristics already exists
     const existingAlarmIndex = dataArray.findIndex((alarm) => {
         return (

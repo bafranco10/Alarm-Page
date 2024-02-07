@@ -37,6 +37,7 @@
         </div>
     </div>
     <!-- Tab content -->
+    <!-- This tab is the current alarms one -->
     <div id="Current Alarms" class="tabcontent border-bottom-0">
         <h1>Current Alarms</h1>
         <span id="criticalLabelMain">View Critical Alarms</span>
@@ -101,19 +102,21 @@
             </thead>
             <tbody>
 
-                <!-- Data will be displayed here -->
+                
                 <tr class="table-no-border-bottom">
-                    <!-- Your table data goes here -->
+                    <!-- Your table data g<!-- Data will be displayed here -->oes here -->
                 </tr>
             </tbody>
         </table>
     </div>
 
+    <!-- This has everything to do with the history tab -->
     <div id="Alarm History" class="tabcontent border-bottom-0">
         <h1>Alarm History</h1>
+        <!-- search bar -->
         <input id="searchbar" onkeyup="search_code()" type="text" name="search"
         placeholder="Search Alarms by code or keyword.."> <br> <br>
-
+        <!-- Filters -->
         <span id="criticalLabel">View Critical Alarms</span>
         <label class="switch" id="toggleCritical" style="margin-right: 40px;">
             <input type="checkbox" id="criticalCheckBox" checked>
@@ -197,6 +200,7 @@
         //fetchData(3);
         //fetchData(4);
         //fetchData(5);
+        //fetchData(6);
 
         // fetch xml data
         // Define the URL of XML file

@@ -1,17 +1,17 @@
 var dataArray = []; // Create an array to store trainData and alarmData objects
-var historyArray = [];
+var historyArray = []; // stores all alarms that need to or have been moved to history
 var xmlFileUrl = 'alarms.xml';
-var rowIdToData = {};
-var filteredRowIdToData = {};
-var communicationDateTimes = [];
+var rowIdToData = {}; // maps the row id to the corresponding data
+var filteredRowIdToData = {}; // does the same as rowID but with filters, this is to ensure that rowID does not lose data
+var communicationDateTimes = []; // stores the date times of communication alarms to ensure no duplicates
 var stopAlarmCodes = [78, 1, 2, 3, 4, 5, 11, 12, 13, 14, 17, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 43, 44, 45, 46, 48, 49, 50, 67, 68, 69, 79];
 var buttonArray = []; //stores button ids
 const oldAlarms = new Set();
-const existingAlarms = new Set();
-const stopAlarmCounts = [0, 0, 0, 0, 0, 0, 0];
-var run = true;
-var trainSelection = 'all';
-var mainTrainSelection = 'allTrains';
+const existingAlarms = new Set(); // looks at the alarms that are currently active or on the HMI
+const stopAlarmCounts = [0, 0, 0, 0, 0, 0, 0]; // keeps track of stop alarms for each train with each train being index n - 1
+var run = true; // this is not used anywhere currently but may be necessary later on
+var trainSelection = 'all'; // global var to keep track of the current dropdown value on history page. the default is all trains
+var mainTrainSelection = 'allTrains'; // global var to keep track of the current dropdown value on current page. the default is all trains
 var filteredDisplay = []; //keeps track of all filters during display 
 
 // checks all logic to ensure the right train logic is implemented
